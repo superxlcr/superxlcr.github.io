@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,应用,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="使用com.android.camera.action.crop、com.android.camera.action.crop的缺点、其他的图片裁剪办法">
+<meta name="keywords" content="android,应用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于Android实现裁剪功能总结">
+<meta property="og:url" content="https://superxlcr.github.io/2017/04/17/关于Android实现裁剪功能总结/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="使用com.android.camera.action.crop、com.android.camera.action.crop的缺点、其他的图片裁剪办法">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.816Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="关于Android实现裁剪功能总结">
+<meta name="twitter:description" content="使用com.android.camera.action.crop、com.android.camera.action.crop的缺点、其他的图片裁剪办法">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2017/04/17/关于Android实现裁剪功能总结/">
+
+
+
+
+
+  <title>关于Android实现裁剪功能总结 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2017/04/17/关于Android实现裁剪功能总结/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">关于Android实现裁剪功能总结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-17T17:42:07+08:00">
+                2017-04-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  830字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近在进行毕业设计的时候，需要实现一个图片裁剪的功能。在此，对Android系统如何实现图片裁剪功能进行一个小结。</p>
+<h1 id="使用com-android-camera-action-crop"><a href="#使用com-android-camera-action-crop" class="headerlink" title="使用com.android.camera.action.crop"></a>使用com.android.camera.action.crop</h1><p>com.android.camera.action.crop是Android系统提供的一个Intent，我们可以利用该Intent打开一个裁剪用的Activity，然后通过onActivityResult返回或者把图片保存到外部的方式获取裁剪的结果。</p>
+<p>com.android.camera.action.crop所使用的参数如下表所示：</p>
+<table>
+<thead>
+<tr>
+<th>附加选项</th>
+<th>数据类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>crop</td>
+<td>String</td>
+<td>发送裁剪信号，“true”表示启用裁剪</td>
+</tr>
+<tr>
+<td>aspectX</td>
+<td>int</td>
+<td>X方向比例</td>
+</tr>
+<tr>
+<td>aspectY</td>
+<td>int</td>
+<td>Y方向比例</td>
+</tr>
+<tr>
+<td>outputX</td>
+<td>int</td>
+<td>裁剪区的宽</td>
+</tr>
+<tr>
+<td>outputY</td>
+<td>int</td>
+<td>裁剪区的高</td>
+</tr>
+<tr>
+<td>scale</td>
+<td>boolean</td>
+<td>是否保留比例</td>
+</tr>
+<tr>
+<td>return-data</td>
+<td>boolean</td>
+<td>是否将裁剪数据保留在Bitmap中返回</td>
+</tr>
+<tr>
+<td>data</td>
+<td>Parcelable</td>
+<td>需要裁剪的Bitmap数据</td>
+</tr>
+<tr>
+<td>circleCrop</td>
+<td>boolean</td>
+<td>是否圆形裁剪区域</td>
+</tr>
+<tr>
+<td>MediaStore.EXTRA_OUTPUT</td>
+<td>URI</td>
+<td>裁剪数据输出位置</td>
+</tr>
+</tbody></table>
+<p>下面为一段裁剪图片的例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">cropPhoto</span><span class="params">(Uri uri)</span> </span>&#123;</span><br><span class="line">    Intent intent = <span class="keyword">new</span> Intent(<span class="string">"com.android.camera.action.CROP"</span>);</span><br><span class="line">    intent.setDataAndType(uri, <span class="string">"image/*"</span>);</span><br><span class="line">    intent.putExtra(<span class="string">"scale"</span>, <span class="keyword">true</span>);</span><br><span class="line">    <span class="comment">// 裁剪比例</span></span><br><span class="line">    intent.putExtra(<span class="string">"aspectX"</span>, xxx);</span><br><span class="line">    intent.putExtra(<span class="string">"aspectY"</span>, xxx);</span><br><span class="line">    <span class="comment">// 裁剪宽高</span></span><br><span class="line">    intent.putExtra(<span class="string">"outputX"</span>, xxx);</span><br><span class="line">    intent.putExtra(<span class="string">"outputY"</span>, xxx);</span><br><span class="line">    <span class="comment">// 文件输出位置</span></span><br><span class="line">    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);</span><br><span class="line">    startActivityForResult(intent, CROP_PHOTO);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Intent photoPickerIntent = <span class="keyword">new</span> Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);</span><br><span class="line">photoPickerIntent.setType(<span class="string">"image/*"</span>);</span><br><span class="line">photoPickerIntent.putExtra(<span class="string">"crop"</span>, <span class="string">"true"</span>);</span><br><span class="line">photoPickerIntent.putExtra(MediaStore.EXTRA_OUTPUT, xxx);</span><br><span class="line">photoPickerIntent.putExtra(<span class="string">"outputFormat"</span>, Bitmap.CompressFormat.JPEG.toString());</span><br><span class="line">startActivityForResult(photoPickerIntent, REQ_CODE_PICK_IMAGE);</span><br></pre></td></tr></table></figure>
+
+<p>在例子中我们设置了MediaStore.EXTRA_OUTPUT参数，因此裁剪的结果将会保存在我们参数的URI中。</p>
+<h1 id="com-android-camera-action-crop的缺点"><a href="#com-android-camera-action-crop的缺点" class="headerlink" title="com.android.camera.action.crop的缺点"></a>com.android.camera.action.crop的缺点</h1><p>虽然com.android.camera.action.crop这个API看起来很方便，然而它还是有非常明显的缺点的。<br>首先，它不是一个官方公开的API接口，在Android官方网站上我们找不到和该接口有关的资料，同时Google可以在不发表任何通知的情况下更改或取消该接口。虽然它一般情况下在大部分的设备上都可以使用，但并不能保证100%不会出现问题或导致APP crash。<br>其次，在使用“return-data”参数获取返回值时，获得的图片在大小尺寸上会有较大的问题。当我们裁剪图片的尺寸大小在300像素以上时，APP有极大可能会crash，更甚者会死机直到你拆掉手机电池重新安上才解决。因此，当我们使用这个接口时，应尽量避免通过onActivityResult返回裁剪结果。</p>
+<h1 id="其他的图片裁剪办法"><a href="#其他的图片裁剪办法" class="headerlink" title="其他的图片裁剪办法"></a>其他的图片裁剪办法</h1><p>由于com.android.camera.action.crop这个API并非官方的正式API，再加上在通过onActivityResult获取的图片尺寸有一定的问题，因此我们需要使用一些别的方法来实现图片裁剪功能。在此，我们可以使用一些第三方库来实现图片裁剪的功能。<br>第三方图片裁剪库github：<a href="https://github.com/lvillani/android-cropimage" target="_blank" rel="noopener">https://github.com/lvillani/android-cropimage</a><br>使用例子如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">doCrop</span><span class="params">(File croppedResult)</span></span>&#123;</span><br><span class="line">        CropImageIntentBuilder builder = <span class="keyword">new</span> CropImageIntentBuilder(<span class="number">600</span>,<span class="number">600</span>, croppedResult);</span><br><span class="line">        <span class="comment">// don't forget this, the error handling within the library is just ignoring if you do</span></span><br><span class="line">        builder.setSourceImage(mImageCaptureUri);</span><br><span class="line">        Intent  intent = builder.getIntent(getApplicationContext());</span><br><span class="line">        <span class="comment">// do not use return data for big images</span></span><br><span class="line">        intent.putExtra(<span class="string">"return-data"</span>, <span class="keyword">false</span>);</span><br><span class="line">        <span class="comment">// start an activity and then get the result back in onActivtyResult</span></span><br><span class="line">        startActivityForResult(intent, CROP_FROM_CAMERA);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于图片裁剪问题更详细的讨论请查看StackOverflow：<br><a href="http://stackoverflow.com/questions/12758425/how-to-set-the-output-image-use-com-android-camera-action-crop" target="_blank" rel="noopener">http://stackoverflow.com/questions/12758425/how-to-set-the-output-image-use-com-android-camera-action-crop</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/应用/" rel="tag"># 应用</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/16/BufferedReader使用readLine问题/" rel="next" title="BufferedReader使用readLine问题">
+                <i class="fa fa-chevron-left"></i> BufferedReader使用readLine问题
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/04/24/Android进程保活总结/" rel="prev" title="Android进程保活总结">
+                Android进程保活总结 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#使用com-android-camera-action-crop"><span class="nav-number">1.</span> <span class="nav-text">使用com.android.camera.action.crop</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#com-android-camera-action-crop的缺点"><span class="nav-number">2.</span> <span class="nav-text">com.android.camera.action.crop的缺点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他的图片裁剪办法"><span class="nav-number">3.</span> <span class="nav-text">其他的图片裁剪办法</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,应用,cpp,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Android 5.0 以下Native进程保活尝试">
+<meta name="keywords" content="android,应用,cpp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android 5.0 以下Native进程保活尝试">
+<meta property="og:url" content="https://superxlcr.github.io/2017/05/26/Android-5-0-以下Native进程保活尝试/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="Android 5.0 以下Native进程保活尝试">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/26/Android-5-0-以下Native进程保活尝试/1.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/26/Android-5-0-以下Native进程保活尝试/2.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/26/Android-5-0-以下Native进程保活尝试/3.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/26/Android-5-0-以下Native进程保活尝试/4.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/26/Android-5-0-以下Native进程保活尝试/5.png">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.487Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android 5.0 以下Native进程保活尝试">
+<meta name="twitter:description" content="Android 5.0 以下Native进程保活尝试">
+<meta name="twitter:image" content="https://superxlcr.github.io/2017/05/26/Android-5-0-以下Native进程保活尝试/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2017/05/26/Android-5-0-以下Native进程保活尝试/">
+
+
+
+
+
+  <title>Android 5.0 以下Native进程保活尝试 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2017/05/26/Android-5-0-以下Native进程保活尝试/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android 5.0 以下Native进程保活尝试</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-26T17:33:53+08:00">
+                2017-05-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近博主尝试了Android 5.0 以下版本的Native保活机制，感觉收获颇丰，在此写下一篇博客记录一下。<br>首先把整个保活流程通过图片的形式描述下：<br><img src="/2017/05/26/Android-5-0-以下Native进程保活尝试/1.png" alt="Native进程保活流程_pic1"></p>
+<p>首先是AndroidManifest 中注册的控件：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">activity</span> <span class="attr">android:name</span>=<span class="string">".MainActivity"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MAIN"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.LAUNCHER"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">service</span> <span class="attr">android:name</span>=<span class="string">".PersistService"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:process</span>=<span class="string">":persist"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">receiver</span> <span class="attr">android:name</span>=<span class="string">".WakeUpBroadcastReceiver"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:process</span>=<span class="string">":wake_up"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:exported</span>=<span class="string">"true"</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>主要有三个控件：一个用于启动服务的Activity，一个在:persist 子进程中的运行任务的服务Service，以及一个在:wake_up 子进程中用于拉活Service的BroadcastReceiver</p>
+<p>MainActivity过于简单在此就不做介绍了，PersistService的代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PersistService</span> <span class="keyword">extends</span> <span class="title">Service</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">"MyLog"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Nullable</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> IBinder <span class="title">onBind</span><span class="params">(Intent intent)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate();</span><br><span class="line">        <span class="comment">// 运行守护Daemon</span></span><br><span class="line">        Log.d(TAG, <span class="string">"run daemon"</span>);</span><br><span class="line">        Daemon.run(<span class="keyword">this</span>, WakeUpBroadcastReceiver.class);</span><br><span class="line">        <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">                <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                    Log.d(<span class="string">"TestLive"</span>, <span class="string">"number is "</span> + i++);</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        Thread.sleep(<span class="number">5000</span>);</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;&#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;).start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">onStartCommand</span><span class="params">(Intent intent, <span class="keyword">int</span> flags, <span class="keyword">int</span> startId)</span> </span>&#123;</span><br><span class="line">        Log.d(TAG, <span class="string">"onStartCommand"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.onStartCommand(intent, flags, startId);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在PersistService的onCreate方法中，调用了Daemon类启动守护进程对PersistService类进行守护，并启动了新线程计数模拟工作。</p>
+<p>Daemon类代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String DIR_NAME = <span class="string">"bin"</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String FILE_NAME = <span class="string">"serviceDaemon"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> AlarmManager alarmManager;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> PendingIntent wakeUpIntent;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> &#123;</span><br><span class="line">    System.loadLibrary(<span class="string">"daemon-lib"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 运行守护进程</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> context 上下文</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> wakeUpClass 唤醒Service类</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">(<span class="keyword">final</span> Context context, <span class="keyword">final</span> Class wakeUpClass)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 初始化闹钟与唤醒用的intent</span></span><br><span class="line">    alarmManager = ((AlarmManager)context.getSystemService(Context.ALARM_SERVICE));</span><br><span class="line">    Intent intent = <span class="keyword">new</span> Intent(context, wakeUpClass);</span><br><span class="line">    wakeUpIntent = PendingIntent.getBroadcast(context, <span class="number">0</span>, intent, <span class="number">0</span>);</span><br><span class="line">    <span class="comment">// 启动守护进程</span></span><br><span class="line">    <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="comment">// 复制binary文件</span></span><br><span class="line">            String binaryFilePath = Command.install(context, DIR_NAME, FILE_NAME);</span><br><span class="line">            <span class="keyword">if</span> (binaryFilePath != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="comment">// 运行</span></span><br><span class="line">                start(context.getPackageName(), wakeUpClass.getSimpleName(), binaryFilePath);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;).start();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">native</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">(String packageName, String serviceClassName, String binaryFilePath)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>在run方法中，首先调用了Command工具类根据系统ABI获取在assets文件夹下相应的二进制文件，复制到特定地点后更改权限等待执行<br>然后启动子线程通过JNI调用native的start方法，传入包名、需要唤醒的类名以及二进制文件的路径：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="string">"C"</span></span><br><span class="line">JNIEXPORT <span class="keyword">void</span> JNICALL Java_com_app_superxlcr_mynativetest_Daemon_start</span><br><span class="line">        (JNIEnv *env, jclass clazz, jstring jPackageName, jstring jWakeUpClassName,</span><br><span class="line">         jstring jBinaryFilePath) &#123;</span><br><span class="line">    <span class="comment">// 获取Java参数</span></span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *packageName = env-&gt;GetStringUTFChars(jPackageName, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *wakeUpClassName = env-&gt;GetStringUTFChars(jWakeUpClassName, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *binaryFilePath = env-&gt;GetStringUTFChars(jBinaryFilePath, <span class="number">0</span>);</span><br><span class="line">    LOGD(MY_NATIVE_TAG, <span class="string">"packageName is %s"</span>, packageName);</span><br><span class="line">    LOGD(MY_NATIVE_TAG, <span class="string">"wakeUpCLassName is %s"</span>, wakeUpClassName);</span><br><span class="line">    LOGD(MY_NATIVE_TAG, <span class="string">"binaryFilePath is %s"</span>, binaryFilePath);</span><br><span class="line">    <span class="comment">// 建立管道，pipe1用于父进程监听子进程，pipe2用于子进程监听父进程</span></span><br><span class="line">    <span class="keyword">int</span> pipe1Fd[<span class="number">2</span>];</span><br><span class="line">    <span class="keyword">int</span> pipe2Fd[<span class="number">2</span>];</span><br><span class="line">    <span class="keyword">if</span> (pipe(pipe1Fd) == <span class="number">-1</span>) &#123;</span><br><span class="line">        LOGE(MY_NATIVE_TAG, <span class="string">"create pipe1 error"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (pipe(pipe2Fd) == <span class="number">-1</span>) &#123;</span><br><span class="line">        LOGE(MY_NATIVE_TAG, <span class="string">"create pipe2 error"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 执行二进制文件</span></span><br><span class="line">    <span class="keyword">pid_t</span> result = fork();</span><br><span class="line">    <span class="keyword">if</span> (result &gt; <span class="number">0</span>) &#123; <span class="comment">// 父进程</span></span><br><span class="line">        <span class="comment">// 关闭pipe1的写端</span></span><br><span class="line">        close(pipe1Fd[<span class="number">1</span>]);</span><br><span class="line">        <span class="comment">// 关闭pipe2的读端</span></span><br><span class="line">        close(pipe2Fd[<span class="number">0</span>]);</span><br><span class="line">        <span class="comment">// 监听子进程情况</span></span><br><span class="line">        <span class="keyword">char</span> readBuffer[<span class="number">100</span>];</span><br><span class="line">        <span class="keyword">int</span> readResult = read(pipe1Fd[<span class="number">0</span>], readBuffer, <span class="number">100</span>);</span><br><span class="line">        LOGD(MY_NATIVE_TAG, <span class="string">"readResult is %d, errno is %d"</span>, readResult, errno);</span><br><span class="line">        <span class="comment">// 阻塞中断，子进程已退出</span></span><br><span class="line">        LOGD(MY_NATIVE_TAG, <span class="string">"child process is dead"</span>);</span><br><span class="line">        <span class="comment">// 释放Java参数内存</span></span><br><span class="line">        env-&gt;ReleaseStringUTFChars(jPackageName, packageName);</span><br><span class="line">        env-&gt;ReleaseStringUTFChars(jWakeUpClassName, wakeUpClassName);</span><br><span class="line">        env-&gt;ReleaseStringUTFChars(jBinaryFilePath, binaryFilePath);</span><br><span class="line">        <span class="comment">// 拉活处理，回调Java方法</span></span><br><span class="line">        jmethodID methodID = env-&gt;GetStaticMethodID(clazz, <span class="string">"onDaemonDead"</span>, <span class="string">"()V"</span>);</span><br><span class="line">        env-&gt;CallStaticVoidMethod(clazz, methodID, <span class="literal">NULL</span>);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (result == <span class="number">0</span>) &#123; <span class="comment">// 子进程</span></span><br><span class="line">        <span class="comment">// 管道描述符转为字符串</span></span><br><span class="line">        <span class="keyword">char</span> strP1r[<span class="number">10</span>];</span><br><span class="line">        <span class="keyword">char</span> strP1w[<span class="number">10</span>];</span><br><span class="line">        <span class="keyword">char</span> strP2r[<span class="number">10</span>];</span><br><span class="line">        <span class="keyword">char</span> strP2w[<span class="number">10</span>];</span><br><span class="line">        <span class="built_in">sprintf</span>(strP1r, <span class="string">"%d"</span>, pipe1Fd[<span class="number">0</span>]);</span><br><span class="line">        <span class="built_in">sprintf</span>(strP1w, <span class="string">"%d"</span>, pipe1Fd[<span class="number">1</span>]);</span><br><span class="line">        <span class="built_in">sprintf</span>(strP2r, <span class="string">"%d"</span>, pipe2Fd[<span class="number">0</span>]);</span><br><span class="line">        <span class="built_in">sprintf</span>(strP2w, <span class="string">"%d"</span>, pipe2Fd[<span class="number">1</span>]);</span><br><span class="line">        <span class="comment">// 执行二进制文件</span></span><br><span class="line">        LOGD(MY_NATIVE_TAG, <span class="string">"execute binary file"</span>);</span><br><span class="line">        LOGD(MY_NATIVE_TAG, <span class="string">"binary file argv ：%s %s %s %s %s %s %s %s %s %s %s %s %s"</span>,</span><br><span class="line">             BINARY_FILE_NAME,</span><br><span class="line">             PACKAGE_NAME, packageName,</span><br><span class="line">             SERVICE_CLASS_NAME, wakeUpClassName,</span><br><span class="line">             PIPE_1_READ, strP1r,</span><br><span class="line">             PIPE_1_WRITE, strP1w,</span><br><span class="line">             PIPE_2_READ, strP2r,</span><br><span class="line">             PIPE_2_WRITE, strP2w);</span><br><span class="line">        execlp(binaryFilePath,</span><br><span class="line">               BINARY_FILE_NAME,</span><br><span class="line">               PACKAGE_NAME, packageName,</span><br><span class="line">               SERVICE_CLASS_NAME, wakeUpClassName,</span><br><span class="line">               PIPE_1_READ, strP1r,</span><br><span class="line">               PIPE_1_WRITE, strP1w,</span><br><span class="line">               PIPE_2_READ, strP2r,</span><br><span class="line">               PIPE_2_WRITE, strP2w,</span><br><span class="line">               <span class="literal">NULL</span>);</span><br><span class="line">        <span class="comment">// 函数返回，执行失败</span></span><br><span class="line">        LOGE(MY_NATIVE_TAG, <span class="string">"execute binary file fail, errno is %d"</span>, errno);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        LOGE(MY_NATIVE_TAG, <span class="string">"fork fail!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 释放Java参数内存</span></span><br><span class="line">    env-&gt;ReleaseStringUTFChars(jPackageName, packageName);</span><br><span class="line">    env-&gt;ReleaseStringUTFChars(jWakeUpClassName, wakeUpClassName);</span><br><span class="line">    env-&gt;ReleaseStringUTFChars(jBinaryFilePath, binaryFilePath);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在start方法中，我们首先获取了从Java层传过来的参数，然后通过pipe函数开启了两条匿名管道用于服务进程与其后代守护进程监听存活情况：</p>
+<ul>
+<li>pipe1：管道1，用于父进程监听子进程的存活情况，父进程关闭pipe1的写端，子进程关闭pipe1的读端</li>
+<li>pipe2：管道2，用于子进程监听父进程的存活情况，父进程关闭pipe2的读端，子进程关闭pipe2的写端</li>
+</ul>
+<p>然后通过fork创建相应的子进程，在父进程中通过管道监听子进程的状况，在子进程中通过exec函数执行二进制文件重生为守护进程。</p>
+<p>当父进程管道读取返回时，代表子进程已被销毁。此时，父进程通过回调Java层的onDeamonDead方法唤醒拉活进程并自杀等待重启：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">onDaemonDead</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Log.d(TAG, <span class="string">"call onDaemonDead!"</span>);</span><br><span class="line">    <span class="comment">// 闹钟启动拉活进程</span></span><br><span class="line">    alarmManager.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + <span class="number">5000</span>, wakeUpIntent);</span><br><span class="line">    <span class="comment">// 自杀</span></span><br><span class="line">    Process.killProcess(Process.myPid());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>二进制文件代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 参数个数检查</span></span><br><span class="line">    <span class="keyword">if</span> (argc &lt; <span class="number">13</span>) &#123;</span><br><span class="line">        LOGE(MY_NATIVE_TAG, <span class="string">"argc number is %d, expected 13!"</span>, argc);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">char</span> *processName = argv[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">char</span> *packageName = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">char</span> *wakeUpClassName = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">int</span> pipe1Fd[<span class="number">2</span>];</span><br><span class="line">    <span class="keyword">int</span> pipe2Fd[<span class="number">2</span>];</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; argc; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(PACKAGE_NAME, argv[i])) &#123;</span><br><span class="line">            packageName = argv[i + <span class="number">1</span>];</span><br><span class="line">            LOGD(MY_NATIVE_TAG, <span class="string">"packageName is : %s"</span>, packageName);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(SERVICE_CLASS_NAME, argv[i])) &#123;</span><br><span class="line">            wakeUpClassName = argv[i + <span class="number">1</span>];</span><br><span class="line">            LOGD(MY_NATIVE_TAG, <span class="string">"wakeUpClassName is : %s"</span>, wakeUpClassName);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(PIPE_1_READ, argv[i])) &#123;</span><br><span class="line">            pipe1Fd[<span class="number">0</span>] = atoi(argv[i + <span class="number">1</span>]);</span><br><span class="line">            LOGD(MY_NATIVE_TAG, <span class="string">"pipe1r is : %d"</span>, pipe1Fd[<span class="number">0</span>]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(PIPE_1_WRITE, argv[i])) &#123;</span><br><span class="line">            pipe1Fd[<span class="number">1</span>] = atoi(argv[i + <span class="number">1</span>]);</span><br><span class="line">            LOGD(MY_NATIVE_TAG, <span class="string">"pipe1w is : %d"</span>, pipe1Fd[<span class="number">1</span>]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(PIPE_2_READ, argv[i])) &#123;</span><br><span class="line">            pipe2Fd[<span class="number">0</span>] = atoi(argv[i + <span class="number">1</span>]);</span><br><span class="line">            LOGD(MY_NATIVE_TAG, <span class="string">"pipe2r is : %d"</span>, pipe2Fd[<span class="number">0</span>]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="built_in">strcmp</span>(PIPE_2_WRITE, argv[i])) &#123;</span><br><span class="line">            pipe2Fd[<span class="number">1</span>] = atoi(argv[i + <span class="number">1</span>]);</span><br><span class="line">            LOGD(MY_NATIVE_TAG, <span class="string">"pipe2w is : %d"</span>, pipe2Fd[<span class="number">1</span>]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 成为守护进程</span></span><br><span class="line">    <span class="keyword">int</span> forkResult = fork();</span><br><span class="line">    <span class="keyword">if</span> (forkResult == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// 成为会话组长</span></span><br><span class="line">        setsid();</span><br><span class="line">        <span class="comment">// 改变工作目录</span></span><br><span class="line">        chdir(<span class="string">"/"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 清理僵尸进程</span></span><br><span class="line">        cleanZombieProcess(processName);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 管道处理</span></span><br><span class="line">        <span class="comment">// 关闭pipe1的读端</span></span><br><span class="line">        close(pipe1Fd[<span class="number">0</span>]);</span><br><span class="line">        <span class="comment">// 关闭pipe2的写端</span></span><br><span class="line">        close(pipe2Fd[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 管道监听，监听父进程情况</span></span><br><span class="line">        <span class="keyword">char</span> readBuffer[<span class="number">100</span>];</span><br><span class="line">        <span class="keyword">int</span> readResult = read(pipe2Fd[<span class="number">0</span>], readBuffer, <span class="number">100</span>);</span><br><span class="line">        LOGD(MY_NATIVE_TAG, <span class="string">"readResult is %d, errno is %d"</span>, readResult, errno);</span><br><span class="line">        <span class="comment">// 阻塞中断，父进程已退出</span></span><br><span class="line">        LOGD(MY_NATIVE_TAG, <span class="string">"parent process is dead"</span>);</span><br><span class="line">        <span class="comment">// 拉活处理</span></span><br><span class="line">        <span class="keyword">pid_t</span> childPid = fork();</span><br><span class="line">        <span class="keyword">if</span> (childPid == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="comment">// 唤醒广播拉活</span></span><br><span class="line">            <span class="keyword">char</span> *wakeUpName = <span class="keyword">new</span> <span class="keyword">char</span>[<span class="built_in">strlen</span>(packageName) + <span class="built_in">strlen</span>(wakeUpClassName) + <span class="number">1</span>];</span><br><span class="line">            <span class="built_in">sprintf</span>(wakeUpName, <span class="string">"%s/.%s"</span>, packageName, wakeUpClassName);</span><br><span class="line">            LOGD(MY_NATIVE_TAG, <span class="string">"wakeUpName is %s"</span>, wakeUpName);</span><br><span class="line">            <span class="keyword">int</span> result = execlp(<span class="string">"am"</span>, <span class="string">"am"</span>, <span class="string">"broadcast"</span>,</span><br><span class="line">                                <span class="string">"--user"</span>, <span class="string">"0"</span>, <span class="string">"-n"</span>, wakeUpName, (<span class="keyword">char</span> *) <span class="literal">NULL</span>);</span><br><span class="line">            LOGD(MY_NATIVE_TAG, <span class="string">"execute am broadcast result is %d"</span>, result);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (childPid &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            waitpid(childPid, <span class="literal">NULL</span>, <span class="number">0</span>);</span><br><span class="line">            LOGD(MY_NATIVE_TAG, <span class="string">"execute am broadcast over"</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            LOGE(MY_NATIVE_TAG, <span class="string">"fork fail!"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (forkResult &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        LOGE(MY_NATIVE_TAG, <span class="string">"fork fail!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在二进制文件中，首先检查了传入的参数，然后使该进程成为Linux的守护进程（没有关闭标准输入输出错误、关闭后执行am指令会出问题），并清理了以前剩下的僵尸守护进程，然后通过管道监听父进程的存活情况，当父进程死亡时，通过exec函数执行am指令发送广播唤醒拉活进程，并退出程序关闭守护进程。</p>
+<p>负责拉活进程的广播接收器如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WakeUpBroadcastReceiver</span> <span class="keyword">extends</span> <span class="title">BroadcastReceiver</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">"MyLog"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onReceive</span><span class="params">(Context context, Intent intent)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 拉活处理</span></span><br><span class="line">        Log.d(TAG, <span class="string">"Receiver Start Service"</span>);</span><br><span class="line">        Intent serviceIntent = <span class="keyword">new</span> Intent(context, PersistService.class);</span><br><span class="line">        context.startService(serviceIntent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面是在Android 4.3 CoolPad手机上测试的效果：<br>首次启动：<br><img src="/2017/05/26/Android-5-0-以下Native进程保活尝试/2.png" alt="首次启动_pic2"></p>
+<p>在adb shell中通过force-stop关闭服务进程：<br><img src="/2017/05/26/Android-5-0-以下Native进程保活尝试/3.png" alt="force-stop_pic3"></p>
+<p>守护进程检测到Service进程被杀死，进行拉活处理：<br><img src="/2017/05/26/Android-5-0-以下Native进程保活尝试/4.png" alt="子进程唤醒_pic4"></p>
+<p>此次守护进程的pid为21561，我们尝试通过kill命令杀死守护进程</p>
+<p>Service进程检测到守护进程被杀死，进行拉活处理：<br><img src="/2017/05/26/Android-5-0-以下Native进程保活尝试/5.png" alt="父进程唤醒_pic5"></p>
+<p>通过测试发现，无论是Service进程死亡还是守护进程死亡，另一方都能通过唤醒拉活进程将其救活，真正实现了Native层的双进程守护功能。</p>
+<p>然而，在Android 5.0以上版本该方法并没有效果……目前博主正在进行进一步的学习研究。</p>
+<p>项目git地址：<a href="https://github.com/superxlcr/MyNativeTest" target="_blank" rel="noopener">https://github.com/superxlcr/MyNativeTest</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/应用/" rel="tag"># 应用</a>
+          
+            <a href="/tags/cpp/" rel="tag"># cpp</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/25/JNI-方法注册与签名/" rel="next" title="JNI 方法注册与签名">
+                <i class="fa fa-chevron-left"></i> JNI 方法注册与签名
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/29/Android-文件中断续传/" rel="prev" title="Android 文件中断续传">
+                Android 文件中断续传 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

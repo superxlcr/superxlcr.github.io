@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,基础知识,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="如何处理Android Crash 并重启手机、如何把view转化为bitmap、library 与 app资源同名冲突问题、Android 扬声器与听筒切换、关于addView后宽高的一些细节">
+<meta name="keywords" content="android,基础知识">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android常见问题总结（六）">
+<meta property="og:url" content="https://superxlcr.github.io/2017/08/08/Android常见问题总结（六）/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="如何处理Android Crash 并重启手机、如何把view转化为bitmap、library 与 app资源同名冲突问题、Android 扬声器与听筒切换、关于addView后宽高的一些细节">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2017/08/08/Android常见问题总结（六）/1.gif">
+<meta property="og:image" content="https://superxlcr.github.io/2017/08/08/Android常见问题总结（六）/2.gif">
+<meta property="og:image" content="https://superxlcr.github.io/2017/08/08/Android常见问题总结（六）/3.png">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.583Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android常见问题总结（六）">
+<meta name="twitter:description" content="如何处理Android Crash 并重启手机、如何把view转化为bitmap、library 与 app资源同名冲突问题、Android 扬声器与听筒切换、关于addView后宽高的一些细节">
+<meta name="twitter:image" content="https://superxlcr.github.io/2017/08/08/Android常见问题总结（六）/1.gif">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2017/08/08/Android常见问题总结（六）/">
+
+
+
+
+
+  <title>Android常见问题总结（六） | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2017/08/08/Android常见问题总结（六）/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android常见问题总结（六）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-08T19:54:28+08:00">
+                2017-08-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.4k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上一篇博客传送门：<a href="/2016/05/17/Android常见问题总结（五）/">Android常见问题总结（五）</a></p>
+<h1 id="如何处理Android-Crash-并重启手机"><a href="#如何处理Android-Crash-并重启手机" class="headerlink" title="如何处理Android Crash 并重启手机"></a>如何处理Android Crash 并重启手机</h1><p>一般而言，发生了APP Crash是由于我们的程序抛出了我们未捕获的RuntimeException<br>在Java中，我们可以通过setDefaultUncaughtExceptionHandler方法为某个线程设置默认未捕获异常处理器，当程序抛出未捕获异常时，会交由改处理器处理<br>Android的默认UncaughtExceptionHandler为弹出Dialog提醒用户APP Crash，并杀死进程退出程序<br>我们可以通过编写自己的UncaughtExceptionHandler来处理APP Crash的问题：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Thread.setDefaultUncaughtExceptionHandler(<span class="keyword">new</span> Thread.UncaughtExceptionHandler() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">uncaughtException</span><span class="params">(Thread t, Throwable e)</span> </span>&#123;</span><br><span class="line">        Intent intent = <span class="keyword">new</span> Intent(MainActivity.<span class="keyword">this</span>, MainActivity.class);</span><br><span class="line">        startActivity(intent);</span><br><span class="line">        Process.killProcess(Process.myPid());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>下面例子中，点击按钮会抛出一个运行时异常，上图为未设置Handler之前，下图为设置Handler之后：</p>
+<p><img src="/2017/08/08/Android常见问题总结（六）/1.gif" alt="_pic1">)<img src="/2017/08/08/Android常见问题总结（六）/2.gif" alt="_pic2"></p>
+<h1 id="如何把view转化为bitmap"><a href="#如何把view转化为bitmap" class="headerlink" title="如何把view转化为bitmap"></a>如何把view转化为bitmap</h1><p>可以使用getDrawingCache方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 设置能否缓存图片信息（drawing cache）</span></span><br><span class="line">view.setDrawingCacheEnabled(<span class="keyword">true</span>);</span><br><span class="line"><span class="comment">// 如果能够缓存图片，则创建图片缓存</span></span><br><span class="line">view.buildDrawingCache();</span><br><span class="line"><span class="comment">// 如果图片已经缓存，返回一个bitmap</span></span><br><span class="line">Bitmap bitmap = view.getDrawingCache();</span><br><span class="line"><span class="comment">// 释放缓存占用的资源</span></span><br><span class="line">view.destroyDrawingCache();</span><br></pre></td></tr></table></figure>
+
+<h1 id="library-与-app资源同名冲突问题"><a href="#library-与-app资源同名冲突问题" class="headerlink" title="library 与 app资源同名冲突问题"></a>library 与 app资源同名冲突问题</h1><p>假设有以下场景：<br><img src="/2017/08/08/Android常见问题总结（六）/3.png" alt="_pic3"></p>
+<p>在一个Project中有两个module，一个是应用app，另一个是android的library：mylibrary<br>两个module中存在着相同的资源名称</p>
+<p>这种情况会导致什么问题呢？<br>会导致mylibrary module中的activity_main.xml被覆盖，无法获取</p>
+<p>在网上查到的R类索引生成规则如下所示：</p>
+<p>资源ID是一个4字节的无符号整数，其中，最高字节表示Package ID，次高字节表示Type ID，最低两字节表示Entry ID。<br>Package ID相当于是一个命名空间，限定资源的来源。Android系统当前定义了两个资源命令空间，其中一个系统资源命令空间，它的Package ID等于0x01，另外一个是应用程序资源命令空间，它的Package ID等于0x7f。所有位于[0x01, 0x7f]之间的Package ID都是合法的，而在这个范围之外的都是非法的Package ID。前面提到的系统资源包package-export.apk的Package ID就等于0x01，而我们在应用程序中定义的资源的Package ID的值都等于0x7f，这一点可以通过生成的R.java文件来验证。</p>
+<p>Type ID是指资源的类型ID。资源的类型有animator、anim、color、drawable、layout、menu、raw、string和xml等等若干种，每一种都会被赋予一个ID。<br>Entry ID是指每一个资源在其所属的资源类型中所出现的次序。注意，不同类型的资源的Entry ID有可能是相同的，但是由于它们的类型不同，我们仍然可以通过其资源ID来区别开来。</p>
+<p>由于名称相同，两个module会对该资源生成相同的索引即（app.R.layout.activity_main == mylibrary.R.layout.activity_main）<br>如果app module依赖mylibrary module，那么最终生成的apk中所有的资源文件res和R类都会被集中到一起，也就是说mylibrary中的activity_main会被完全覆盖<br>原本在mylibrary module中的获取的activity_main资源均会变为app中的activity_main资源</p>
+<p>stackoverflow对此问题给出的解决方案是：为你的android library资源添加相关的前缀，如AppCompat的前缀为abc_<br><a href="https://stackoverflow.com/questions/42513509/is-there-any-way-in-android-module-to-pick-up-resources-from-its-own-module-and" target="_blank" rel="noopener">https://stackoverflow.com/questions/42513509/is-there-any-way-in-android-module-to-pick-up-resources-from-its-own-module-and</a></p>
+<h1 id="Android-扬声器与听筒切换"><a href="#Android-扬声器与听筒切换" class="headerlink" title="Android 扬声器与听筒切换"></a>Android 扬声器与听筒切换</h1><p>要实现扬声器与听筒的切换.而android中实现对音量和振铃模式的控制主要通过AudioManager类来实现.</p>
+<p>获取到AudioManager后，我们可以通过其几个关键的方法改变扬声器与听筒的状态：</p>
+<ol>
+<li>isSpeakerphoneOn：用于检测当前是否开启了扬声器</li>
+<li>setSpeakerphoneOn：设置是否打开扬声器</li>
+<li>setMode：设置音频模式，设置扬声器时，使用MODE_NORMAL，设置听筒时，使用MODE_IN_COMMUNICATION</li>
+</ol>
+<p>具体实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 设置是否开启扬声器</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> isSpeakerOn 是否开启</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setSpeakerphone</span><span class="params">(<span class="keyword">boolean</span> isSpeakerOn)</span> </span>&#123;</span><br><span class="line">    AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);</span><br><span class="line">    <span class="keyword">if</span> (audioManager != <span class="keyword">null</span>) &#123;</span><br><span class="line">        audioManager.setMode(isSpeakerOn ? AudioManager.MODE_NORMAL : AudioManager.MODE_IN_COMMUNICATION);</span><br><span class="line">        audioManager.setSpeakerphoneOn(isSpeakerOn);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>值得注意的是直接调用这个方法并不能切换生效，我们还需要申请MODIFY_AUDIO_SETTINGS的权限才行：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;uses-permission android:name=<span class="string">"android.permission.MODIFY_AUDIO_SETTINGS"</span> /&gt;</span><br></pre></td></tr></table></figure>
+
+<h1 id="关于addView后宽高的一些细节"><a href="#关于addView后宽高的一些细节" class="headerlink" title="关于addView后宽高的一些细节"></a>关于addView后宽高的一些细节</h1><p>对于ViewGroup#addView方法，我们应该都不陌生，该方法经常可以用来动态添加子View<br>但如果我们使用时不注意的话，添加到ViewGroup中的View的宽高往往并不会如我们所愿<br>想要避免这种情况，我们就需要确保调用addView方法时，我们的View具有正确的LayoutParams（宽高信息包含在里面），以下有三种方式确认我们的View设置了正确的LayoutParams：</p>
+<ol>
+<li>在使用LayoutInflater时，传入父ViewGroup：LayoutInflater只有当我们传入父ViewGroup时，才会为我们解析的View设置正确的LayoutParams，否则其实我们写在xml上的布局信息并不会准确的生效</li>
+<li>在addView之前，调用setLayoutParams设置</li>
+<li>调用addView带有LayoutParams参数的方法</li>
+</ol>
+<p>一般而言，最常用的ViewGroup#addView方法如下所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addView</span><span class="params">(View child)</span> </span>&#123;</span><br><span class="line">       addView(child, -<span class="number">1</span>);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addView</span><span class="params">(View child, <span class="keyword">int</span> index)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">if</span> (child == <span class="keyword">null</span>) &#123;</span><br><span class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Cannot add a null child view to a ViewGroup"</span>);</span><br><span class="line">       &#125;</span><br><span class="line">       LayoutParams params = child.getLayoutParams();</span><br><span class="line">       <span class="keyword">if</span> (params == <span class="keyword">null</span>) &#123;</span><br><span class="line">           params = generateDefaultLayoutParams();</span><br><span class="line">           <span class="keyword">if</span> (params == <span class="keyword">null</span>) &#123;</span><br><span class="line">               <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"generateDefaultLayoutParams() cannot return null"</span>);</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">       addView(child, index, params);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">protected</span> LayoutParams <span class="title">generateDefaultLayoutParams</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">new</span> LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>从第11行我们可以看出，如果我们动态添加的View并没有设置好相应的LayoutParams，系统变会填充上一个默认的LayoutParams，而大多数情况下，这个LayoutParams的布局方式并不是我们想要的</p>
+<p>这也是为什么有时候addView之后，我们添加的View宽高为0的原因之一</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/基础知识/" rel="tag"># 基础知识</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/06/Android-BuildConfig类/" rel="next" title="Android BuildConfig类">
+                <i class="fa fa-chevron-left"></i> Android BuildConfig类
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/10/ProGuard详解/" rel="prev" title="ProGuard详解">
+                ProGuard详解 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#如何处理Android-Crash-并重启手机"><span class="nav-number">1.</span> <span class="nav-text">如何处理Android Crash 并重启手机</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何把view转化为bitmap"><span class="nav-number">2.</span> <span class="nav-text">如何把view转化为bitmap</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#library-与-app资源同名冲突问题"><span class="nav-number">3.</span> <span class="nav-text">library 与 app资源同名冲突问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Android-扬声器与听筒切换"><span class="nav-number">4.</span> <span class="nav-text">Android 扬声器与听筒切换</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#关于addView后宽高的一些细节"><span class="nav-number">5.</span> <span class="nav-text">关于addView后宽高的一些细节</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

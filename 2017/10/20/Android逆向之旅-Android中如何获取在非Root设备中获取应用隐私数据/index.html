@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="（转载）前言、Android中的allowBackup属性、如何在非root设备上获取隐私数据、技术概要、总结">
+<meta name="keywords" content="android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android逆向之旅---Android中如何获取在非Root设备中获取应用隐私数据">
+<meta property="og:url" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="（转载）前言、Android中的allowBackup属性、如何在非root设备上获取隐私数据、技术概要、总结">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/1.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/2.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/3.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/4.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/5.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/6.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/7.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/8.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/9.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/10.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/11.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/12.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/13.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/14.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/15.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/16.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/17.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/18.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/19.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/20.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/21.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/22.png">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.613Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android逆向之旅---Android中如何获取在非Root设备中获取应用隐私数据">
+<meta name="twitter:description" content="（转载）前言、Android中的allowBackup属性、如何在非root设备上获取隐私数据、技术概要、总结">
+<meta name="twitter:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/">
+
+
+
+
+
+  <title>Android逆向之旅---Android中如何获取在非Root设备中获取应用隐私数据 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android逆向之旅---Android中如何获取在非Root设备中获取应用隐私数据</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-20T15:43:34+08:00">
+                2017-10-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  4k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文转载自：<a href="http://blog.csdn.net/jiangwei0910410003/article/details/51437659" target="_blank" rel="noopener">http://blog.csdn.net/jiangwei0910410003/article/details/51437659</a></p>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>今天在开发的过程中遇到一个问题，就是关于AndroidManifest.xml中的allowBackup属性，也算是自己之前对这个属性的不了解，加上IDE的自动生成代码，没太注意这个属性，但是没想到这个属性会直接导致隐私数据的丢失。下面就来看一下这个属性的影响到底有多大。他的作用是什么？</p>
+<h1 id="Android中的allowBackup属性"><a href="#Android中的allowBackup属性" class="headerlink" title="Android中的allowBackup属性"></a>Android中的allowBackup属性</h1><h2 id="allowBackup安全风险描述"><a href="#allowBackup安全风险描述" class="headerlink" title="allowBackup安全风险描述"></a>allowBackup安全风险描述</h2><p>Android API Level 8及其以上Android系统提供了为应用程序数据的备份和恢复功能，此功能的开关决定于该应用程序中AndroidManifest.xml文件中的allowBackup属性值[1] ，其属性值默认是true。当allowBackup标志为true时，用户即可通过adb backup和adb restore来进行对应用数据的备份和恢复，这可能会带来一定的安全风险。<br>Android属性allowBackup安全风险源于adb backup容许任何一个能够打开USB 调试开关的人从Android手机中复制应用数据到外设，一旦应用数据被备份之后，所有应用数据都可被用户读取；adb restore容许用户指定一个恢复的数据来源（即备份的应用数据）来恢复应用程序数据的创建。因此，当一个应用数据被备份之后，用户即可在其他Android手机或模拟器上安装同一个应用，以及通过恢复该备份的应用数据到该设备上，在该设备上打开该应用即可恢复到被备份的应用程序的状态。<br>尤其是通讯录应用，一旦应用程序支持备份和恢复功能，攻击者即可通过adb backup和adb restore进行恢复新安装的同一个应用来查看聊天记录等信息；对于支付金融类应用，攻击者可通过此来进行恶意支付、盗取存款等；因此为了安全起见，开发者务必将allowBackup标志值设置为false来关闭应用程序的备份和恢复功能，以免造成信息泄露和财产损失。</p>
+<h2 id="allowBackup安全影响范围"><a href="#allowBackup安全影响范围" class="headerlink" title="allowBackup安全影响范围"></a>allowBackup安全影响范围</h2><p>Android API Level 8以及以上系统</p>
+<h2 id="allowBackup安全风险详情"><a href="#allowBackup安全风险详情" class="headerlink" title="allowBackup安全风险详情"></a>allowBackup安全风险详情</h2><ol>
+<li>allowBackup风险位置：AndroidMannifest.xml文件android:allowBackup属性</li>
+<li>allowBackup风险触发前提条件：未将AndroidMannifest.xml文件中的android:allowBackup属性值设为false</li>
+<li>allowBackup风险原理：当allowBackup标志值为true时，即可通过adb backup和adb restore来备份和恢复应用程序数据</li>
+</ol>
+<h1 id="如何在非root设备上获取隐私数据"><a href="#如何在非root设备上获取隐私数据" class="headerlink" title="如何在非root设备上获取隐私数据"></a>如何在非root设备上获取隐私数据</h1><p>好了，上面我们就了解了，原来allowBackup属性的风险很大。下面我们看看现在如果这个属性是false的话，我们怎么在没有root的设备去获取数据呢？<br>首先我们看这样一个场景，现在市场上有一些应用锁类的app，他们就是给每个应用打开的时候添加一个密码，在打开app的时候需要输入密码才能进入指定的应用，一般会把自己的银行app，通讯类的app加密。现在市场上这些应用锁的原理也很简单，一般是三种方式实现：</p>
+<ol>
+<li>最古老的方式，启动一个Service然后隔一段时间去轮训，获取当前的topActivity，然后进行操作。</li>
+<li>因为Android5.0以后，获取当前的topActivity需要授权，所以这里还需要做一个操作就是引导用户去开一些功能。</li>
+<li>通过辅助功能，可以监听当前Window的变化，这种方式比上面的轮训方式高效的多了。</li>
+</ol>
+<p>其实1和2两种方式差不多，唯一的区别就在于获取topActivity的方式，其实google意识到了，获取topActivity是很危险的一件事：<br>在之前的一篇文章中说到了：<a href="http://www.wjdiankong.cn/blog/android%E4%B8%AD%E5%BA%94%E7%94%A8%E9%94%81%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B9%8B%E8%B4%A6%E5%8F%B7%E7%9B%97%E5%8F%96/" target="_blank" rel="noopener">Android中通过应用锁盗取账号</a>，恶意的软件，可以通过这个功能，使用一个类似于QQ或者支付宝这样的app，当用户启动QQ或者支付宝的时候，我们可以监听到，然后就启动我们自己的模拟QQ或者支付宝的登录页面然后就可以获取到用户名和密码了，完成盗取。<br>下面我们来看一个市场上比较火的一款应用锁app：<strong>智能应用锁</strong><br><img src="/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/1.png" alt="_pic1"></p>
+<p>我们下载apk，之后使用aapt查看他的AndroidManifest.xml内容：<br><strong>aapt dump xmltree applock.apk AndroidManifest.xml &gt; D:\demo.txt</strong><br><strong>注：</strong>我们在拿到一个apk的时候，如果想知道apk中的一些资源和配置信息，aapt命令是个不错的选择，同时，他能够删除apk中的一些资源，添加一些资源到apk中都是可以的。<br><img src="/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/2.png" alt="_pic2"></p>
+<p>这里因为AndroidManifest.xml内容有点多，就重定向到一个txt文件中，我们看到allowBackup属性为true，因为非0的都是true。好吧，说明applock.apk这个应用咋们是可以使用adb backup命令进行隐私数据的备份的。下面咋们就来看一下如何进行备份：</p>
+<h2 id="第一步：使用adb-backup-f-applock-ab-com-thinkyeah-smartlockfree-进行数据的备份"><a href="#第一步：使用adb-backup-f-applock-ab-com-thinkyeah-smartlockfree-进行数据的备份" class="headerlink" title="第一步：使用adb backup -f applock.ab com.thinkyeah.smartlockfree 进行数据的备份"></a>第一步：使用adb backup -f applock.ab com.thinkyeah.smartlockfree 进行数据的备份</h2><p>adb backup [-system|-nosystem] -all [-apk|-noapk] [-shared|-noshared] -f &lt;档案名称&gt; [需要备份的应用包名]</p>
+<h3 id="system-nosystem"><a href="#system-nosystem" class="headerlink" title="[-system|-nosystem]"></a>[-system|-nosystem]</h3><p>这个指令是告诉adb 在备份时是否要连同系统一起备份</p>
+<p>若没有打的话 默认是-system 表示会一起备份系统</p>
+<p>注意!若连系统一起备份 在还原的时候会复盖系统档案 对于已经升级后的手机是非常不好的</p>
+<p>我不知道在没有ROOT的情况下 adb是否有权限去还原系统档案 但就算如此 还是不建议这样做</p>
+<p>因此 -nosystem是建议一定要打上的指令</p>
+<h3 id="all"><a href="#all" class="headerlink" title="-all"></a>-all</h3><p>这个指令除非只是要备份单一APP 不然是一定要打上去的 </p>
+<p>这个是问你是否要备份全部的APP 若有加上-nosystem的指令</p>
+<p>那么他就只会备份你目前已经安装上去的APP 而不会连系统APP一起备份</p>
+<h3 id="apk-noapk"><a href="#apk-noapk" class="headerlink" title="[-apk|-noapk]"></a>[-apk|-noapk]</h3><p>默认是-noapk 这个的意思是是否连安装的APK一起备份</p>
+<p>若为-noapk 则只会备份APK的资料档(像是游戏存盘 设定 之类的)</p>
+<h3 id="shared-noshared"><a href="#shared-noshared" class="headerlink" title="[-shared|-noshared]"></a>[-shared|-noshared]</h3><p>默认是-noshared 这个会问你是否连手机储存空间或是SD卡的档案一起备份</p>
+<p>关于这个应用的包名，我们可以直接从上面dump出来的AndroidManifest.xml中获取即可：<br><img src="/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/3.png" alt="_pic3"></p>
+<p>获取包名之后，我们就可以执行命令，我们把导出来的文件保存到当前目录下：applock.ab，注意这里的格式是ab，这个也是Android中备份文件的格式要求。<br><img src="/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/4.png" alt="_pic4"></p>
+<p>当我们执行这个命令的时候，设备端会出现一个提示页面：<br><img src="/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/5.png" alt="_pic5"></p>
+<p>这时候会提示我们输入备份密码，这里为了简单，不输入，直接点击备份即可。<br><img src="/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/6.png" alt="_pic6"></p>
+<p>下面，我们还需要借助一个工具来解析这个ab文件。</p>
+<h2 id="第二步：使用android-backup-extractor-abe-工具来解析ab文件"><a href="#第二步：使用android-backup-extractor-abe-工具来解析ab文件" class="headerlink" title="第二步：使用android-backup-extractor(abe)工具来解析ab文件"></a>第二步：使用android-backup-extractor(abe)工具来解析ab文件</h2><p>这个工具是开源的，用Java语言写的。源码位于：<a href="https://github.com/nelenkov/android-backup-extractor" target="_blank" rel="noopener">https://github.com/nelenkov/android-backup-extractor</a><br>这里没有直接下载源码，然后编译了，直接在网上下载了一个编译好的<br>这里我就下载好了，可以从这里下载：<a href="http://download.csdn.net/detail/jiangwei0910410003/9523470" target="_blank" rel="noopener">http://download.csdn.net/detail/jiangwei0910410003/9523470</a><br><img src="/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/7.png" alt="_pic7"></p>
+<p>用法也很简单：<br><img src="/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/8.png" alt="_pic8"></p>
+<p>看到我们使用unpack参数来将ab文件转化成tar文件：<br><strong>java -jar abe.jar unpack applock.ab applock.tar</strong><br><img src="/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/9.png" alt="_pic9"><br>我们在用解压缩软件查看内容：<br><img src="/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/10.png" alt="_pic10"></p>
+<p>我们现在如果想知道他的密码，那么可以直接查看SharePreferences文件即可，因为一般都会把密码放到这里保存，不过这是一个非常危险的操作，如果你在不进行加密的话，那更是危险了。<br><img src="/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/11.png" alt="_pic11"></p>
+<p>我们查看SmartLockConfig.xml内容：<br><img src="/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/12.png" alt="_pic12"></p>
+<p>好吧，被我们猜中了，他尽然把手势密码以明文的方式保存在这里。这里他用的是手势方式加密：03678，代表的应该是一个L：<br><img src="/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/13.png" alt="_pic13"></p>
+<p>到这里我们就成功的破解了智能应用锁的加密app的功能，而且是在没有root的情况下。下面来总结一下：</p>
+<p>1、这个智能应用锁的app现在在市场的下载量还是蛮高的，已经有100W的下载量了，但是我们看到他的一不留神<strong>allowBackup</strong>属性设置成true，这样就导致了数据可能被外泄，不过这个属性google不知道怎么去对待他的，他的默认值尽然是true，而且更为有趣的是，在使用各大IDE工具，默认新建的工程之后，这个属性的值也是true<br><img src="/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/14.png" alt="_pic14">     <img src="/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/15.png" alt="_pic15"></p>
+<p>上面就是现在比较常用的两个IDE工具：Eclipse和AndroidStudio，看到当我们新建一个工程的时候，他默认都是把这个属性设置成true的，那么当你不设置设置个属性的时候，也是可以进行备份的，因为默认值也是true的，所以按照google的想法，应该是为了防止数据的丢失，就留了这一个功能。便于用户备份数据。但是这里会隐含一些安全问题，所以我们在开发的时候，如果不去注意这个属性的话，就会吃亏的，所以在开发的过程中一定要记得把这个属性设置成false，特别是非常重要的需要账号登录的app。<br>2、上面分析了智能应用锁的app，并非只是一个案例，其实现在很多app都有这个问题，我们看看<strong>豌豆荚app</strong>：<br><img src="/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/16.png" alt="_pic16"></p>
+<p>他也是没有手动的改变这个属性为false的，所以他的数据也是可以导出来的。<br>再看看<strong>优酷视频app</strong>：<br><img src="/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/17.png" alt="_pic17"></p>
+<p>也是一样，不过像这些app，他们的账号登录密码啥的信息肯定不是放在本地的，而是放到服务端进行验证的，不像应用锁这样的，他不需要联网也是可以进行操作的，所以密码必须放到本地。但是只要有这个属性allowBackup为true的话，就会被查看到沙盒数据，就是不安全的。最后我们再来看看<strong>微信5.0版本也有这个问题</strong>，不过他在6.0之后已经把allowBackup设置成false了：<br><img src="/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/18.png" alt="_pic18"></p>
+<p>这里我们看到他没有设置allowBackup属性，但是刚刚说了，默认值就是true，所以还是可以导出来的，下面我们可以使用上面的导出步骤进行操作：<br><img src="/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/19.png" alt="_pic19"></p>
+<p>这里，其实微信他把通讯录和聊天记录，都是保存到db中，但是这个db是进行加密的，然后保存到一个目录下面的，关于这个db加密，其实是需要反编译微信，然后动态调试跟踪代码来破解了，这个后面会写一篇文章详细介绍的，因为我们知道，通讯录和聊天内容是没有网络就可以查看的，那么加解密肯定是放在本地做的，只要是放在本地做的，那么就可以进行破解。<br>不过这里看到微信在后续的版本已经修复了这个问题，6.0版本之后就不能导出来数据了，那么5.0的用户其实还是会受影响的。<br>3、还是回到这个应用锁app中来，其实在这里还是想吐槽一番的，作为下载量蛮高的app，尽然把密码用明文保存到xml中，这种做法其实是对用户的不负责，首先这里完全可以使用MD5来做密码验证就可以了，为何要暴露明文，其次是为何把这么重要的数据保存到xml中，稍微加点难度破解的放到so中也是可以的呀~~<br>4、破解场景：之前我看到好几个同事都下载了这个app，去加密相册app，QQ和微信啥的呀，其实现在看来并没有什么用，当我拿到手机的那一刻，什么都是可以做的，而且不需要root，只需要一个命令就可以了，完全的悄无声息，没法察觉的就看到密码了。<br>5、所以在开发的过程中，我们在最后一步发包的过程中一定要检查一下这个属性是否为false，因为他牵涉到你的太多隐私信息了</p>
+<p><strong>补充：</strong></p>
+<ol>
+<li>我们可以使用adb backup命令来做一下操作，就是我们在开发过程中，如果遇到手机没有root的，但是又想查看沙盒数据，那么这个也是一种方式，当然我们可以使用run-as命令来操作，不了解run-as的同学可以看这篇文章：<a href="http://www.wjdiankong.cn/blog/android%E7%B3%BB%E7%BB%9F%E7%AF%87%E4%B9%8B-android%E4%B8%AD%E7%9A%84run-as%E5%91%BD%E4%BB%A4%E5%BC%95%E5%87%BA%E7%9A%84%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98linux%E4%B8%AD%E7%9A%84setuid%E5%92%8Cse/" target="_blank" rel="noopener">Android中的run-as命令使用</a> 但是这个也是一种方式，虽然看上去有点繁琐。</li>
+<li>与上面的adb backup命令相对应的还有一个就是adb restore命令，他是用来恢复数据的，具体用法：</li>
+</ol>
+<p><strong>adb restore applock.ab</strong><br><img src="/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/20.png" alt="_pic20"></p>
+<p>这时候也会在客户端出现确认页面：<br><img src="/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/21.png" alt="_pic21"></p>
+<p>点击恢复数据即可。<br>那么这里又有一个问题了，现在如果我想改了这个应用锁的密码，其实很简单：<br><img src="/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/22.png" alt="_pic22"></p>
+<p>然后在保存成ab文件，然后还原。密码就被修改了。那么比如有些应用它把一些隐私的链接url这样的信息保存到xml中，那就蛋疼了，我们可以导出来数据，然后修改url为我们自己的url，然后在还原，我擦，如果是一些上报，或者是登录的url，我们就可以在这里做手脚，达到我们想要的目的了。</p>
+<h1 id="技术概要"><a href="#技术概要" class="headerlink" title="技术概要"></a>技术概要</h1><ol>
+<li>分析了现阶段应用锁的原理以及如何使用应用锁来进行账号盗取</li>
+<li>使用aapt命令查看apk包中信息</li>
+<li>使用adb backup/restore进行应用数据的备份和还原</li>
+<li>使用abe工具查看备份文件</li>
+<li>我们在备份完数据之后，可以尝试查看一些应用的隐私数据，同时还可以篡改信息，在还原。都是可以的。</li>
+<li>在开发过程中对于没有root的设备，adb backup也是可以用来查看开发应用的沙盒数据的，只是过程有点复杂。</li>
+</ol>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>从这篇文章我们可以可以看到，一个属性的不留意，会带来多大的风险，当然这个属性也是很蛋疼的，就是他默认值是true，所以在你不管他的情况下还是有问题的，必须手动的去设置成false才可以，所以这个也是导致现在市场上很多app都存在这样的风险。其次这里我们主要分析了一个智能应用锁的信息，发现他犯了一个最大的错误就是把密码用明文的方式保存在xml中，破解难度为0，如果有一些你的朋友或者你的老婆，想看你的微信和QQ，同时又发现了你用了这个app去加密，那么你就惨了，你老婆只要会adb命令，或者看到这篇文章之后，就两步，然后看到你不想让她看到的数据，好吧，然后就没然后了<del>，所以我们开发者在开发一个app的时候，不仅要的是用户体验，更重要的时候对用户的隐私负责。我们用户在下载和安装一些app的时候也是需要注意的就是多留点心</del></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/" rel="next" title="Android逆向之旅---静态分析技术来破解Apk">
+                <i class="fa fa-chevron-left"></i> Android逆向之旅---静态分析技术来破解Apk
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/10/20/Android逆向之旅-动态方式破解apk前奏篇-Eclipse动态调试smail源码/" rel="prev" title="Android逆向之旅---动态方式破解apk前奏篇(Eclipse动态调试smail源码)">
+                Android逆向之旅---动态方式破解apk前奏篇(Eclipse动态调试smail源码) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Android中的allowBackup属性"><span class="nav-number">2.</span> <span class="nav-text">Android中的allowBackup属性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#allowBackup安全风险描述"><span class="nav-number">2.1.</span> <span class="nav-text">allowBackup安全风险描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#allowBackup安全影响范围"><span class="nav-number">2.2.</span> <span class="nav-text">allowBackup安全影响范围</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#allowBackup安全风险详情"><span class="nav-number">2.3.</span> <span class="nav-text">allowBackup安全风险详情</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何在非root设备上获取隐私数据"><span class="nav-number">3.</span> <span class="nav-text">如何在非root设备上获取隐私数据</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#第一步：使用adb-backup-f-applock-ab-com-thinkyeah-smartlockfree-进行数据的备份"><span class="nav-number">3.1.</span> <span class="nav-text">第一步：使用adb backup -f applock.ab com.thinkyeah.smartlockfree 进行数据的备份</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#system-nosystem"><span class="nav-number">3.1.1.</span> <span class="nav-text">[-system|-nosystem]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#all"><span class="nav-number">3.1.2.</span> <span class="nav-text">-all</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#apk-noapk"><span class="nav-number">3.1.3.</span> <span class="nav-text">[-apk|-noapk]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#shared-noshared"><span class="nav-number">3.1.4.</span> <span class="nav-text">[-shared|-noshared]</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第二步：使用android-backup-extractor-abe-工具来解析ab文件"><span class="nav-number">3.2.</span> <span class="nav-text">第二步：使用android-backup-extractor(abe)工具来解析ab文件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#技术概要"><span class="nav-number">4.</span> <span class="nav-text">技术概要</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

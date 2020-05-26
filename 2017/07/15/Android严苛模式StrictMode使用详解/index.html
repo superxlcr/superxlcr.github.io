@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,应用,内存,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="（转载）StrictMode具体能检测什么、工作原理、常见用法、查看报告结果、ThreadPolicy 详解、VMPolicy 详解、其他操作、注意事项、补充">
+<meta name="keywords" content="android,应用,内存">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android严苛模式StrictMode使用详解">
+<meta property="og:url" content="https://superxlcr.github.io/2017/07/15/Android严苛模式StrictMode使用详解/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="（转载）StrictMode具体能检测什么、工作原理、常见用法、查看报告结果、ThreadPolicy 详解、VMPolicy 详解、其他操作、注意事项、补充">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2017/07/15/Android严苛模式StrictMode使用详解/1.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/07/15/Android严苛模式StrictMode使用详解/2.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/07/15/Android严苛模式StrictMode使用详解/3.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/07/15/Android严苛模式StrictMode使用详解/4.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/07/15/Android严苛模式StrictMode使用详解/5.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/07/15/Android严苛模式StrictMode使用详解/6.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/07/15/Android严苛模式StrictMode使用详解/7.jpg">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.558Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android严苛模式StrictMode使用详解">
+<meta name="twitter:description" content="（转载）StrictMode具体能检测什么、工作原理、常见用法、查看报告结果、ThreadPolicy 详解、VMPolicy 详解、其他操作、注意事项、补充">
+<meta name="twitter:image" content="https://superxlcr.github.io/2017/07/15/Android严苛模式StrictMode使用详解/1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2017/07/15/Android严苛模式StrictMode使用详解/">
+
+
+
+
+
+  <title>Android严苛模式StrictMode使用详解 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2017/07/15/Android严苛模式StrictMode使用详解/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android严苛模式StrictMode使用详解</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-15T16:48:01+08:00">
+                2017-07-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.8k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>StrictMode类是Android 2.3 （API 9）引入的一个工具类，可以用来帮助开发者发现代码中的一些不规范的问题，以达到提升应用响应能力的目的。举个例子来说，如果开发者在UI线程中进行了网络操作或者文件系统的操作，而这些缓慢的操作会严重影响应用的响应能力，甚至出现ANR对话框。为了在开发中发现这些容易忽略的问题，我们使用StrictMode，系统检测出主线程违例的情况并做出相应的反应，最终帮助开发者优化和改善代码逻辑。<br>官网文档：<a href="http://developer.android.com/reference/android/os/StrictMode.html" target="_blank" rel="noopener">http://developer.android.com/reference/android/os/StrictMode.html</a></p>
+<h1 id="StrictMode具体能检测什么"><a href="#StrictMode具体能检测什么" class="headerlink" title="StrictMode具体能检测什么"></a>StrictMode具体能检测什么</h1><p>严苛模式主要检测两大问题，一个是线程策略，即ThreadPolicy，另一个是VM策略，即VmPolicy。</p>
+<h2 id="ThreadPolicy线程策略检测"><a href="#ThreadPolicy线程策略检测" class="headerlink" title="ThreadPolicy线程策略检测"></a>ThreadPolicy线程策略检测</h2><ul>
+<li>自定义的耗时调用 使用detectCustomSlowCalls()开启</li>
+<li>磁盘读取操作 使用detectDiskReads()开启</li>
+<li>磁盘写入操作 使用detectDiskWrites()开启</li>
+<li>网络操作 使用detectNetwork()开启</li>
+</ul>
+<h2 id="VmPolicy虚拟机策略检测"><a href="#VmPolicy虚拟机策略检测" class="headerlink" title="VmPolicy虚拟机策略检测"></a>VmPolicy虚拟机策略检测</h2><ul>
+<li>Activity泄露 使用detectActivityLeaks()开启</li>
+<li>未关闭的Closable对象泄露 使用detectLeakedClosableObjects()开启</li>
+<li>泄露的Sqlite对象 使用detectLeakedSqlLiteObjects()开启</li>
+<li>检测实例数量 使用setClassInstanceLimit()开启</li>
+</ul>
+<h1 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h1><p>其实StrictMode实现原理也比较简单，以IO操作为例，主要是通过在open，read，write，close时进行监控。libcore.io.BlockGuardOs文件就是监控的地方。以open为例，如下进行监控。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> FileDescriptor <span class="title">open</span><span class="params">(String path, <span class="keyword">int</span> flags, <span class="keyword">int</span> mode)</span> <span class="keyword">throws</span> ErrnoException </span>&#123;</span><br><span class="line">  BlockGuard.getThreadPolicy().onReadFromDisk();</span><br><span class="line">    <span class="keyword">if</span> ((mode &amp; O_ACCMODE) != O_RDONLY) &#123;</span><br><span class="line">      BlockGuard.getThreadPolicy().onWriteToDisk();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> os.open(path, flags, mode);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中onReadFromDisk()方法的实现，代码位于StrictMode.Java中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onReadFromDisk</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> ((mPolicyMask &amp; DETECT_DISK_READ) == <span class="number">0</span>) &#123;</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (tooManyViolationsThisLoop()) &#123;</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    BlockGuard.BlockGuardPolicyException e = <span class="keyword">new</span> StrictModeDiskReadViolation(mPolicyMask);</span><br><span class="line">    e.fillInStackTrace();</span><br><span class="line">    startHandlingViolationException(e);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="常见用法"><a href="#常见用法" class="headerlink" title="常见用法"></a>常见用法</h1><p>严格模式的开启可以放在Application或者Activity以及其他组件的onCreate方法。为了更好地分析应用中的问题，建议放在Application的onCreate方法中。<br>其中，我们只需要在app的开发版本下使用 StrictMode，线上版本避免使用 StrictMode，这里定义了一个布尔值变量DEV_MODE来进行控制。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">boolean</span> DEV_MODE = <span class="keyword">true</span>;</span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">     <span class="keyword">if</span> (DEV_MODE) &#123;</span><br><span class="line">         StrictMode.setThreadPolicy(<span class="keyword">new</span> StrictMode.ThreadPolicy.Builder()</span><br><span class="line">                 .detectCustomSlowCalls() <span class="comment">//API等级11，使用StrictMode.noteSlowCode</span></span><br><span class="line">                 .detectDiskReads()</span><br><span class="line">                 .detectDiskWrites()</span><br><span class="line">                 .detectNetwork()   <span class="comment">// or .detectAll() for all detectable problems</span></span><br><span class="line">                 .penaltyDialog() <span class="comment">//弹出违规提示对话框</span></span><br><span class="line">                 .penaltyLog() <span class="comment">//在Logcat 中打印违规异常信息</span></span><br><span class="line">                 .penaltyFlashScreen() <span class="comment">//API等级11</span></span><br><span class="line">                 .build());</span><br><span class="line">         StrictMode.setVmPolicy(<span class="keyword">new</span> StrictMode.VmPolicy.Builder()</span><br><span class="line">                 .detectLeakedSqlLiteObjects()</span><br><span class="line">                 .detectLeakedClosableObjects() <span class="comment">//API等级11</span></span><br><span class="line">                 .penaltyLog()</span><br><span class="line">                 .penaltyDeath()</span><br><span class="line">                 .build());</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">super</span>.onCreate();</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中Android3.0引入的方法包括detectCustomSlowCalls()和noteSlowCode()，它们都是用来检测应用中执行缓慢代码的或者潜在的缓慢代码。</p>
+<h1 id="查看报告结果"><a href="#查看报告结果" class="headerlink" title="查看报告结果"></a>查看报告结果</h1><p>严格模式有很多种报告违例的形式，但是想要分析具体违例情况，还是需要查看日志，终端下过滤StrictMode就能得到违例的具体stacktrace信息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb logcat | grep StrictMode</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2017/07/15/Android严苛模式StrictMode使用详解/1.jpg" alt="日志_pic1"><br>当然也可以选择弹窗形式来简明提醒开发者<br><img src="/2017/07/15/Android严苛模式StrictMode使用详解/2.jpg" alt="弹窗警告_pic2"></p>
+<h1 id="ThreadPolicy-详解"><a href="#ThreadPolicy-详解" class="headerlink" title="ThreadPolicy 详解"></a>ThreadPolicy 详解</h1><p>StrictMode.ThreadPolicy.Builder 主要方法如下</p>
+<h2 id="detectNetwork"><a href="#detectNetwork" class="headerlink" title="detectNetwork()"></a>detectNetwork()</h2><p>用于检查UI线程中是否有网络请求操作</p>
+<p>检测UI线程中网络请求案例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> <span class="keyword">implements</span> <span class="title">View</span>.<span class="title">OnClickListener</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    Button btnTest;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.activity_main);</span><br><span class="line">        StrictMode.setThreadPolicy(<span class="keyword">new</span> StrictMode.ThreadPolicy.Builder()</span><br><span class="line">                .detectNetwork()</span><br><span class="line">                .penaltyLog()</span><br><span class="line">                .build());</span><br><span class="line">        btnTest = (Button) findViewById(R.id.btn_test);</span><br><span class="line">        btnTest.setOnClickListener(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> id = v.getId();</span><br><span class="line">        <span class="keyword">switch</span> (id) &#123;</span><br><span class="line">            <span class="keyword">case</span> R.id.btn_test:</span><br><span class="line">                postNetwork();</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 网络连接的操作</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">postNetwork</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            URL url = <span class="keyword">new</span> URL(<span class="string">"http://www.wooyun.org"</span>);</span><br><span class="line">            HttpURLConnection conn = (HttpURLConnection) url.openConnection();</span><br><span class="line">            conn.connect();</span><br><span class="line">            BufferedReader reader = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(</span><br><span class="line">                    conn.getInputStream()));</span><br><span class="line">            String lines = <span class="keyword">null</span>;</span><br><span class="line">            StringBuffer sb = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">            <span class="keyword">while</span> ((lines = reader.readLine()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                sb.append(lines);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行后，触发的警告如下<br><img src="/2017/07/15/Android严苛模式StrictMode使用详解/3.jpg" alt="日志_pic3"></p>
+<h2 id="detectDiskReads-和detectDiskWrites"><a href="#detectDiskReads-和detectDiskWrites" class="headerlink" title="detectDiskReads()和detectDiskWrites()"></a>detectDiskReads()和detectDiskWrites()</h2><p>是磁盘读写检查</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">磁盘读写检查案例：</span><br><span class="line"><span class="keyword">public</span> </span><br><span class="line"></span><br><span class="line">    Button btnTest;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.activity_main);</span><br><span class="line">        StrictMode.setThreadPolicy(<span class="keyword">new</span> StrictMode.ThreadPolicy.Builder()</span><br><span class="line">                .detectDiskWrites()</span><br><span class="line">                .detectDiskReads()</span><br><span class="line">                .penaltyLog()</span><br><span class="line">                .build());</span><br><span class="line">        btnTest = (Button) findViewById(R.id.btn_test);</span><br><span class="line">        btnTest.setOnClickListener(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> id = v.getId();</span><br><span class="line">        <span class="keyword">switch</span> (id) &#123;</span><br><span class="line">            <span class="keyword">case</span> R.id.btn_test:</span><br><span class="line">                writeToExternalStorage();</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 文件系统的操作</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">writeToExternalStorage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        File externalStorage = Environment.getExternalStorageDirectory();</span><br><span class="line">        File mbFile = <span class="keyword">new</span> File(externalStorage, <span class="string">"castiel.txt"</span>);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            OutputStream output = <span class="keyword">new</span> FileOutputStream(mbFile, <span class="keyword">true</span>);</span><br><span class="line">            output.write(<span class="string">"www.wooyun.org"</span>.getBytes());</span><br><span class="line">            output.flush();</span><br><span class="line">            output.close();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (FileNotFoundException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行后，触发的警告如下<br><img src="/2017/07/15/Android严苛模式StrictMode使用详解/4.jpg" alt="日志_pic4"></p>
+<h2 id="noteSlowCall"><a href="#noteSlowCall" class="headerlink" title="noteSlowCall"></a>noteSlowCall</h2><p>针对执行比较耗时的检查<br>StrictMode从 API 11开始允许开发者自定义一些耗时调用违例，这种自定义适用于自定义的任务执行类中，比如我们有一个进行任务处理的类，为TaskExecutor。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TaskExecutor</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(Runnable task)</span> </span>&#123;</span><br><span class="line">        task.run();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>先需要跟踪每个任务的耗时情况，如果大于500毫秒需要提示给开发者，noteSlowCall就可以实现这个功能，如下修改代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TaskExecutor</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">long</span> SLOW_CALL_THRESHOLD = <span class="number">500</span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">executeTask</span><span class="params">(Runnable task)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> startTime = SystemClock.uptimeMillis();</span><br><span class="line">        task.run();</span><br><span class="line">        <span class="keyword">long</span> cost = SystemClock.uptimeMillis() - startTime;</span><br><span class="line">        <span class="keyword">if</span> (cost &gt; SLOW_CALL_THRESHOLD) &#123;</span><br><span class="line">            StrictMode.noteSlowCall(<span class="string">"slowCall cost="</span> + cost);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行一个耗时2000毫秒的任务</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">TaskExecutor executor = <span class="keyword">new</span> TaskExecutor();</span><br><span class="line">executor.executeTask(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">          Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>得到的违例日志，注意其中~duration=20 ms并非耗时任务的执行时间，而我们的自定义信息msg=slowCall cost=2000才包含了真正的耗时。</p>
+<h2 id="penaltyDeath"><a href="#penaltyDeath" class="headerlink" title="penaltyDeath()"></a>penaltyDeath()</h2><p>当触发违规条件时，直接Crash掉当前应用程序。</p>
+<h2 id="penaltyDeathOnNetwork"><a href="#penaltyDeathOnNetwork" class="headerlink" title="penaltyDeathOnNetwork()"></a>penaltyDeathOnNetwork()</h2><p>当触发网络违规时，Crash掉当前应用程序。</p>
+<h2 id="penaltyDialog"><a href="#penaltyDialog" class="headerlink" title="penaltyDialog()"></a>penaltyDialog()</h2><p>触发违规时，显示对违规信息对话框。</p>
+<h2 id="penaltyFlashScreen"><a href="#penaltyFlashScreen" class="headerlink" title="penaltyFlashScreen()"></a>penaltyFlashScreen()</h2><p>会造成屏幕闪烁，不过一般的设备可能没有这个功能。</p>
+<h2 id="penaltyDropBox"><a href="#penaltyDropBox" class="headerlink" title="penaltyDropBox()"></a>penaltyDropBox()</h2><p>将违规信息记录到 dropbox 系统日志目录中（/data/system/dropbox），你可以通过如下命令进行插件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb shell dumpsys dropbox dataappstrictmode  --print</span><br></pre></td></tr></table></figure>
+
+<h2 id="permitCustomSlowCalls-、permitDiskReads-、permitDiskWrites-、permitNetwork"><a href="#permitCustomSlowCalls-、permitDiskReads-、permitDiskWrites-、permitNetwork" class="headerlink" title="permitCustomSlowCalls()、permitDiskReads ()、permitDiskWrites()、permitNetwork()"></a>permitCustomSlowCalls()、permitDiskReads ()、permitDiskWrites()、permitNetwork()</h2><p>如果你想关闭某一项检测，可以使用对应的permit方法。</p>
+<h1 id="VMPolicy-详解"><a href="#VMPolicy-详解" class="headerlink" title="VMPolicy 详解"></a>VMPolicy 详解</h1><p>StrictMode.VmPolicy.Builder 主要方法如下</p>
+<h2 id="detectActivityLeaks"><a href="#detectActivityLeaks" class="headerlink" title="detectActivityLeaks()"></a>detectActivityLeaks()</h2><p>用户检查 Activity 的内存泄露情况</p>
+<p>内存泄露检查案例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> <span class="keyword">implements</span> <span class="title">View</span>.<span class="title">OnClickListener</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.activity_main);</span><br><span class="line">        StrictMode.setVmPolicy(<span class="keyword">new</span> StrictMode.VmPolicy.Builder()</span><br><span class="line">                .detectActivityLeaks()</span><br><span class="line">                .penaltyLog()</span><br><span class="line">                .build()</span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">        <span class="keyword">new</span> Thread() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line"></span><br><span class="line">                    SystemClock.sleep(<span class="number">1000</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;.start();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们反复旋转屏幕就会输出提示信息（重点在 instances=2; limit=1 这一行）<br><img src="/2017/07/15/Android严苛模式StrictMode使用详解/5.jpg" alt="日志_pic5"><br>这时因为，我们在Activity中创建了一个Thread匿名内部类，而匿名内部类隐式持有外部类的引用。而每次旋转屏幕是，android会新创建一个Activity，而原来的Activity实例又被我们启动的匿名内部类线程持有，所以不会释放，从日志上看，当先系统中该Activty有4个实例，而限制是只能创建1各实例。我们不断翻转屏幕，instances 的个数还会持续增加。</p>
+<h2 id="detectLeakedClosableObjects"><a href="#detectLeakedClosableObjects" class="headerlink" title="detectLeakedClosableObjects()"></a>detectLeakedClosableObjects()</h2><p>用于资源没有正确关闭时提醒</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 资源引用没有关闭检查案例</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> <span class="keyword">implements</span> <span class="title">View</span>.<span class="title">OnClickListener</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.activity_main);</span><br><span class="line">        StrictMode.setVmPolicy(<span class="keyword">new</span> StrictMode.VmPolicy.Builder()</span><br><span class="line">                .detectLeakedClosableObjects()</span><br><span class="line">                .penaltyLog()</span><br><span class="line">                .build()</span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">        File newxmlfile = <span class="keyword">new</span> File(Environment.getExternalStorageDirectory(), <span class="string">"castiel.txt"</span>);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            newxmlfile.createNewFile();</span><br><span class="line">            FileWriter fw = <span class="keyword">new</span> FileWriter(newxmlfile);</span><br><span class="line">            fw.write(<span class="string">"猴子搬来的救兵WooYun"</span>);</span><br><span class="line">            <span class="comment">//fw.close(); 我们在这里特意没有关闭 fw</span></span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行后触发警告如下<br><img src="/2017/07/15/Android严苛模式StrictMode使用详解/6.jpg" alt="日志_pic7"></p>
+<h2 id="detectLeakedSqlLiteObjects-和detectLeakedClosableObjects"><a href="#detectLeakedSqlLiteObjects-和detectLeakedClosableObjects" class="headerlink" title="detectLeakedSqlLiteObjects()和detectLeakedClosableObjects()"></a>detectLeakedSqlLiteObjects()和detectLeakedClosableObjects()</h2><p>用法类似，只不过是用来检查 SQLiteCursor 或者 其他 SQLite 对象是否被正确关闭</p>
+<h2 id="detectLeakedRegistrationObjects"><a href="#detectLeakedRegistrationObjects" class="headerlink" title="detectLeakedRegistrationObjects()"></a>detectLeakedRegistrationObjects()</h2><p>用来检查 BroadcastReceiver 或者ServiceConnection 注册类对象是否被正确释放</p>
+<h2 id="setClassInstanceLimit"><a href="#setClassInstanceLimit" class="headerlink" title="setClassInstanceLimit()"></a>setClassInstanceLimit()</h2><p>设置某个类的同时处于内存中的实例上限，可以协助检查内存泄露</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 检测内存泄露案例</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> <span class="keyword">implements</span> <span class="title">View</span>.<span class="title">OnClickListener</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> List&lt;CastielClass&gt; classList;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.activity_main);</span><br><span class="line">        classList = <span class="keyword">new</span> ArrayList&lt;CastielClass&gt;();</span><br><span class="line"></span><br><span class="line">        StrictMode.setVmPolicy(<span class="keyword">new</span> StrictMode.VmPolicy.Builder()</span><br><span class="line">                .setClassInstanceLimit(CastielClass.class, <span class="number">2</span>)</span><br><span class="line">                .penaltyLog()</span><br><span class="line">                .build());</span><br><span class="line"></span><br><span class="line">        classList.add(<span class="keyword">new</span> CastielClass());</span><br><span class="line">        classList.add(<span class="keyword">new</span> CastielClass());</span><br><span class="line">        classList.add(<span class="keyword">new</span> CastielClass());</span><br><span class="line">        classList.add(<span class="keyword">new</span> CastielClass());</span><br><span class="line">        classList.add(<span class="keyword">new</span> CastielClass());</span><br><span class="line">        classList.add(<span class="keyword">new</span> CastielClass());</span><br><span class="line">        classList.add(<span class="keyword">new</span> CastielClass());</span><br><span class="line">        classList.add(<span class="keyword">new</span> CastielClass());</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="其他操作"><a href="#其他操作" class="headerlink" title="其他操作"></a>其他操作</h1><p>除了通过日志查看之外，我们也可以在开发者选项中开启严格模式，开启之后，如果主线程中有执行时间长的操作，屏幕则会闪烁，这是一个更加直接的方法。<br><img src="/2017/07/15/Android严苛模式StrictMode使用详解/7.jpg" alt="开发者模式_pic9"></p>
+<h1 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h1><ul>
+<li>只在开发阶段启用StrictMode，发布应用或者release版本一定要禁用它。</li>
+<li>严格模式无法监控JNI中的磁盘IO和网络请求。</li>
+<li>应用中并非需要解决全部的违例情况，比如有些IO操作必须在主线程中进行。</li>
+</ul>
+<h1 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h1><p>最近博主在使用StrictMode扫描UI线程文件io操作的时候，发现了一些问题：<br>当博主在Application#onCreate方法中开启了相应的StrictMode#ThreadPolicy策略后，却发现没有任何的效果<br>通过StrictMode#getThreadPolicyMask打印设置策略后的标志位，发现在Application设置后，标志位会有相应的改动，不过在首个启动的Activity#onCreate中打印时，标志位却又变回原来的设置了<br>也就是说在Application#onCreate方法之后，首个Activity#onCreate方法之前，StrictMode#ThreadPolicy的策略又被改动回来了<br>在查阅了相关源码后，在ActivityThread中发现了如下代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">handleBindApplication</span><span class="params">(AppBindData data)</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Allow disk access during application and provider setup. This could</span></span><br><span class="line">	<span class="comment">// block processing ordered broadcasts, but later processing would</span></span><br><span class="line">	<span class="comment">// probably end up doing the same disk access.</span></span><br><span class="line">	Application app;</span><br><span class="line">	<span class="keyword">final</span> StrictMode.ThreadPolicy savedPolicy = StrictMode.allowThreadDiskWrites();</span><br><span class="line">	<span class="keyword">final</span> StrictMode.ThreadPolicy writesAllowedPolicy = StrictMode.getThreadPolicy();</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		<span class="comment">// If the app is being launched for full backup or restore, bring it up in</span></span><br><span class="line">		<span class="comment">// a restricted environment with the base application class.</span></span><br><span class="line">		app = data.info.makeApplication(data.restrictedBackupMode, <span class="keyword">null</span>);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// Propagate autofill compat state</span></span><br><span class="line">		app.setAutofillCompatibilityEnabled(data.autofillCompatibilityEnabled);</span><br><span class="line"></span><br><span class="line">		mInitialApplication = app;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// don't bring up providers in restricted mode; they may depend on the</span></span><br><span class="line">		<span class="comment">// app's custom Application class</span></span><br><span class="line">		<span class="keyword">if</span> (!data.restrictedBackupMode) &#123;</span><br><span class="line">			<span class="keyword">if</span> (!ArrayUtils.isEmpty(data.providers)) &#123;</span><br><span class="line">				installContentProviders(app, data.providers);</span><br><span class="line">				<span class="comment">// For process that contains content providers, we want to</span></span><br><span class="line">				<span class="comment">// ensure that the JIT is enabled "at some point".</span></span><br><span class="line">				mH.sendEmptyMessageDelayed(H.ENABLE_JIT, <span class="number">10</span>*<span class="number">1000</span>);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// Do this after providers, since instrumentation tests generally start their</span></span><br><span class="line">		<span class="comment">// test thread at this point, and we don't want that racing.</span></span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			mInstrumentation.onCreate(data.instrumentationArgs);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			<span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(</span><br><span class="line">				<span class="string">"Exception thrown in onCreate() of "</span></span><br><span class="line">				+ data.instrumentationName + <span class="string">": "</span> + e.toString(), e);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="comment">// 这里回调Application#onCreate，通常在此处进行StrictMode相关设置</span></span><br><span class="line">			mInstrumentation.callApplicationOnCreate(app);</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			<span class="keyword">if</span> (!mInstrumentation.onException(app, e)) &#123;</span><br><span class="line">				<span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(</span><br><span class="line">				  <span class="string">"Unable to create application "</span> + app.getClass().getName()</span><br><span class="line">				  + <span class="string">": "</span> + e.toString(), e);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">		<span class="comment">// 如果targetSdk小于27，把StrictMode改为savedPolicy，即允许disk io出现在UI线程</span></span><br><span class="line">		<span class="comment">// If the app targets &lt; O-MR1, or doesn't change the thread policy</span></span><br><span class="line">		<span class="comment">// during startup, clobber the policy to maintain behavior of b/36951662</span></span><br><span class="line">		<span class="keyword">if</span> (data.appInfo.targetSdkVersion &lt; Build.VERSION_CODES.O_MR1</span><br><span class="line">				|| StrictMode.getThreadPolicy().equals(writesAllowedPolicy)) &#123;</span><br><span class="line">			StrictMode.setThreadPolicy(savedPolicy);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>省略了部分无关代码，在43行，ActivityThread回调了我们Application#onCreate方法，我们也通常在此设置了StrictMode相关的设置<br>然而，在第57行会判断，如果我们app的targetSdk小于27，则会重新把StrictMode设置为允许disk io出现在UI线程<br>为啥会实现这样子，博主表示也不清楚，可能为官方的问题<br>博主试过在第一个启动的Activity#onCreate重新打开后，会导致主线程使用SharedPreferences以及调用Activity#setContentView等也会出现警告log，虽然误判有一些，不过感觉还是可以使用的<br>Ps：博主的compileSdkVersion以及buildToolsVersion均为28</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/应用/" rel="tag"># 应用</a>
+          
+            <a href="/tags/内存/" rel="tag"># 内存</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/09/关于一些基础的Java问题的解答（八）/" rel="next" title="关于一些基础的Java问题的解答（八）">
+                <i class="fa fa-chevron-left"></i> 关于一些基础的Java问题的解答（八）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/20/Android生成渠道包总结/" rel="prev" title="Android生成渠道包总结">
+                Android生成渠道包总结 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#StrictMode具体能检测什么"><span class="nav-number">1.</span> <span class="nav-text">StrictMode具体能检测什么</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ThreadPolicy线程策略检测"><span class="nav-number">1.1.</span> <span class="nav-text">ThreadPolicy线程策略检测</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#VmPolicy虚拟机策略检测"><span class="nav-number">1.2.</span> <span class="nav-text">VmPolicy虚拟机策略检测</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#工作原理"><span class="nav-number">2.</span> <span class="nav-text">工作原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常见用法"><span class="nav-number">3.</span> <span class="nav-text">常见用法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#查看报告结果"><span class="nav-number">4.</span> <span class="nav-text">查看报告结果</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ThreadPolicy-详解"><span class="nav-number">5.</span> <span class="nav-text">ThreadPolicy 详解</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#detectNetwork"><span class="nav-number">5.1.</span> <span class="nav-text">detectNetwork()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#detectDiskReads-和detectDiskWrites"><span class="nav-number">5.2.</span> <span class="nav-text">detectDiskReads()和detectDiskWrites()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#noteSlowCall"><span class="nav-number">5.3.</span> <span class="nav-text">noteSlowCall</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#penaltyDeath"><span class="nav-number">5.4.</span> <span class="nav-text">penaltyDeath()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#penaltyDeathOnNetwork"><span class="nav-number">5.5.</span> <span class="nav-text">penaltyDeathOnNetwork()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#penaltyDialog"><span class="nav-number">5.6.</span> <span class="nav-text">penaltyDialog()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#penaltyFlashScreen"><span class="nav-number">5.7.</span> <span class="nav-text">penaltyFlashScreen()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#penaltyDropBox"><span class="nav-number">5.8.</span> <span class="nav-text">penaltyDropBox()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#permitCustomSlowCalls-、permitDiskReads-、permitDiskWrites-、permitNetwork"><span class="nav-number">5.9.</span> <span class="nav-text">permitCustomSlowCalls()、permitDiskReads ()、permitDiskWrites()、permitNetwork()</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#VMPolicy-详解"><span class="nav-number">6.</span> <span class="nav-text">VMPolicy 详解</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#detectActivityLeaks"><span class="nav-number">6.1.</span> <span class="nav-text">detectActivityLeaks()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#detectLeakedClosableObjects"><span class="nav-number">6.2.</span> <span class="nav-text">detectLeakedClosableObjects()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#detectLeakedSqlLiteObjects-和detectLeakedClosableObjects"><span class="nav-number">6.3.</span> <span class="nav-text">detectLeakedSqlLiteObjects()和detectLeakedClosableObjects()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#detectLeakedRegistrationObjects"><span class="nav-number">6.4.</span> <span class="nav-text">detectLeakedRegistrationObjects()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#setClassInstanceLimit"><span class="nav-number">6.5.</span> <span class="nav-text">setClassInstanceLimit()</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他操作"><span class="nav-number">7.</span> <span class="nav-text">其他操作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#注意事项"><span class="nav-number">8.</span> <span class="nav-text">注意事项</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#补充"><span class="nav-number">9.</span> <span class="nav-text">补充</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

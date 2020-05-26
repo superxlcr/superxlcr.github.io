@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="gradle,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Transform执行顺序、buildSrc放置本地插件代码、Transform增量编译、Transform处理一些非.class文件、使用gradle插件的方式">
+<meta name="keywords" content="gradle">
+<meta property="og:type" content="article">
+<meta property="og:title" content="gradle插件编写（二）">
+<meta property="og:url" content="https://superxlcr.github.io/2020/03/29/gradle插件编写（二）/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="Transform执行顺序、buildSrc放置本地插件代码、Transform增量编译、Transform处理一些非.class文件、使用gradle插件的方式">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2020/03/29/gradle插件编写（二）/1.png">
+<meta property="og:image" content="https://superxlcr.github.io/2020/03/29/gradle插件编写（二）/2.png">
+<meta property="og:image" content="https://superxlcr.github.io/2020/03/29/gradle插件编写（二）/3.png">
+<meta property="og:updated_time" content="2020-05-14T14:44:00.208Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="gradle插件编写（二）">
+<meta name="twitter:description" content="Transform执行顺序、buildSrc放置本地插件代码、Transform增量编译、Transform处理一些非.class文件、使用gradle插件的方式">
+<meta name="twitter:image" content="https://superxlcr.github.io/2020/03/29/gradle插件编写（二）/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2020/03/29/gradle插件编写（二）/">
+
+
+
+
+
+  <title>gradle插件编写（二） | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2020/03/29/gradle插件编写（二）/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">gradle插件编写（二）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-29T12:17:45+08:00">
+                2020-03-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/gradle/" itemprop="url" rel="index">
+                    <span itemprop="name">gradle</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.2k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上一篇博客可见：<a href="2018/09/06/gradle插件编写/">gradle插件编写</a></p>
+<p>博主最近有在编写gradle相关的插件，总结了一些新的相关问题，在此记录一下</p>
+<h1 id="Transform执行顺序"><a href="#Transform执行顺序" class="headerlink" title="Transform执行顺序"></a>Transform执行顺序</h1><p>从1.5.0-beta1开始，Android gradle plugin 加入了 <a href="http://tools.android.com/tech-docs/new-build-system/transform-api" target="_blank" rel="noopener">Transform API</a>，允许第三方插件在 class 文件转换成 dex 文件之前来操控 class 文件，这样就很容易在不入侵代码的情况下实现一些 AOP 的操作</p>
+<p><img src="/2020/03/29/gradle插件编写（二）/1.png" alt="Android编译流程图"></p>
+<p>这里 Android 官方也实现了很多 transform，这里有一个DesugarTransform，是 Android 给使用了 java8 的代码做脱糖处理的，所以说在 Android 上面使用 java8，其实只是语法糖而已</p>
+<p><img src="/2020/03/29/gradle插件编写（二）/2.png" alt="官方Transform列表"></p>
+<p>下图给出了 transform 的工作方式，即上一个 transform 的输出作为下一个 transform 的输入。</p>
+<p><img src="/2020/03/29/gradle插件编写（二）/3.png" alt="Transform工作方式"></p>
+<p>既然这样，那么肯定有先后顺序的问题，比如我们自定义了一个 CustomTransfrom，作用是修改某个类中的某些东西，但是官方又实现了一个 ProGuardTransform 用来处理代码混淆，如果是先执行 ProGuardTransform ，后执行 CustomTransfrom ，那么代码先被混淆了，包名类名都变了， CustomTransfrom 肯定不生效了。那么怎么控制这些 transform 的执行顺序呢？</p>
+<p>答案在 com.android.build.gradle.internal.TaskManager#createPostCompilationTasks(VariantScope)，代码太长就不贴了，他会在编译完成之后，准备生成 dex 文件之前</p>
+<p>因此Transform执行顺序如下：<br>Desugar -&gt; MergeJavaRes -&gt; <strong>apply all the external transforms</strong> -&gt; Android studio profiling transforms -&gt; JavaCodeShrinker (Proguard / BuiltInShrinker)-&gt; ResourcesShrinker -&gt; ……</p>
+<p>所以，我们大概率不用担心我们自定义的 transform 和 Android 官方提供的 transform 冲突，而在 apply all the external transforms 这一步，就是循环遍历项目中引用的第三方的自定义的 plugin 中的 transform ，先后执行顺序也就提现在 build.gradle 中 apply plugin: xxx 的先后顺序上。<strong>谁写在前面，谁就先执行。</strong></p>
+<h1 id="buildSrc放置本地插件代码"><a href="#buildSrc放置本地插件代码" class="headerlink" title="buildSrc放置本地插件代码"></a>buildSrc放置本地插件代码</h1><p>当我们需要应用自定义插件时，尤其在自测阶段，往往需要上传到本地的maven仓库，然后再下载下来应用</p>
+<p>除此以外，我们其实还可以在需要应用插件的目标project中，创建<strong>名称为buildSrc的module</strong>，这样gradle会自动把该module下的代码编译依赖为gradle相关插件的仓库代码</p>
+<h1 id="Transform增量编译"><a href="#Transform增量编译" class="headerlink" title="Transform增量编译"></a>Transform增量编译</h1><p>当我们自定义Transform的时候，一个高效的自定义Transform应该是能支持增量编译的</p>
+<p>首先我们需要在返回的配置中支持增量编译：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public boolean isIncremental() &#123; // 是否支持增量返回 true</span><br><span class="line">	return true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>改动文件列表对应的接口api如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public interface DirectoryInput extends QualifiedContent &#123;</span><br><span class="line">    Map&lt;File, Status&gt; getChangedFiles();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们可以通过以下代码，获取本次增量编译中改动过的文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">input.directoryInputs.each &#123; directoryInput -&gt;</span><br><span class="line">	directoryInput.changedFiles.each&#123; changeFileEntry-&gt;</span><br><span class="line">        def status = changeFileEntry.value;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样我们可以遍历所有改动的文件，而且可以获取每个改动文件的状态，有4种：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public enum Status &#123;</span><br><span class="line">    NOTCHANGED,</span><br><span class="line">    ADDED,</span><br><span class="line">    CHANGED,</span><br><span class="line">    REMOVED;</span><br><span class="line"></span><br><span class="line">    private Status() &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>JarInput 和DirectoryInput不同，JarInput只能获取状态，也有4种状态：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public interface JarInput extends QualifiedContent &#123;</span><br><span class="line">    Status getStatus();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>PS：值得注意的是，根据网上查到的一些资料说，删除一个java文件，对应的class文件输入不会出现REMOVED状态，也就是不能从changeFiles里面获取被删除的文件</p>
+<h1 id="Transform处理一些非-class文件"><a href="#Transform处理一些非-class文件" class="headerlink" title="Transform处理一些非.class文件"></a>Transform处理一些非.class文件</h1><p>当我们实现自定义Transform的时候，需要定义该Transform处理的文件类型，一般来说我们要处理的都是class文件，就返回TransformManager.CONTENT_CLASS，如果我们是想要处理资源文件，可以使用TransformManager.CONTENT_RESOURCES，这里按需要来就好</p>
+<p>最近博主需要在Transform中处理非.class相关的文件（一些apt生成的非.class的文件，也可理解为资源文件）</p>
+<p>比较奇怪的一点是：</p>
+<ul>
+<li>在jar包中的资源文件，需要我们定义处理类型为 TransformManager.CONTENT_RESOURCES 才返回</li>
+<li>而在我们编译主module下的文件，即在Transform中以dir文件夹输入的资源文件，则是定义处理类型为 TransformManager.CONTENT_CLASS 才返回</li>
+</ul>
+<p>因此博主定义的处理文件类型为：TransformManager.CONTENT_JARS，表示class与jar的集合</p>
+<p>其中具体的处理逻辑跟处理class文件没有什么特别大的区别，只是获取输出文件的地址时把contentTypes定义为资源类型即可</p>
+<p>比较疑惑，在此先记录一下</p>
+<h1 id="使用gradle插件的方式"><a href="#使用gradle插件的方式" class="headerlink" title="使用gradle插件的方式"></a>使用gradle插件的方式</h1><p>在编写完gradle插件后，我们可以通过以下几种方式来应用插件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apply from: &apos;xxx.gradle&apos;</span><br></pre></td></tr></table></figure>
+
+<p>上面这种方式用来应用写在.gradle文件的脚本插件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">apply plugin: ClassName</span><br><span class="line">apply plugin:&apos;pluginid&apos;</span><br></pre></td></tr></table></figure>
+
+<p>上面这种方式用来应用继承自Plugin基类的对象插件<br>这类插件可能存放在远程的仓库中，也有可能存放在buildSrc的module下</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/gradle/" rel="tag"># gradle</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/03/28/Android常见问题总结（十）/" rel="next" title="Android常见问题总结（十）">
+                <i class="fa fa-chevron-left"></i> Android常见问题总结（十）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/05/14/查看gradle各任务依赖关系/" rel="prev" title="查看gradle各任务依赖关系">
+                查看gradle各任务依赖关系 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Transform执行顺序"><span class="nav-number">1.</span> <span class="nav-text">Transform执行顺序</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#buildSrc放置本地插件代码"><span class="nav-number">2.</span> <span class="nav-text">buildSrc放置本地插件代码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Transform增量编译"><span class="nav-number">3.</span> <span class="nav-text">Transform增量编译</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Transform处理一些非-class文件"><span class="nav-number">4.</span> <span class="nav-text">Transform处理一些非.class文件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用gradle插件的方式"><span class="nav-number">5.</span> <span class="nav-text">使用gradle插件的方式</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

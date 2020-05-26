@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="基础知识,java,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="ThreadPool用法与优势、Concurrent包里的工具：ArrayBlockingQueue、CountDownLatch等等、wait()和sleep()的区别、foreach与正常for循环效率对比、Java IO与NIO">
+<meta name="keywords" content="基础知识,java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于一些基础的Java问题的解答（六）">
+<meta property="og:url" content="https://superxlcr.github.io/2016/03/20/关于一些基础的Java问题的解答（六）/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="ThreadPool用法与优势、Concurrent包里的工具：ArrayBlockingQueue、CountDownLatch等等、wait()和sleep()的区别、foreach与正常for循环效率对比、Java IO与NIO">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2016/03/20/关于一些基础的Java问题的解答（六）/1.png">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.834Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="关于一些基础的Java问题的解答（六）">
+<meta name="twitter:description" content="ThreadPool用法与优势、Concurrent包里的工具：ArrayBlockingQueue、CountDownLatch等等、wait()和sleep()的区别、foreach与正常for循环效率对比、Java IO与NIO">
+<meta name="twitter:image" content="https://superxlcr.github.io/2016/03/20/关于一些基础的Java问题的解答（六）/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2016/03/20/关于一些基础的Java问题的解答（六）/">
+
+
+
+
+
+  <title>关于一些基础的Java问题的解答（六） | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2016/03/20/关于一些基础的Java问题的解答（六）/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">关于一些基础的Java问题的解答（六）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-20T09:53:11+08:00">
+                2016-03-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上一篇文章的传送门：<a href="/2016/03/19/关于一些基础的Java问题的解答（五）/">关于一些基础的Java问题的解答（五）</a></p>
+<h1 id="ThreadPool用法与优势"><a href="#ThreadPool用法与优势" class="headerlink" title="ThreadPool用法与优势"></a>ThreadPool用法与优势</h1><p>ThreadPool即线程池，它是JDK1.5引入的Concurrent包中用于处理并发编程的工具。使用线程池有如下好处：</p>
+<ol>
+<li>降低资源消耗：通过重复利用已创建的线程降低线程创建和销毁造成的消耗</li>
+<li>提高响应速度：当任务到达时，任务可以不需要等到线程创建，复用缓存线程就能立即执行</li>
+<li>提高线程的可管理性：线程是稀缺资源，如果无限制的创建，不仅会消耗系统资源，还会降低系统的稳定性，使用线程池可以进行统一的分配，调优和监控</li>
+</ol>
+<p>线程池的创建方法如下：<br>通过ThreadPoolExecutor创建：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ThreadPoolExecutor executor = <span class="keyword">new</span> ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, handler);</span><br></pre></td></tr></table></figure>
+
+<p>该构造函数具有重载，最后两个参数是可选的，各参数的含义如下：</p>
+<ol>
+<li>corePoolSize（基本线程池大小）：当提交一个任务到线程池时，线程池会创建一个线程来执行任务，即使其他空闲的基本线程能够执行新任务也会创建线程，等到需要执行的任务数大于基本线程池大小时就不再创建。线程池有一个prestartAllCoreThreads方法用来提前创建并启动所有基本线程</li>
+<li>maximumPoolSize（最大线程池大小）：线程池允许创建的最大线程数，必须大于基本线程池大小。线程池中含有一个任务阻塞队列，如果队列满了，并且已创建的线程数小于最大线程数，则线程池会再创建新的线程执行任务</li>
+<li>keepAliveTime（线程活动保持时间）：线程池的工作线程空闲后，保持存活的时间。所以如果任务很多，并且每个任务执行的时间比较短，可以调大这个时间，提高线程的利用率</li>
+<li>unit（线程活动保持时间的单位）：前一个参数的时间单位</li>
+<li>workQueue（工作队列）：用于保存等待执行的任务的阻塞队列，如果当任务提交时基本线程池中已没有空闲线程，则任务会被放入工作队列等待</li>
+<li>threadFactory（线程工厂，可选参数）：创建一个新线程时会调用其newThread方法，可以初始化一些信息</li>
+<li>handler（饱和处理器）：当队列和线程池都满了，说明线程池处于饱和状态，那么就会使用处理器处理提交的新任务。ThreadPoolExecutor内部提供了一些handler的静态实现类：</li>
+</ol>
+<ul>
+<li>AbortPolicy：直接抛出异常RejectedExecutionException</li>
+<li>CallerRunsPolicy：使用调用者所在线程来运行任务</li>
+<li>DiscardOldestPolicy：丢弃队列头的任务，并执行当前任务</li>
+<li>DiscardPolicy：什么也不做，放弃掉该任务</li>
+</ul>
+<p>除了自定义线程池，我们还可以使用Executors类中提供的实现好的线程池：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 为每个任务创建一个新线程或回收利用旧线程的线程池  </span></span><br><span class="line">       ExecutorService service1 = Executors.newCachedThreadPool();  </span><br><span class="line">       <span class="comment">// 创建指定数目线程的线程池  </span></span><br><span class="line">       ExecutorService service2 = Executors.newFixedThreadPool(nThreads);  </span><br><span class="line">       <span class="comment">// 线程数量固定为1的线程池，拥有无界的工作队列  </span></span><br><span class="line">       ExecutorService service3 = Executors.newSingleThreadExecutor();</span><br></pre></td></tr></table></figure>
+
+<p>以上三种线程池为比较常用的线程池，其余的不再探讨。<br>线程池的用法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 传入一个Runnable接口处理任务  </span></span><br><span class="line">executor.execute(runnable);  </span><br><span class="line"><span class="comment">// 传入一个Callable接口处理任务，返回Future对象代表任务返回值  </span></span><br><span class="line">Future&lt;Object&gt; result = executor.submit(callable);  </span><br><span class="line"><span class="comment">// 使用get方法获取具体内容  </span></span><br><span class="line">result.get();  </span><br><span class="line"><span class="comment">// 关闭线程池，中断空闲线程  </span></span><br><span class="line">executor.shutdown();  </span><br><span class="line"><span class="comment">// 关闭线程池，中断所有线程  </span></span><br><span class="line">executor.shutdownNow();</span><br></pre></td></tr></table></figure>
+
+<p>综上，线程池的工作流程为：<br><img src="/2016/03/20/关于一些基础的Java问题的解答（六）/1.png" alt="线程池工作流程图"></p>
+<h1 id="Concurrent包里的工具：ArrayBlockingQueue、CountDownLatch等等"><a href="#Concurrent包里的工具：ArrayBlockingQueue、CountDownLatch等等" class="headerlink" title="Concurrent包里的工具：ArrayBlockingQueue、CountDownLatch等等"></a>Concurrent包里的工具：ArrayBlockingQueue、CountDownLatch等等</h1><p>JDK1.2引入的容器类库为了效率问题所以是不同步的，要同步容器类我们只能自己实现或指望Collections类提供的各种static同步方法。但在JDK1.5中引入的Concurrent包中，Java为我们提供了许多线程安全的免锁容器，主要使用的有以下几种：</p>
+<ol>
+<li>CopyOnWriteArrayList：写时拷贝列表，对容器的写入操作将导致创建整个底层数组的副本，而原数组保存在原地，使得当数组在被修改时，读取可以安全的执行。修改完成时，一个原子性的操作会把新数组换入，使得新的读取操作可以看到修改</li>
+<li>CopyOnWriteArraySet：与CopyOnWriteArrayList类似的集合</li>
+<li>ConcurrentHashMap：线程安全的HashMap</li>
+<li>ConcurrentLinkedQueue：一个线程安全的队列</li>
+<li>DelayQueue：延迟队列，是一个无界阻塞队列，对于放入的元素实现延迟接口，设定延迟时间，元素只有过了延迟时间后才能被取走</li>
+<li>LinkedBlockingQueue：阻塞队列，LinkedBlockingQueue 可以指定容量，也可以不指定，不指定的话，默认最大是Integer.MAX_VALUE，其中主要用到put和take方法，put方法在队列满的时候会阻塞直到有队列成员被消费，take方法在队列空的时候会阻塞，直到有队列成员被放进来</li>
+<li>PriorityBlockingQueue：优先级阻塞队列，与优先级队列相似，具有阻塞的特点</li>
+</ol>
+<p>除了容器外，Concurrent还为我们提供了各种用于同步的辅助类，常见的有以下几种：</p>
+<ol>
+<li>Atomic类，原子类，各种包装类型的同步类，可以使用compareAndSet形式的方法来更新变量</li>
+<li>CountDownLatch：一个同步辅助类，在完成一组正在其他线程中执行的操作之前，它允许一个或多个线程一直等待。其构造方法可以指定计数次数，当其countDown方法被调用时次数减一，而调用await方法（可以设置超时）会使当前线程一直被阻塞，直到计时器的值为0</li>
+<li>CyclicBarrier：回环栅栏，通过它可以实现让一组线程等待至某个状态之后再全部同时执行。叫做回环是因为当所有等待线程都被释放以后，CyclicBarrier可以被重用。其构造方法可以指定线程数，还可以传入Runnable表示所有线程到达状态后要执行的内容。线程调用其await方法时表示线程已到达指定状态并被阻塞，当有所有线程都到达状态时，线程才可以继续往下执行。调用其reset方法可以重复使用。</li>
+<li>Exchanger：用于两个线程交换数据的辅助类，调用exchange方法后线程会被阻塞直到另一个线程调用exchange方法（可以设置超时）</li>
+<li>ReadWriteLock：读写锁允许我们拥有多个读者，对向数据结构相对不频繁的写入但频繁读取做了优化。我们分别可以调用readLock和writeLock方法获取读锁和写锁，使用lock和unlock方法来加锁和解锁。</li>
+<li>Semaphore：信号量，可以控同时访问的线程个数（通过构造函数设置），通过 acquire方法 获取一个许可，如果没有就等待，而 release方法 释放一个许可。</li>
+</ol>
+<h1 id="wait-和sleep-的区别"><a href="#wait-和sleep-的区别" class="headerlink" title="wait()和sleep()的区别"></a>wait()和sleep()的区别</h1><p>wait是Object类的方法，只有当线程拥有调用对象的锁的时候才可以调用该方法，否则会抛出IllegalMonitorStateException。wait方法的作用是阻塞当前线程并让出调用对象的锁，直到别的线程使用notify或notifyAll唤醒，或经过特定时间，或被别的线程中断才继续工作。<br>sleep是Thread类的静态方法，他可以让当前线程休眠一段时间，直到经过特定休眠时间，或被别的线程中的才继续工作。</p>
+<h1 id="foreach与正常for循环效率对比"><a href="#foreach与正常for循环效率对比" class="headerlink" title="foreach与正常for循环效率对比"></a>foreach与正常for循环效率对比</h1><p>for的写法都比较熟悉就不提了。<br>foreach语句是JDK1.5的新特征之一，在遍历数组、集合方面，foreach为开发人员提供了极大的方便。foreach语句是for语句的特殊简化版本，但是foreach语句并不能完全取代for语句，然而，任何的foreach语句都可以改写为for语句版本。foreach并不是一个关键字，习惯上将这种特殊的for语句格式称之为“foreach”语句。可以使用foreach的对象必须实现Iterator 接口。<br>一般而言，只是遍历的话我们可以使用foreach，如果要涉及对数组或容器的操作就只能使用for循环了。</p>
+<h1 id="Java-IO与NIO"><a href="#Java-IO与NIO" class="headerlink" title="Java IO与NIO"></a>Java IO与NIO</h1><p>Java NIO（Java new IO），是jdk1.4 里提供的新api ，为所有的原始类型提供缓存支持。<br>两者的不同主要体现在以下几点：Java IO是面向流的而Java NIO是面向缓冲的，Java IO提供阻塞IO服务而Java NIO提供非阻塞IO服务，Java IO需要使用多个线程来处理多个IO流而Java NIO引入了Selector（选择器）来处理多个Channel（通道）。</p>
+<h2 id="面向流与面向缓冲"><a href="#面向流与面向缓冲" class="headerlink" title="面向流与面向缓冲"></a>面向流与面向缓冲</h2><p>Java NIO和IO之间第一个最大的区别是，IO是面向流的，NIO是面向缓冲区的。 Java IO面向流意味着每次从流中读一个或多个字节，直至读取所有字节，它们没有被缓存在任何地方。此外，它不能前后移动流中的数据。如果需要前后移动从流中读取的数据，需要先将它缓存到一个缓冲区。 Java NIO的缓冲导向方法略有不同。数据读取到一个它稍后处理的缓冲区，需要时可在缓冲区中前后移动。这就增加了处理过程中的灵活性。但是，还需要检查是否该缓冲区中包含所有您需要处理的数据。而且，需确保当更多的数据读入缓冲区时，不要覆盖缓冲区里尚未处理的数据。</p>
+<h2 id="阻塞IO与非阻塞IO"><a href="#阻塞IO与非阻塞IO" class="headerlink" title="阻塞IO与非阻塞IO"></a>阻塞IO与非阻塞IO</h2><p>Java IO的各种流是阻塞的。这意味着，当一个线程调用read() 或 write()时，该线程被阻塞，直到有一些数据被读取，或数据完全写入。该线程在此期间不能再干任何事情了。 Java NIO的非阻塞模式，使一个线程从某通道发送请求读取数据，但是它仅能得到目前可用的数据，如果目前没有数据可用时，就什么都不会获取。而不是保持线程阻塞，所以直至数据变的可以读取之前，该线程可以继续做其他的事情。 非阻塞写也是如此。一个线程请求写入一些数据到某通道，但不需要等待它完全写入，这个线程同时可以去做别的事情。 线程通常将非阻塞IO的空闲时间用于在其它通道上执行IO操作，所以一个单独的线程现在可以管理多个输入和输出通道（channel）</p>
+<h2 id="选择器（Selector）"><a href="#选择器（Selector）" class="headerlink" title="选择器（Selector）"></a>选择器（Selector）</h2><p>Java NIO的选择器允许一个单独的线程来监视多个输入通道，你可以注册多个通道使用一个选择器，然后使用一个单独的线程来“选择”通道：这些通道里已经有可以处理的输入，或者选择已准备写入的通道。这种选择机制，使得一个单独的线程很容易来管理多个通道。</p>
+<p>Java IO 优点：简单容易编写。 缺点：阻塞IO使得线程在等待输入时什么也不能做，多个流需要多个线程来处理。<br>Java NIO 优点：非阻塞IO非常灵活，多个通道可以通过搭配选择器使用少数线程来处理。 缺点：编写复杂。若传输内容以行为单位且具有一定逻辑性，则传输过程逻辑性可能会丢失（每次接收的数据不一定为完整一行，没有readLine方法）。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/基础知识/" rel="tag"># 基础知识</a>
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/03/19/关于一些基础的Java问题的解答（五）/" rel="next" title="关于一些基础的Java问题的解答（五）">
+                <i class="fa fa-chevron-left"></i> 关于一些基础的Java问题的解答（五）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/03/21/Android-View与SurfaceView的手绘板制作/" rel="prev" title="Android View与SurfaceView的手绘板制作">
+                Android View与SurfaceView的手绘板制作 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ThreadPool用法与优势"><span class="nav-number">1.</span> <span class="nav-text">ThreadPool用法与优势</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Concurrent包里的工具：ArrayBlockingQueue、CountDownLatch等等"><span class="nav-number">2.</span> <span class="nav-text">Concurrent包里的工具：ArrayBlockingQueue、CountDownLatch等等</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#wait-和sleep-的区别"><span class="nav-number">3.</span> <span class="nav-text">wait()和sleep()的区别</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#foreach与正常for循环效率对比"><span class="nav-number">4.</span> <span class="nav-text">foreach与正常for循环效率对比</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java-IO与NIO"><span class="nav-number">5.</span> <span class="nav-text">Java IO与NIO</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#面向流与面向缓冲"><span class="nav-number">5.1.</span> <span class="nav-text">面向流与面向缓冲</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#阻塞IO与非阻塞IO"><span class="nav-number">5.2.</span> <span class="nav-text">阻塞IO与非阻塞IO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#选择器（Selector）"><span class="nav-number">5.3.</span> <span class="nav-text">选择器（Selector）</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

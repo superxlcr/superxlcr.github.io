@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,基础知识,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Android全屏方式对比，ListView的Header与Footer设置Visibility为Gone不起作用，ViewGroup没有调用onDraw方法，ViewPager获取当前显示的Fragment，Android 7.0 https 抓包问题">
+<meta name="keywords" content="android,基础知识">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android常见问题总结（八）">
+<meta property="og:url" content="https://superxlcr.github.io/2019/05/06/Android常见问题总结（八）/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="Android全屏方式对比，ListView的Header与Footer设置Visibility为Gone不起作用，ViewGroup没有调用onDraw方法，ViewPager获取当前显示的Fragment，Android 7.0 https 抓包问题">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.581Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android常见问题总结（八）">
+<meta name="twitter:description" content="Android全屏方式对比，ListView的Header与Footer设置Visibility为Gone不起作用，ViewGroup没有调用onDraw方法，ViewPager获取当前显示的Fragment，Android 7.0 https 抓包问题">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2019/05/06/Android常见问题总结（八）/">
+
+
+
+
+
+  <title>Android常见问题总结（八） | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2019/05/06/Android常见问题总结（八）/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android常见问题总结（八）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-06T14:13:12+08:00">
+                2019-05-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.3k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上一篇博客传送门：<a href="/2019/03/29/Android常见问题总结（七）/">Android常见问题总结（七）</a></p>
+<h1 id="Android全屏方式对比"><a href="#Android全屏方式对比" class="headerlink" title="Android全屏方式对比"></a>Android全屏方式对比</h1><p>博主目前发现两种在Android中实现全屏的方案，分别是：</p>
+<ul>
+<li>通过 View#setSystemUiVisibility 方法，使用 View#SYSTEM_UI_FLAG_FULLSCREEN</li>
+<li>通过 Window#addFlags 方法，使用 WindowManager.LayoutParams#FLAG_FULLSCREEN</li>
+</ul>
+<p>两者在视觉效果上并没有什么不同，其中，View#SYSTEM_UI_FLAG_FULLSCREEN 说明如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Flag for &#123;<span class="doctag">@link</span> #setSystemUiVisibility(int)&#125;: View has requested to go</span></span><br><span class="line"><span class="comment"> * into the normal fullscreen mode so that its content can take over the screen</span></span><br><span class="line"><span class="comment"> * while still allowing the user to interact with the application.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;This has the same visual effect as</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> android.view.WindowManager.LayoutParams#FLAG_FULLSCREEN</span></span><br><span class="line"><span class="comment"> * WindowManager.LayoutParams.FLAG_FULLSCREEN&#125;,</span></span><br><span class="line"><span class="comment"> * meaning that non-critical screen decorations (such as the status bar) will be</span></span><br><span class="line"><span class="comment"> * hidden while the user is in the View's window, focusing the experience on</span></span><br><span class="line"><span class="comment"> * that content.  Unlike the window flag, if you are using ActionBar in</span></span><br><span class="line"><span class="comment"> * overlay mode with &#123;<span class="doctag">@link</span> Window#FEATURE_ACTION_BAR_OVERLAY</span></span><br><span class="line"><span class="comment"> * Window.FEATURE_ACTION_BAR_OVERLAY&#125;, then enabling this flag will also</span></span><br><span class="line"><span class="comment"> * hide the action bar.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;This approach to going fullscreen is best used over the window flag when</span></span><br><span class="line"><span class="comment"> * it is a transient state -- that is, the application does this at certain</span></span><br><span class="line"><span class="comment"> * points in its user interaction where it wants to allow the user to focus</span></span><br><span class="line"><span class="comment"> * on content, but not as a continuous state.  For situations where the application</span></span><br><span class="line"><span class="comment"> * would like to simply stay full screen the entire time (such as a game that</span></span><br><span class="line"><span class="comment"> * wants to take over the screen), the</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> android.view.WindowManager.LayoutParams#FLAG_FULLSCREEN window flag&#125;</span></span><br><span class="line"><span class="comment"> * is usually a better approach.  The state set here will be removed by the system</span></span><br><span class="line"><span class="comment"> * in various situations (such as the user moving to another application) like</span></span><br><span class="line"><span class="comment"> * the other system UI states.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;When using this flag, the application should provide some easy facility</span></span><br><span class="line"><span class="comment"> * for the user to go out of it.  A common example would be in an e-book</span></span><br><span class="line"><span class="comment"> * reader, where tapping on the screen brings back whatever screen and UI</span></span><br><span class="line"><span class="comment"> * decorations that had been hidden while the user was immersed in reading</span></span><br><span class="line"><span class="comment"> * the book.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> #setSystemUiVisibility(int)</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+
+<p>主要需要注意的细节有这种方式实现的全屏效果是<strong>短暂的（transient）</strong>，会因为用户的某些操作（如：跳转到其他应用，下拉状态栏等）退出全屏模式</p>
+<p>而 WindowManager.LayoutParams#FLAG_FULLSCREEN 说明如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Window flag: hide all screen decorations (such as the status bar) while</span></span><br><span class="line"><span class="comment"> * this window is displayed.  This allows the window to use the entire</span></span><br><span class="line"><span class="comment"> * display space for itself -- the status bar will be hidden when</span></span><br><span class="line"><span class="comment"> * an app window with this flag set is on the top layer. A fullscreen window</span></span><br><span class="line"><span class="comment"> * will ignore a value of &#123;<span class="doctag">@link</span> #SOFT_INPUT_ADJUST_RESIZE&#125; for the window's</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> #softInputMode&#125; field; the window will stay fullscreen</span></span><br><span class="line"><span class="comment"> * and will not resize.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;This flag can be controlled in your theme through the</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> android.R.attr#windowFullscreen&#125; attribute; this attribute</span></span><br><span class="line"><span class="comment"> * is automatically set for you in the standard fullscreen themes</span></span><br><span class="line"><span class="comment"> * such as &#123;<span class="doctag">@link</span> android.R.style#Theme_NoTitleBar_Fullscreen&#125;,</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> android.R.style#Theme_Black_NoTitleBar_Fullscreen&#125;,</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> android.R.style#Theme_Light_NoTitleBar_Fullscreen&#125;,</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> android.R.style#Theme_Holo_NoActionBar_Fullscreen&#125;,</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> android.R.style#Theme_Holo_Light_NoActionBar_Fullscreen&#125;,</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> android.R.style#Theme_DeviceDefault_NoActionBar_Fullscreen&#125;, and</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> android.R.style#Theme_DeviceDefault_Light_NoActionBar_Fullscreen&#125;.&lt;/p&gt;</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+
+<p>主要需要注意的是跟软键盘弹出的一些交互问题</p>
+<h1 id="ListView的Header与Footer设置Visibility为Gone不起作用"><a href="#ListView的Header与Footer设置Visibility为Gone不起作用" class="headerlink" title="ListView的Header与Footer设置Visibility为Gone不起作用"></a>ListView的Header与Footer设置Visibility为Gone不起作用</h1><p>常用的ViewGroup，例如LinearLayout，在onMeasure方法内对每个child view执行measure前，会判断child view的visibility是否为gone。如果是gone，则不对这个child view执行measure操作，即这个child view的高度不被计算在linearLayout的高度里面。LinearLayout的measureVertical代码片段</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">measureVertical</span><span class="params">(<span class="keyword">int</span> widthMeasureSpec, <span class="keyword">int</span> heightMeasureSpec)</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line"></span><br><span class="line">	<span class="comment">// See how tall everyone is. Also remember max width.</span></span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; count; ++i) &#123;</span><br><span class="line">		<span class="keyword">final</span> View child = getVirtualChildAt(i);</span><br><span class="line">		<span class="keyword">if</span> (child == <span class="keyword">null</span>) &#123;</span><br><span class="line">			mTotalLength += measureNullChild(i);</span><br><span class="line">			<span class="keyword">continue</span>;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (child.getVisibility() == View.GONE) &#123;</span><br><span class="line">		   i += getChildrenSkipCount(child, i);</span><br><span class="line">		   <span class="keyword">continue</span>;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		...</span><br><span class="line"></span><br><span class="line">		i += getChildrenSkipCount(child, i);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>view在measure自己时，并不会去判断自己的Visibility是GONE。这个逻辑操作如上述代码所示，是在parent view里面做的。所以当对LinearLayout里面的一个childView设置Visiblility为gone时，这个view不会被measure，最终也不会被显示出来。</p>
+<p>在使用ListView时，经常会添加一些headerView、footerView。但是当设置headerView、footerView的visibility为gone时，却发现headerView、footerView虽然没有显示出来，但垂直方向其所占的位置还是被显示出来了，从而出现了空白区域。网上查到的解决办法是：不能直接设置headerView、footerView的Visibility为gone。而是要<strong>在HeaderView、FooterView外面包一层parent view</strong>（FrameLayout RelativeLayout 都可以），并设置layout_height=“wrap_content”。然后对里面的childView设置visibility为GONE、VISIBLE都会生效。查看源码，情况确实如此。</p>
+<p>ListView的onMeasure里面，如果ListView的widthMode、heightMode有一个是unspecified时（应该对应于在XML中没有对listView设置layout_width、layout_height），会调用方法measureScrapChild。如果没有unspecified的情况，则会调用measureHeightOfChildren方法，而此方法内部也会调用measureScrapChild方法。查看measureScrapChild方法:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">measureScrapChild</span><span class="params">(View child, <span class="keyword">int</span> position, <span class="keyword">int</span> widthMeasureSpec, <span class="keyword">int</span> heightHint)</span> </span>&#123;</span><br><span class="line">	LayoutParams p = (LayoutParams) child.getLayoutParams();</span><br><span class="line">	<span class="keyword">if</span> (p == <span class="keyword">null</span>) &#123;</span><br><span class="line">		p = (AbsListView.LayoutParams) generateDefaultLayoutParams();</span><br><span class="line">		child.setLayoutParams(p);</span><br><span class="line">	&#125;</span><br><span class="line">	p.viewType = mAdapter.getItemViewType(position);</span><br><span class="line">	p.isEnabled = mAdapter.isEnabled(position);</span><br><span class="line">	p.forceAdd = <span class="keyword">true</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">final</span> <span class="keyword">int</span> childWidthSpec = ViewGroup.getChildMeasureSpec(widthMeasureSpec,</span><br><span class="line">			mListPadding.left + mListPadding.right, p.width);</span><br><span class="line">	<span class="keyword">final</span> <span class="keyword">int</span> lpHeight = p.height;</span><br><span class="line">	<span class="keyword">final</span> <span class="keyword">int</span> childHeightSpec;</span><br><span class="line">	<span class="keyword">if</span> (lpHeight &gt; <span class="number">0</span>) &#123;</span><br><span class="line">		childHeightSpec = MeasureSpec.makeMeasureSpec(lpHeight, MeasureSpec.EXACTLY);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		childHeightSpec = MeasureSpec.makeSafeMeasureSpec(heightHint, MeasureSpec.UNSPECIFIED);</span><br><span class="line">	&#125;</span><br><span class="line">	child.measure(childWidthSpec, childHeightSpec);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Since this view was measured directly aginst the parent measure</span></span><br><span class="line">	<span class="comment">// spec, we must measure it again before reuse.</span></span><br><span class="line">	child.forceLayout();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看出，listview在对child view执行measure前，没有判断visibility为gone的情况。<br>再看看里面的详细逻辑：</p>
+<ul>
+<li>lpHeight&gt;0时，说明在xml或者程序里面设置了一个确定的尺寸，这里没有问题</li>
+<li>else里面，设置mode为UNSPECIFIED，就是让child view自己去决定大小，child view在measure自己时，不会考虑VISIBILITY属性</li>
+</ul>
+<p>如果外面包一层parent view（例如LinearLayout），并设置layout_height为wrap_content(按上面的分析，设置match_parent也是可以的），listView会调用调用额外的这个parent view的measure方法。而LinearLayout在measure时，会判断child view的visibility，如果为gone，则会返回0。最终这个额外的parent view返回给list view的尺寸就是0，从而解决了空白区域的问题</p>
+<h1 id="ViewGroup没有调用onDraw方法"><a href="#ViewGroup没有调用onDraw方法" class="headerlink" title="ViewGroup没有调用onDraw方法"></a>ViewGroup没有调用onDraw方法</h1><p>结论：经测试得知，在没有background背景的情况下，ViewGroup并不会执行onDraw绘制</p>
+<p>View#draw相关代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@CallSuper</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">draw</span><span class="params">(Canvas canvas)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">final</span> <span class="keyword">int</span> privateFlags = mPrivateFlags;</span><br><span class="line">	<span class="keyword">final</span> <span class="keyword">boolean</span> dirtyOpaque = (privateFlags &amp; PFLAG_DIRTY_MASK) == PFLAG_DIRTY_OPAQUE &amp;&amp;</span><br><span class="line">			(mAttachInfo == <span class="keyword">null</span> || !mAttachInfo.mIgnoreDirtyState);</span><br><span class="line">	mPrivateFlags = (privateFlags &amp; ~PFLAG_DIRTY_MASK) | PFLAG_DRAWN;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * Draw traversal performs several drawing steps which must be executed</span></span><br><span class="line"><span class="comment">	 * in the appropriate order:</span></span><br><span class="line"><span class="comment">	 *</span></span><br><span class="line"><span class="comment">	 *      1. Draw the background</span></span><br><span class="line"><span class="comment">	 *      2. If necessary, save the canvas' layers to prepare for fading</span></span><br><span class="line"><span class="comment">	 *      3. Draw view's content</span></span><br><span class="line"><span class="comment">	 *      4. Draw children</span></span><br><span class="line"><span class="comment">	 *      5. If necessary, draw the fading edges and restore layers</span></span><br><span class="line"><span class="comment">	 *      6. Draw decorations (scrollbars for instance)</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// Step 1, draw the background, if needed</span></span><br><span class="line">	<span class="keyword">int</span> saveCount;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (!dirtyOpaque) &#123;</span><br><span class="line">		drawBackground(canvas);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// skip step 2 &amp; 5 if possible (common case)</span></span><br><span class="line">	<span class="keyword">final</span> <span class="keyword">int</span> viewFlags = mViewFlags;</span><br><span class="line">	<span class="keyword">boolean</span> horizontalEdges = (viewFlags &amp; FADING_EDGE_HORIZONTAL) != <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">boolean</span> verticalEdges = (viewFlags &amp; FADING_EDGE_VERTICAL) != <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">if</span> (!verticalEdges &amp;&amp; !horizontalEdges) &#123;</span><br><span class="line">		<span class="comment">// Step 3, draw the content</span></span><br><span class="line">		<span class="keyword">if</span> (!dirtyOpaque) onDraw(canvas);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// Step 4, draw the children</span></span><br><span class="line">		dispatchDraw(canvas);</span><br><span class="line"></span><br><span class="line">		...</span><br><span class="line"></span><br><span class="line">		<span class="comment">// we're done...</span></span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	...</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Step 3, draw the content</span></span><br><span class="line">	<span class="keyword">if</span> (!dirtyOpaque) onDraw(canvas);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Step 4, draw the children</span></span><br><span class="line">	dispatchDraw(canvas);</span><br><span class="line"></span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到想要执行onDraw，我们都需要变量dirtyOpaque为false（这个变量的具体逻辑没有追踪，大意应该是需要有内容进行绘制吧，所以我们需要添加一个背景）<br>又或者我们可以<strong>重写方法dispatchDraw</strong>，这个是一定会执行的</p>
+<h1 id="ViewPager获取当前显示的Fragment"><a href="#ViewPager获取当前显示的Fragment" class="headerlink" title="ViewPager获取当前显示的Fragment"></a>ViewPager获取当前显示的Fragment</h1><p>最近博主使用到了ViewPager与Fragment这一经典的组合，在此记录一下如何在ViewPager中获取当前显示的Fragment</p>
+<h2 id="FragmentManager-findFragmentByTag"><a href="#FragmentManager-findFragmentByTag" class="headerlink" title="FragmentManager#findFragmentByTag"></a>FragmentManager#findFragmentByTag</h2><p>当我们使用Viewpager + FragmentPagerAdapter的组合时，加载过的Fragment都会被保留，因此我们可以通过 FragmentManager#findFragmentByTag 来获取相应的 Fragment<br>根据网上相关的资料以及翻看源码，我们可以使用 FragmentPagerAdapter#makeFragmentName 来获取相应的 tag (该方法是private的，我们可以拷贝出来使用)</p>
+<p>具体的源码如下所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Return a unique identifier for the item at the given position.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;The default implementation returns the given position.</span></span><br><span class="line"><span class="comment"> * Subclasses should override this method if the positions of items can change.&lt;/p&gt;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> position Position within this adapter</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> Unique identifier for the item at position</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">getItemId</span><span class="params">(<span class="keyword">int</span> position)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> position;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">makeFragmentName</span><span class="params">(<span class="keyword">int</span> viewId, <span class="keyword">long</span> id)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="string">"android:switcher:"</span> + viewId + <span class="string">":"</span> + id;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>PS：FragmentPagerAdapter#makeFragmentName 这个方法是 private 的，直接调用或者copy并不是非常保险，比较好的做法是把整个FragmentPagerAdapter都拷贝出去</p>
+<h2 id="重写FragmentPagerAdapter-setPrimaryItem"><a href="#重写FragmentPagerAdapter-setPrimaryItem" class="headerlink" title="重写FragmentPagerAdapter#setPrimaryItem"></a>重写FragmentPagerAdapter#setPrimaryItem</h2><p>这个方法在每次viewpager滑动后都会被调用，而object参数就是显示的Fragment<br>我们可以通过重写该方法，把object存到我们的成员变量中随时读取<br>不过这种方式有一个缺陷，FragmentPagerAdapter#setPrimaryItem是在 viewpager的滑动监听执行完后才会调用的，因此我们在滑动监听中读取的当前Fragment是不正确的</p>
+<h1 id="Android-7-0-https-抓包问题"><a href="#Android-7-0-https-抓包问题" class="headerlink" title="Android 7.0 https 抓包问题"></a>Android 7.0 https 抓包问题</h1><p>当我们使用Fiddler或者Charles等工具，想要在Android手机上抓包https请求时，我们需要把他们的证书安装到手机上，让手机能与抓包工具正确建立https连接<br>然而这个方式在Android 7.0 以上的版本却失效了，博主亲测像往常安装证书之后还是不能抓包https请求<br>具体的原因可以参考官方的文档：<br><a href="https://developer.android.com/training/articles/security-config.html" target="_blank" rel="noopener">https://developer.android.com/training/articles/security-config.html</a></p>
+<p>简单来说，就是因为官方的检验机制变得更加严格了，虽然我们安装了相应的用户证书，但应用仍然是不信任我们的证书的<br>要解决这个问题，根据官方文档：</p>
+<ol>
+<li>我们需要把我们的证书放置/res/raw目录下</li>
+<li>我们需要在/res/xml新建一个network_security_config.xml，来配置证书</li>
+<li>在AndroidManifest.xml上应用此配置</li>
+</ol>
+<p>network_security_config.xml：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span><br><span class="line"><span class="tag">&lt;<span class="name">network-security-config</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">base-config</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">trust-anchors</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">certificates</span> <span class="attr">src</span>=<span class="string">"@raw/charles证书"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">certificates</span> <span class="attr">src</span>=<span class="string">"system"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">trust-anchors</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">base-config</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">network-security-config</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>AndroidManifest.xml：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">application</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:networkSecurityConfig</span>=<span class="string">"@xml/network_security_config"</span></span></span><br><span class="line"><span class="tag">		<span class="attr">...</span>&gt;</span></span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/基础知识/" rel="tag"># 基础知识</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/06/关于一些基础的Java问题的解答（十）/" rel="next" title="关于一些基础的Java问题的解答（十）">
+                <i class="fa fa-chevron-left"></i> 关于一些基础的Java问题的解答（十）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/16/HTTP缓存原理/" rel="prev" title="HTTP缓存原理">
+                HTTP缓存原理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Android全屏方式对比"><span class="nav-number">1.</span> <span class="nav-text">Android全屏方式对比</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ListView的Header与Footer设置Visibility为Gone不起作用"><span class="nav-number">2.</span> <span class="nav-text">ListView的Header与Footer设置Visibility为Gone不起作用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ViewGroup没有调用onDraw方法"><span class="nav-number">3.</span> <span class="nav-text">ViewGroup没有调用onDraw方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ViewPager获取当前显示的Fragment"><span class="nav-number">4.</span> <span class="nav-text">ViewPager获取当前显示的Fragment</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#FragmentManager-findFragmentByTag"><span class="nav-number">4.1.</span> <span class="nav-text">FragmentManager#findFragmentByTag</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重写FragmentPagerAdapter-setPrimaryItem"><span class="nav-number">4.2.</span> <span class="nav-text">重写FragmentPagerAdapter#setPrimaryItem</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Android-7-0-https-抓包问题"><span class="nav-number">5.</span> <span class="nav-text">Android 7.0 https 抓包问题</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

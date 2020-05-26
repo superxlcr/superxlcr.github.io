@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,通信,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="通信方式：Binder类、内部类广播、Messenger和AIDL">
+<meta name="keywords" content="android,通信">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android Activity与Service通信">
+<meta property="og:url" content="https://superxlcr.github.io/2016/03/09/Android-Activity与Service通信/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="通信方式：Binder类、内部类广播、Messenger和AIDL">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2016/03/09/Android-Activity与Service通信/1.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2016/03/09/Android-Activity与Service通信/2.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2016/03/09/Android-Activity与Service通信/3.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2016/03/09/Android-Activity与Service通信/4.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2016/03/09/Android-Activity与Service通信/5.jpg">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.493Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android Activity与Service通信">
+<meta name="twitter:description" content="通信方式：Binder类、内部类广播、Messenger和AIDL">
+<meta name="twitter:image" content="https://superxlcr.github.io/2016/03/09/Android-Activity与Service通信/1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2016/03/09/Android-Activity与Service通信/">
+
+
+
+
+
+  <title>Android Activity与Service通信 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2016/03/09/Android-Activity与Service通信/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android Activity与Service通信</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-09T23:01:12+08:00">
+                2016-03-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.3k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在Android中，Activity和Service分别管理着应用的前台和后台，他们都是相当重要的四大组件之一，那么Activity和Service之间是如何通信的呢？以下总结了四种可行的方法：</p>
+<h1 id="方法一：Binder类"><a href="#方法一：Binder类" class="headerlink" title="方法一：Binder类"></a>方法一：Binder类</h1><p>该方法要求我们构造一个Binder类来封装Service实例，并在Service类中重写onBind方法返回该binder对象：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyService</span> <span class="keyword">extends</span> <span class="title">Service</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> IBinder <span class="title">onBind</span><span class="params">(Intent intent)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> MyBinder();  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">MyBinder</span> <span class="keyword">extends</span> <span class="title">Binder</span> </span>&#123;  </span><br><span class="line">        <span class="comment">/** </span></span><br><span class="line"><span class="comment">         * 获取service实例 </span></span><br><span class="line"><span class="comment">         * <span class="doctag">@return</span>  </span></span><br><span class="line"><span class="comment">         */</span>  </span><br><span class="line">        <span class="function"><span class="keyword">public</span> MyService <span class="title">getService</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">            <span class="keyword">return</span> MyService.<span class="keyword">this</span>;  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">      </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在Activity中我们则需要使用bindService方法绑定Service，并传入一个ServiceConnection参数，通过其onServiceConnected方法来获取binder实例，进而获取service实例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyActivity</span> <span class="keyword">extends</span> <span class="title">Activity</span></span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 服务实例  </span></span><br><span class="line">    <span class="keyword">private</span> MyService myService = <span class="keyword">null</span>;  </span><br><span class="line">    <span class="keyword">private</span> ServiceConnection connection = <span class="keyword">new</span> ServiceConnection() &#123;  </span><br><span class="line">          </span><br><span class="line">        <span class="meta">@Override</span>  </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceDisconnected</span><span class="params">(ComponentName name)</span> </span>&#123;  </span><br><span class="line">        &#125;  </span><br><span class="line">          </span><br><span class="line">        <span class="meta">@Override</span>  </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceConnected</span><span class="params">(ComponentName name, IBinder service)</span> </span>&#123;  </span><br><span class="line">            <span class="comment">// 获取服务实例  </span></span><br><span class="line">            myService = ((MyService.MyBinder)service).getService();  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;;  </span><br><span class="line">      </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);  </span><br><span class="line">        setContentView(R.layout.activity_main);  </span><br><span class="line">        Intent intent = <span class="keyword">new</span> Intent(<span class="keyword">this</span>, MyService.class);  </span><br><span class="line">        bindService(intent, connection, BIND_AUTO_CREATE);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="方法二：通过内部类广播"><a href="#方法二：通过内部类广播" class="headerlink" title="方法二：通过内部类广播"></a>方法二：通过内部类广播</h1><p>我们可以分别在Service和Activity中实现两个广播内部类，当两个组件需要互相通信的时候只要发送适当的广播即可：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyService</span> <span class="keyword">extends</span> <span class="title">Service</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> IBinder <span class="title">onBind</span><span class="params">(Intent intent)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">      </span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">MyServiceBroadcastReceiver</span> <span class="keyword">extends</span> <span class="title">BroadcastReceiver</span> </span>&#123;  </span><br><span class="line">        <span class="meta">@Override</span>  </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onReceive</span><span class="params">(Context context, Intent intent)</span> </span>&#123;  </span><br><span class="line">            <span class="comment">// do something   </span></span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">      </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyActivity</span> <span class="keyword">extends</span> <span class="title">Activity</span></span>&#123;  </span><br><span class="line">      </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);  </span><br><span class="line">        setContentView(R.layout.activity_main);  </span><br><span class="line">        Intent intent = <span class="keyword">new</span> Intent(<span class="keyword">this</span>, MyService.class);  </span><br><span class="line">        startService(intent);  </span><br><span class="line">    &#125;  </span><br><span class="line">      </span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">MyActivityBroadcastReceiver</span> <span class="keyword">extends</span> <span class="title">BroadcastReceiver</span> </span>&#123;  </span><br><span class="line">        <span class="meta">@Override</span>  </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onReceive</span><span class="params">(Context context, Intent intent)</span> </span>&#123;  </span><br><span class="line">            <span class="comment">// do something  </span></span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="方法三：Messenger"><a href="#方法三：Messenger" class="headerlink" title="方法三：Messenger"></a>方法三：Messenger</h1><p>Messenger类的官方注释如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** </span></span><br><span class="line"><span class="comment"> * Reference to a Handler, which others can use to send messages to it. </span></span><br><span class="line"><span class="comment"> * This allows for the implementation of message-based communication across </span></span><br><span class="line"><span class="comment"> * processes, by creating a Messenger pointing to a Handler in one process, </span></span><br><span class="line"><span class="comment"> * and handing that Messenger to another process. </span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+
+<p>从注释我们可以得知，这是一个基于Message的，使用Handler来处理消息的，进程间组件通信的工具类。<br>Messenger的使用方法如下：<br>Service类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyRemoteService</span> <span class="keyword">extends</span> <span class="title">Service</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String TAG = <span class="string">"MyService"</span>;   </span><br><span class="line">      </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> IBinder <span class="title">onBind</span><span class="params">(Intent intent)</span> </span>&#123;  </span><br><span class="line">        <span class="comment">// 返回Messenger的Binder对象  </span></span><br><span class="line">        <span class="keyword">return</span> messenger.getBinder();  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">super</span>.onCreate();  </span><br><span class="line">        Log.v(TAG, <span class="string">"onCreate"</span>);  </span><br><span class="line">    &#125;  </span><br><span class="line">      </span><br><span class="line">    <span class="comment">// 传入一个Handler参数用来处理消息，Handler默认构造方法绑定主线程  </span></span><br><span class="line">    <span class="keyword">private</span> Messenger messenger = <span class="keyword">new</span> Messenger(<span class="keyword">new</span> Handler() &#123;  </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(android.os.Message msg)</span> </span>&#123;  </span><br><span class="line">            <span class="comment">// 收到消息打印Log  </span></span><br><span class="line">            Log.v(TAG, <span class="string">"Get Message from remote activity : "</span> + ((Bundle)msg.obj).getString(<span class="string">"String"</span>));  </span><br><span class="line">            <span class="comment">// 回复服务端消息  </span></span><br><span class="line">            Message msgReply = Message.obtain();  </span><br><span class="line">			<span class="comment">// 使用Bundle类包装信息  </span></span><br><span class="line">            Bundle bundle = <span class="keyword">new</span> Bundle();  </span><br><span class="line">            bundle.putString(<span class="string">"String"</span>, <span class="string">"From Remote Service"</span>);  </span><br><span class="line">            msgReply.obj = bundle;  </span><br><span class="line">            <span class="keyword">try</span> &#123;  </span><br><span class="line">                msg.replyTo.send(msgReply);  </span><br><span class="line">            &#125; <span class="keyword">catch</span> (RemoteException e) &#123;  </span><br><span class="line">                e.printStackTrace();  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;;  </span><br><span class="line">    &#125;);  </span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在Service类中我们构造了一个Messenger对象，并在onBind方法里调用了Messenger的getBinder方法，返回了一个IBinder对象。我们在构造Messenger对象时传入了一个Handler参数，该Handler用于处理从服务端接收到的Message。此处我们把接收到的消息通过Log打印出来，并获取Message中的replyTo属性发送一条消息作为回复。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">service</span> <span class="attr">android:name</span>=<span class="string">"com.example.test.MyRemoteService"</span>  </span></span><br><span class="line"><span class="tag">          <span class="attr">android:enabled</span>=<span class="string">"true"</span>  </span></span><br><span class="line"><span class="tag">          <span class="attr">android:exported</span>=<span class="string">"true"</span>&gt;</span>  </span><br><span class="line">          <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span>  </span><br><span class="line">              <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"com.example.test.messenger"</span>/&gt;</span>  </span><br><span class="line">              <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.DEFAULT"</span>/&gt;</span>  </span><br><span class="line">          <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span>  </span><br><span class="line">      <span class="tag">&lt;/<span class="name">service</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>以上是Service注册表的信息，记得设置好Action和exported属性以便外部应用访问，此处把enabled属性设置为true允许其让系统启动。<br>接下来我们来看看另一个应用中Activity的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyActivity</span> <span class="keyword">extends</span> <span class="title">Activity</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String TAG = <span class="string">"MyActivity"</span>;   </span><br><span class="line">      </span><br><span class="line">    <span class="comment">// 用于发送消息  </span></span><br><span class="line">    <span class="keyword">private</span> Messenger messengerSender = <span class="keyword">null</span>;  </span><br><span class="line">    <span class="comment">// 用于接收消息  </span></span><br><span class="line">    <span class="keyword">private</span> Messenger messengerReceiver = <span class="keyword">new</span> Messenger(<span class="keyword">new</span> Handler() &#123;  </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(android.os.Message msg)</span> </span>&#123;  </span><br><span class="line">            <span class="comment">// 收到消息打印Log  </span></span><br><span class="line">            Log.v(TAG, <span class="string">"Get Message from remote Service : "</span> + ((Bundle)msg.obj).getString(<span class="string">"String"</span>));  </span><br><span class="line">        &#125;;  </span><br><span class="line">    &#125;);  </span><br><span class="line">    <span class="keyword">private</span> ServiceConnection connection = <span class="keyword">new</span> ServiceConnection() &#123;  </span><br><span class="line">          </span><br><span class="line">        <span class="meta">@Override</span>  </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceDisconnected</span><span class="params">(ComponentName name)</span> </span>&#123;   </span><br><span class="line">        &#125;  </span><br><span class="line">          </span><br><span class="line">        <span class="meta">@Override</span>  </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceConnected</span><span class="params">(ComponentName name, IBinder service)</span> </span>&#123;  </span><br><span class="line">            <span class="comment">// 获取来自Service的Binder对象，构造MessengerSender用于发送消息  </span></span><br><span class="line">            messengerSender = <span class="keyword">new</span> Messenger(service);  </span><br><span class="line">            <span class="comment">// 发送消息  </span></span><br><span class="line">            Message message = <span class="keyword">new</span> Message();  </span><br><span class="line">            <span class="comment">// 设置消息返回的Messenger  </span></span><br><span class="line">            message.replyTo = messengerReceiver;  </span><br><span class="line">            <span class="comment">// 设置消息内容  </span></span><br><span class="line">            Bundle bundle = <span class="keyword">new</span> Bundle();  </span><br><span class="line">            bundle.putString(<span class="string">"String"</span>, <span class="string">"From Activity"</span>);  </span><br><span class="line">            message.obj = bundle;  </span><br><span class="line">            <span class="keyword">try</span> &#123;  </span><br><span class="line">                messengerSender.send(message);  </span><br><span class="line">            &#125; <span class="keyword">catch</span> (RemoteException e) &#123;  </span><br><span class="line">                e.printStackTrace();  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;;  </span><br><span class="line">      </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);  </span><br><span class="line">        setContentView(R.layout.activity_main);  </span><br><span class="line">          </span><br><span class="line">        <span class="comment">// 绑定远程Service  </span></span><br><span class="line">        Intent intent = <span class="keyword">new</span> Intent();  </span><br><span class="line">        intent.setAction(<span class="string">"com.example.test.messenger"</span>);  </span><br><span class="line">        bindService(intent, connection, Context.BIND_AUTO_CREATE);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在Activity中我们构造了两个Messenger，一个传入Handler参数构造用于处理接收到的Message，一个传入在ServiceConnection中获取的IBinder对象用于发送Message。在Activity中我们通过指定Action，使用bindService方法完成Activity与Service的绑定。此处我们在与Service建立连接后发送了一条消息给Service，并把Service返回的消息给打印出来。<br><img src="/2016/03/09/Android-Activity与Service通信/1.jpg" alt="Service所在进程日志"><br><img src="/2016/03/09/Android-Activity与Service通信/2.jpg" alt="Activity所在进程日志"><br>从Logcat信息中我们可以看出Activity和Service通信成功了，并且是在两个应用，各自的进程当中（PID不同）。<br>值的注意的是，通信过程中Message的obj对象必须是实现了Parcelable接口的，否则系统会报RuntimeException:Can’t marshal non-Parcelable objects across processes.一般而言我们只需要使用Bundle类包装要传输的数据即可。</p>
+<h1 id="方法四：AIDL"><a href="#方法四：AIDL" class="headerlink" title="方法四：AIDL"></a>方法四：AIDL</h1><p>AIDL：Android Interface Definition Language，即Android接口定义语言。要是使用Messenger还不能满足你的需求，我们就必须使出AIDL这项工具来实现进程间通信了。那么AIDL适用于什么场景呢？我们来看看官方的解释：<br>Using AIDL is necessary only if you allow clients from different applications to access your service for IPC and want to handle multithreading in your service. If you do not need to perform concurrent IPC across different applications, you should create your interface by implementing a Binder or, if you want to perform IPC, but do not need to handle multithreading, implement your interface using a Messenger. Regardless, be sure that you understand Bound Services before implementing an AIDL.<br>上面最重要的就是第一句话：只有当你允许来自不同的客户端访问你的服务并且需要处理多线程问题时你才必须使用AIDL。在其他情况下你都可以选择其他方法，如使用Messager，也能跨进程通讯。可见AIDL是处理多线程、多客户端并发访问的。<br>那么接下来我们就来看看如何使用AIDL吧：<br>首先我们在src下面编写.aidl文件定义接口，其语法与java类似：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.aidl;  </span><br><span class="line">  </span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">IRemoteService</span> </span>&#123;  </span><br><span class="line">    <span class="function">String <span class="title">sendMessage</span><span class="params">(String s)</span></span>;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在定义了该aidl文件后，保存后Android编译器会在gen目录下自动生成对应的文件：<br><img src="/2016/03/09/Android-Activity与Service通信/3.jpg" alt="aidl生成文件"><br>注意，在Activity和Service所在的应用中都必须有完全相同的aidl文件，包名称也必须相同，否则会报java.lang.SecurityException: Binder invocation to an incorrect interface的错误。<br>接下来我们就可以利用aidl定义的接口编写Service和Activity了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyRemoteService</span> <span class="keyword">extends</span> <span class="title">Service</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String TAG = <span class="string">"MyService"</span>;   </span><br><span class="line">      </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> IBinder <span class="title">onBind</span><span class="params">(Intent intent)</span> </span>&#123;  </span><br><span class="line">        <span class="comment">// 返回IRemoteService.Stub对象  </span></span><br><span class="line">        <span class="keyword">return</span> binder;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">super</span>.onCreate();  </span><br><span class="line">        Log.v(TAG, <span class="string">"onCreate"</span>);  </span><br><span class="line">    &#125;  </span><br><span class="line">      </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> IRemoteService.Stub binder = <span class="keyword">new</span> IRemoteService.Stub() &#123;  </span><br><span class="line">          </span><br><span class="line">        <span class="meta">@Override</span>  </span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">sendMessage</span><span class="params">(String s)</span> <span class="keyword">throws</span> RemoteException </span>&#123;  </span><br><span class="line">            <span class="comment">// 通过Log打印传入的字符串  </span></span><br><span class="line">            Log.v(TAG, <span class="string">"String from Activity : "</span>+s);  </span><br><span class="line">            <span class="keyword">return</span> <span class="string">"Service Message!"</span>;  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;;  </span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在Service中我们实现了IRemoteService内部的Stub类，并把它当做返回值在onBind方法返回给建立连接的组件。<br>Service的xml代码与Messenger相比没有什么改动，故不再贴出来。<br>接下来是Activity的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyActivity</span> <span class="keyword">extends</span> <span class="title">Activity</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String TAG = <span class="string">"MyActivity"</span>;  </span><br><span class="line">    <span class="keyword">private</span> IRemoteService mRemoteService;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> ServiceConnection connection = <span class="keyword">new</span> ServiceConnection() &#123;  </span><br><span class="line">  </span><br><span class="line">        <span class="meta">@Override</span>  </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceDisconnected</span><span class="params">(ComponentName name)</span> </span>&#123;  </span><br><span class="line">        &#125;  </span><br><span class="line">  </span><br><span class="line">        <span class="meta">@Override</span>  </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceConnected</span><span class="params">(ComponentName name, IBinder service)</span> </span>&#123;  </span><br><span class="line">            mRemoteService = IRemoteService.Stub.asInterface(service);  </span><br><span class="line">            <span class="keyword">try</span> &#123;  </span><br><span class="line">                Log.v(TAG, mRemoteService.sendMessage(<span class="string">"Activity Message!"</span>));  </span><br><span class="line">            &#125; <span class="keyword">catch</span> (RemoteException e) &#123;  </span><br><span class="line">                e.printStackTrace();  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);  </span><br><span class="line">        setContentView(R.layout.activity_main);  </span><br><span class="line">		Log.v(TAG, <span class="string">"onCreate"</span>);</span><br><span class="line">  </span><br><span class="line">        <span class="comment">// 绑定远程Service  </span></span><br><span class="line">        Intent intent = <span class="keyword">new</span> Intent();  </span><br><span class="line">        intent.setAction(<span class="string">"com.example.test.aidl"</span>);  </span><br><span class="line">        bindService(intent, connection, Context.BIND_AUTO_CREATE);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们利用Stub的asInterface方法构造了用于通信的IRemoteService接口，通过接口定义的sendMessage方法向另一个进程中的Service发送了一条消息，并把Service返回的信息打印了出来。<br>通过Logcat我们可以发现，在两个进程中的Activity和Service通信成功了（PID不同）：<br><img src="/2016/03/09/Android-Activity与Service通信/4.jpg" alt="Service所在进程日志"><br><img src="/2016/03/09/Android-Activity与Service通信/5.jpg" alt="Activity所在进程日志"><br>值的注意的是Activity是在主线程中与Service通信，而Service却并没有在主线程通信，而是新开启了一个线程和Activity通信（TID不同）。这也印证了官方对于AIDL工具的定位，当我们需要在不同进程中实现组件通信，并且需要处理多线程问题时，才使用AIDL，不然我们还是用回简单方便的Messenger吧。<br>总结:</p>
+<ol>
+<li>Activity调用bindService方法，通过IBinder对象得到Service的实例，这样Activity可以直接调用到Service中的方法，如果需要Service主动通知Activity，我们还可以为其添加回调方法。</li>
+<li>Service向Activity发送消息，可以使用广播，当然Activity要注册相应的接收器。比如Service要向多个Activity发送同样的消息的话，用这种方法就更好。</li>
+<li>当Activity和Service分别处在不同的应用之中时，我们可以通过使用Messenger类来完成两组件之间的基于Message机制的交流通信，使用Handler来处理发送接收的消息。</li>
+<li>当不仅Activity和Service所处应用不同，而且我们还需要处理多线程通信问题时，我们就需要使用AIDL来进行通信了。</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/通信/" rel="tag"># 通信</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/03/08/Android-Looper和Handler小结/" rel="next" title="Android Looper和Handler小结">
+                <i class="fa fa-chevron-left"></i> Android Looper和Handler小结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/03/10/算法导论小结（一）/" rel="prev" title="算法导论小结（一）">
+                算法导论小结（一） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#方法一：Binder类"><span class="nav-number">1.</span> <span class="nav-text">方法一：Binder类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#方法二：通过内部类广播"><span class="nav-number">2.</span> <span class="nav-text">方法二：通过内部类广播</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#方法三：Messenger"><span class="nav-number">3.</span> <span class="nav-text">方法三：Messenger</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#方法四：AIDL"><span class="nav-number">4.</span> <span class="nav-text">方法四：AIDL</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

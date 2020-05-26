@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="git,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="（翻译）Github 之 SSH key的创建与配置">
+<meta name="keywords" content="git">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Github 之 SSH key的创建与配置（Windows）">
+<meta property="og:url" content="https://superxlcr.github.io/2016/05/09/Github-之-SSH-key的创建于配置（Windows）/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="（翻译）Github 之 SSH key的创建与配置">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2016/05/09/Github-之-SSH-key的创建于配置（Windows）/1.png">
+<meta property="og:image" content="https://superxlcr.github.io/2016/05/09/Github-之-SSH-key的创建于配置（Windows）/2.png">
+<meta property="og:image" content="https://superxlcr.github.io/2016/05/09/Github-之-SSH-key的创建于配置（Windows）/3.png">
+<meta property="og:image" content="https://superxlcr.github.io/2016/05/09/Github-之-SSH-key的创建于配置（Windows）/4.png">
+<meta property="og:image" content="https://superxlcr.github.io/2016/05/09/Github-之-SSH-key的创建于配置（Windows）/5.png">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.661Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Github 之 SSH key的创建与配置（Windows）">
+<meta name="twitter:description" content="（翻译）Github 之 SSH key的创建与配置">
+<meta name="twitter:image" content="https://superxlcr.github.io/2016/05/09/Github-之-SSH-key的创建于配置（Windows）/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2016/05/09/Github-之-SSH-key的创建于配置（Windows）/">
+
+
+
+
+
+  <title>Github 之 SSH key的创建与配置（Windows） | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2016/05/09/Github-之-SSH-key的创建于配置（Windows）/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Github 之 SSH key的创建与配置（Windows）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-09T17:47:22+08:00">
+                2016-05-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/git/" itemprop="url" rel="index">
+                    <span itemprop="name">git</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  948字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近配置了github的ssh key，翻找了大量资料后发现github官方就有相关的教程……在此翻译一下官方教程以加深印象<br>原文链接：<a href="https://help.github.com/categories/ssh/" target="_blank" rel="noopener">https://help.github.com/categories/ssh/</a></p>
+<h1 id="Generating-an-SSH-key（生成SSH-key）"><a href="#Generating-an-SSH-key（生成SSH-key）" class="headerlink" title="Generating an SSH key（生成SSH key）"></a>Generating an SSH key（生成SSH key）</h1><p>SSH密钥是来识别值得信赖的电脑的方法。您可以生成一个SSH密钥，并按照本节所述的方法将公共密钥添加到您的帐户GitHub中</p>
+<h1 id="Checking-for-existing-SSH-keys（检查已存在的SSH-key）"><a href="#Checking-for-existing-SSH-keys（检查已存在的SSH-key）" class="headerlink" title="Checking for existing SSH keys（检查已存在的SSH key）"></a>Checking for existing SSH keys（检查已存在的SSH key）</h1><p>在你生成一个ssh key之前，你可以检查一下你是否已经有了ssh key：</p>
+<ol>
+<li><p>打开Git Bash</p>
+</li>
+<li><p>输入</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -al ~/.ssh</span><br></pre></td></tr></table></figure>
+
+<p> 来查看是否有ssh key存在</p>
+</li>
+<li><p>检查/.ssh目录来查看是否存在公开的ssh key</p>
+</li>
+</ol>
+<p>一般而言，公开的ssh key的文件名为以下几种：</p>
+<ul>
+<li>id_dsa.pub</li>
+<li>id_ecdsa.pub</li>
+<li>id_ed25519.pub</li>
+<li>id_rsa.pub</li>
+</ul>
+<h1 id="Generating-a-new-SSH-key-and-adding-it-to-the-ssh-agent（生成一个新的SSH-key并添加到ssh-agent）"><a href="#Generating-a-new-SSH-key-and-adding-it-to-the-ssh-agent（生成一个新的SSH-key并添加到ssh-agent）" class="headerlink" title="Generating a new SSH key and adding it to the ssh-agent（生成一个新的SSH key并添加到ssh-agent）"></a>Generating a new SSH key and adding it to the ssh-agent（生成一个新的SSH key并添加到ssh-agent）</h1><p>在你检查过存在的ssh key后，你可以新建一个ssh key：</p>
+<ol>
+<li><p>打开Git Bash</p>
+</li>
+<li><p>输入这一串：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -b 4096 -C &quot;your_email@example.com&quot;</span><br></pre></td></tr></table></figure>
+
+<p> 生成一个新的ssh key，使用填入的邮箱地址作为ssh key的标签，并生成RSA密钥对</p>
+</li>
+<li><p>看到如下提示时：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Enter a file in which to save the key (/Users/you/.ssh/id_rsa): [Press enter]</span><br></pre></td></tr></table></figure>
+
+<p> 按下回车，表示把ssh key放在默认地址</p>
+</li>
+<li><p>然后为ssh key设置密码：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Enter passphrase (empty for no passphrase): [Type a passphrase]  </span><br><span class="line">Enter same passphrase again: [Type passphrase again]</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ol>
+<p>创建完ssh key后，你需要把它添加到ssh-agent中去：</p>
+<ol>
+<li><p>首先保证ssh-agent启用了：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">eval &quot;$(ssh-agent -s)&quot;</span><br></pre></td></tr></table></figure>
+
+<p> 该指令返回进程id则表示已经启用ssh-agent</p>
+</li>
+<li><p>使用如下指令把ssh key添加到ssh-agent中：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-add ~/.ssh/id_rsa</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ol>
+<h1 id="Adding-a-new-SSH-key-to-your-GitHub-account（为你的github账号添加SSH-key）"><a href="#Adding-a-new-SSH-key-to-your-GitHub-account（为你的github账号添加SSH-key）" class="headerlink" title="Adding a new SSH key to your GitHub account（为你的github账号添加SSH key）"></a>Adding a new SSH key to your GitHub account（为你的github账号添加SSH key）</h1><p>在把ssh key添加到ssh-agent后，你需要把ssh key添加到你的github账号中：</p>
+<ol>
+<li><p>打开Git Bash，使用指令把ssh key复制到剪贴板：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">clip &lt; ~/.ssh/id_rsa.pub</span><br></pre></td></tr></table></figure>
+
+<p> 如果不成功就用编辑器打开该文件直接复制内容</p>
+</li>
+<li><p>在github右上角点击<strong>setting</strong>：<br> <img src="/2016/05/09/Github-之-SSH-key的创建于配置（Windows）/1.png" alt="setting位置示意图"></p>
+</li>
+<li><p>在左边选择<strong>SSH and GPG keys</strong>：<br> <img src="/2016/05/09/Github-之-SSH-key的创建于配置（Windows）/2.png" alt="SSH and GPG keys位置示意图"></p>
+</li>
+<li><p>点击<strong>New SSH key</strong>：<br> <img src="/2016/05/09/Github-之-SSH-key的创建于配置（Windows）/3.png" alt="New SSH key位置示意图"></p>
+</li>
+<li><p>在Title处为你的ssh key填入适当的标题，在Key处粘贴你复制的ssh key<br> <img src="/2016/05/09/Github-之-SSH-key的创建于配置（Windows）/4.png" alt="填入ssh key"></p>
+</li>
+<li><p>点击<strong>Add SSH key</strong>：<br><img src="/2016/05/09/Github-之-SSH-key的创建于配置（Windows）/5.png" alt="Add SSH key"></p>
+</li>
+<li><p>输入你的github账号密码确认此次操作</p>
+</li>
+</ol>
+<h1 id="Testing-your-SSH-connection（测试你的SSH连接）"><a href="#Testing-your-SSH-connection（测试你的SSH连接）" class="headerlink" title="Testing your SSH connection（测试你的SSH连接）"></a>Testing your SSH connection（测试你的SSH连接）</h1><p>在进行完上面一系列操作后，是时候看看你的SSH连接是否成功了：</p>
+<ol>
+<li><p>打开Git Bash</p>
+</li>
+<li><p>输入以下指令：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
+
+<p> 尝试去用ssh连接github，你可能会看到一些警告信息：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">The authenticity of host &apos;github.com (192.30.252.1)&apos; can&apos;t be established.  </span><br><span class="line">RSA key fingerprint is 16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48.  </span><br><span class="line">Are you sure you want to continue connecting (yes/no)?</span><br></pre></td></tr></table></figure>
+
+<p> 输入yes不管他就好</p>
+</li>
+<li><p>如果你看到一下信息：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Hi username! You&apos;ve successfully authenticated, but GitHub does not provide shell access</span><br></pre></td></tr></table></figure>
+
+<p> 则表示ssh连接成功了</p>
+</li>
+<li><p>如果你收到的信息是”access denied” ,那么你可以参考一下链接进行进一步处理：<a href="https://help.github.com/articles/error-permission-denied-publickey/" target="_blank" rel="noopener">https://help.github.com/articles/error-permission-denied-publickey/</a></p>
+</li>
+</ol>
+<h1 id="Changing-a-remote’s-URL（改变远程仓库的URL）"><a href="#Changing-a-remote’s-URL（改变远程仓库的URL）" class="headerlink" title="Changing a remote’s URL（改变远程仓库的URL）"></a>Changing a remote’s URL（改变远程仓库的URL）</h1><p>在设置完ssh后，你可能需要把你的远程仓库的URL从HTTPS改为SSH（SSH好处在于不用每次push都输账号密码……）：</p>
+<ol>
+<li><p>打开GIt Bash</p>
+</li>
+<li><p>把工作目录转到你的本地工程中</p>
+</li>
+<li><p>查看拥有的远程仓库：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote -v</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>更改远程仓库的url：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote set-url origin https://github.com/USERNAME/OTHERREPOSITORY.git</span><br></pre></td></tr></table></figure>
+
+<p> origin为仓库名，后面接的是ssh仓库地址：</p>
+</li>
+<li><p>查看拥有的远程仓库，看看是否修改成功：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote -v</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>至此Github的SSH key配置大功告成，以后push再也不用每次都输入github的账号密码了～</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/git/" rel="tag"># git</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/09/Android常见问题总结（四）/" rel="next" title="Android常见问题总结（四）">
+                <i class="fa fa-chevron-left"></i> Android常见问题总结（四）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/12/一个Activity的显示过程总结（一）/" rel="prev" title="一个Activity的显示过程总结（一）">
+                一个Activity的显示过程总结（一） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Generating-an-SSH-key（生成SSH-key）"><span class="nav-number">1.</span> <span class="nav-text">Generating an SSH key（生成SSH key）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Checking-for-existing-SSH-keys（检查已存在的SSH-key）"><span class="nav-number">2.</span> <span class="nav-text">Checking for existing SSH keys（检查已存在的SSH key）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Generating-a-new-SSH-key-and-adding-it-to-the-ssh-agent（生成一个新的SSH-key并添加到ssh-agent）"><span class="nav-number">3.</span> <span class="nav-text">Generating a new SSH key and adding it to the ssh-agent（生成一个新的SSH key并添加到ssh-agent）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Adding-a-new-SSH-key-to-your-GitHub-account（为你的github账号添加SSH-key）"><span class="nav-number">4.</span> <span class="nav-text">Adding a new SSH key to your GitHub account（为你的github账号添加SSH key）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Testing-your-SSH-connection（测试你的SSH连接）"><span class="nav-number">5.</span> <span class="nav-text">Testing your SSH connection（测试你的SSH连接）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Changing-a-remote’s-URL（改变远程仓库的URL）"><span class="nav-number">6.</span> <span class="nav-text">Changing a remote’s URL（改变远程仓库的URL）</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

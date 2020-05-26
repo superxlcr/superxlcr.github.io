@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,应用,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="（转载）单步调试区、断点管理区、修改变量值、变量观察区、断点的分类、调试的两种方式">
+<meta name="keywords" content="android,应用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="你所不知道的Android Studio调试技巧">
+<meta property="og:url" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="（转载）单步调试区、断点管理区、修改变量值、变量观察区、断点的分类、调试的两种方式">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/1.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/2.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/3.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/4.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/5.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/6.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/7.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/8.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/9.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/10.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/11.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/12.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/13.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/14.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/15.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/16.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/17.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/18.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/19.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/20.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/21.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/22.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/23.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/24.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/25.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/26.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/27.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/28.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/29.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/30.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/31.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/32.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/33.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/34.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/35.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/36.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/37.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/38.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/39.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/40.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/41.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/42.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/43.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/44.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/45.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/46.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/47.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/48.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/49.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/50.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/51.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/52.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/53.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/54.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/55.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/56.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/57.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/58.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/59.png">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.796Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="你所不知道的Android Studio调试技巧">
+<meta name="twitter:description" content="（转载）单步调试区、断点管理区、修改变量值、变量观察区、断点的分类、调试的两种方式">
+<meta name="twitter:image" content="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/">
+
+
+
+
+
+  <title>你所不知道的Android Studio调试技巧 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2017/10/26/你所不知道的Android-Studio调试技巧/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">你所不知道的Android Studio调试技巧</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-26T19:32:31+08:00">
+                2017-10-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3.4k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文转载自：<a href="http://www.jianshu.com/p/011eb88f4e0d/" target="_blank" rel="noopener">http://www.jianshu.com/p/011eb88f4e0d/</a></p>
+<p>Android Studio目前已经成为开发Android的主要工具，用熟了可谓相当顺手。作为开发者，调试并发现bug，进而解决，可是我们的看家本领。正所谓，工欲善其事必先利其器，和其他开发工具一样，如Eclipse、Idea，Android Studio也为我们提供了强大的调试技巧，今天我们就来看看Android Studio中有关调试的技巧。<br>首先，来看看Android studio中为我们提供的调试面板（标准情况下）：</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/1.png" alt="_pic1"></p>
+<p>点击右上角Restore ‘Threads’View可先展示目前相关的线程信息：</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/2.png" alt="_pic2"></p>
+<p>android studio大体为我们提供了7个功能区：</p>
+<ol>
+<li>单步调试区</li>
+<li>断点管理区</li>
+<li>求值表达式</li>
+<li>线程帧栈区</li>
+<li>对象变量区</li>
+<li>变量观察区</li>
+</ol>
+<p>下面我们分别对这七个区域进行介绍。</p>
+<hr>
+<h1 id="单步调试区"><a href="#单步调试区" class="headerlink" title="单步调试区"></a>单步调试区</h1><p>该区提供了调试的主要操作，和你所熟知的一样的，主要有：Step over、step into、force step into、step out、drop frame。</p>
+<h2 id="Show-Execution-Point"><a href="#Show-Execution-Point" class="headerlink" title="Show Execution Point"></a>Show Execution Point</h2><p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/3.jpg" alt="_pic3"></p>
+<p>点击该按钮,光标将定位到当前正在调试的位置.</p>
+<h2 id="Step-Over"><a href="#Step-Over" class="headerlink" title="Step Over"></a>Step Over</h2><p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/4.png" alt="_pic4"></p>
+<p>单步跳过，点击该按钮将导致程序向下执行一行。如果当前行是一个方法调用，此行调用的方法被执行完毕后再到下一行。比如当前代码是：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> num=<span class="number">10</span>;</span><br><span class="line"><span class="keyword">int</span> min=Math.min(num,<span class="number">100</span>);</span><br><span class="line">System.out.println(min);</span><br></pre></td></tr></table></figure>
+
+<p>如果当前调试的是第二行，当点击step over时，Math.min（num,100)方法先执行完后跳到第三行.</p>
+<h2 id="Step-Into"><a href="#Step-Into" class="headerlink" title="Step Into"></a>Step Into</h2><p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/5.png" alt="_pic5"></p>
+<p>单步跳入，执行该操作将导致程序向下执行一行。如果该行有自定义的方法，则进入该方法内部继续执行，需要注意如果是类库中的方法，则不会进入方法内部。</p>
+<h2 id="Force-Step-Into"><a href="#Force-Step-Into" class="headerlink" title="Force Step Into"></a>Force Step Into</h2><p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/6.png" alt="_pic6"></p>
+<p>强制单步跳入，和step into功能类似，主要区别在于：如果当前行有任何方法，则不管该方法是我们自行定义还是类库提供的，都能跳入到方法内部继续执行</p>
+<h2 id="Drop-Frame"><a href="#Drop-Frame" class="headerlink" title="Drop Frame"></a>Drop Frame</h2><p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/7.jpg" alt="_pic7"></p>
+<p>没有好记的名字，大意理解为中断执行,并返回到方法执行的初始点,在这个过程中该方法对应的栈帧会从栈中移除.换言之,如果该方法是被调用的,则返回到当前方法被调用处，并且所有上下文变量的值也恢复到该方法未执行时的状态。简单的举例来说明：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public class DebugDemo &#123;</span><br><span class="line">    private String name = &quot;default&quot;;</span><br><span class="line"></span><br><span class="line">    public void alertName() &#123;</span><br><span class="line">        System.out.println(name);</span><br><span class="line">        debug();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void debug() &#123;</span><br><span class="line">        this.name = &quot;debug&quot;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        new DebugDemo().alertName();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当你在调试debug（）时，执行该操作，将回调到debug（）被调用的地方，也就是alertName()方法。如果此时再继续执行drop frame，将回调到alertName（）被调用的地方，也就是main（）.</p>
+<h2 id="Force-Run-to-Cursor"><a href="#Force-Run-to-Cursor" class="headerlink" title="Force Run to Cursor"></a>Force Run to Cursor</h2><p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/8.jpg" alt="_pic8"></p>
+<p>非常好用的一个功能,可以忽视已经存在的断点,跳转到光标所在处.举个简单例子说明下:</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/9.jpg" alt="_pic9"></p>
+<p>比如现在第10行,此时我想调试18行而又不想一步一步调试,能不能一次到位呢?我们只需要将光标定位到相应的位置,然后执行Force Run to Cursor即可:</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/10.jpg" alt="_pic10"></p>
+<h2 id="Evaluate-expression"><a href="#Evaluate-expression" class="headerlink" title="Evaluate expression"></a>Evaluate expression</h2><p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/11.jpg" alt="_pic11"></p>
+<p>点击该按钮会在当前调试的语句处嵌入一个交互式解释器，在该解释器中，你可以执行任何你想要执行的表达式进行求值操作。比如，我们在调试时执行到以下代码：</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/12.png" alt="_pic12"></p>
+<p>此时执行Evaluate Expression，就相当于在调试行之前嵌入了一个交互式解释器，那么在该解释器中我们能做什么呢？在这里，我们可以对result进行求值操作：对着你想要求值得位置点击鼠标右键，选择evaluate Expression.此时会显示如下：</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/13.png" alt="_pic13"></p>
+<p>在弹出的输入框中输入求值表达式，比如这里我们输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Math.min(result,50)</span><br></pre></td></tr></table></figure>
+
+<p>,如下图</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/14.png" alt="_pic14"></p>
+<p>点击执行，我们发现在Result中已经输出了结果，如下：</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/15.png" alt="_pic15"></p>
+<hr>
+<h1 id="断点管理区"><a href="#断点管理区" class="headerlink" title="断点管理区"></a>断点管理区</h1><h2 id="Return"><a href="#Return" class="headerlink" title="Return"></a>Return</h2><p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/16.jpg" alt="_pic16"></p>
+<p>点击该按钮会停止目前的应用,并且重新启动.换言之,就是你想要重新调试时,可以使用该操作,嗯,就是重新来过的意思.</p>
+<h2 id="Pause-Program"><a href="#Pause-Program" class="headerlink" title="Pause Program"></a>Pause Program</h2><p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/17.jpg" alt="_pic17"></p>
+<p>点击该按钮将暂停应用的执行.如果想要恢复则可以使用下面提到的Resume Program.</p>
+<h2 id="Resume-Program"><a href="#Resume-Program" class="headerlink" title="Resume Program"></a>Resume Program</h2><p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/18.png" alt="_pic18"></p>
+<p>该操作有恢复应用的含义,但是却有两种行为:</p>
+<ol>
+<li>在应用处在暂停状态下,点击该按钮将恢复应用运行.</li>
+<li>在很多情况下，我们会设置多个断点以便调试。在某些情况下，我们需要从当前断点移动到下一个断点处，两个断点之间的代码自动被执行，这样我们就不需要一步一步调试到下一个断点了，省时又省力。举例说明：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public void test()&#123;</span><br><span class="line">    test1();</span><br><span class="line">    ...</span><br><span class="line">    test2();</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>假设我们分别在第2行和第4行添加了断点。如果此时我们调试在第2行，此时点击执行该操作，当前调试位置会自动执行到第4行，也就是第2到第4行之间的代码会自动被执行。</p>
+<h2 id="Stop"><a href="#Stop" class="headerlink" title="Stop"></a>Stop</h2><p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/19.jpg" alt="_pic19"></p>
+<p>点击该按钮会通过相关的关闭脚本来终止当前进程.换言之,对不同类型的工程可能有不同的停止行为,比如:对普通的Java项目,点击该按钮意味着退出调试模式,但是应用还会执行完成.而在Android项目中,点击该按钮,则意味这app结束运行.<br>这里我们以一个普通的JAVA工程为例:</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/20.jpg" alt="_pic20"></p>
+<p>此时如果我们执行停止操作，发现程序退出调试模式，并正常执行完毕，Console中结果如下：</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/21.jpg" alt="_pic21"></p>
+<h2 id="View-Breakpoints"><a href="#View-Breakpoints" class="headerlink" title="View Breakpoints"></a>View Breakpoints</h2><p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/22.png" alt="_pic22"></p>
+<p>点击该按钮会进入断点管理界面，在这里你可以查看所有断点,管理或者配置断点的行为,如:删除，修改属性信息等：</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/23.jpg" alt="_pic23"></p>
+<h2 id="Mute-Breakpoints"><a href="#Mute-Breakpoints" class="headerlink" title="Mute Breakpoints"></a>Mute Breakpoints</h2><p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/24.jpg" alt="_pic24"></p>
+<p>使用该按钮来切换断点的状态:启动或者禁用.在调试过程中,你可以禁用暂时禁用所有的断点,已实现应用正常的运行.该功能非常有用,比如当你在调试过程中,突然不想让断点干扰你所关心的流程时,可以临时禁用断点.</p>
+<h2 id="Get-thread-dump"><a href="#Get-thread-dump" class="headerlink" title="Get thread dump"></a>Get thread dump</h2><p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/25.jpg" alt="_pic25"></p>
+<p>获取线程Dump,点击该按钮将进入线程Dump界面:</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/26.jpg" alt="_pic26"></p>
+<p>借此我们顺便介绍一下dump界面:</p>
+<p>线程工具区中最常用的是<br><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/27.jpg" alt="_pic27"></p>
+<p>,可以用来过滤线程,其他的不做解释了<br>解析来我们来认识一下线程的类型,表示为不同的图标:</p>
+<table>
+<thead>
+<tr>
+<th>线程状态描述</th>
+<th>图标</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Thread is suspended.</td>
+<td><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/28.png" alt="_pic28"></td>
+</tr>
+<tr>
+<td>Thread is waiting on a monitor lock.</td>
+<td><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/29.png" alt="_pic29"></td>
+</tr>
+<tr>
+<td>Thread is running.</td>
+<td><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/30.png" alt="_pic30"></td>
+</tr>
+<tr>
+<td>Thread is executing network operation, and is waiting for data to be passed.</td>
+<td><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/31.png" alt="_pic31"></td>
+</tr>
+<tr>
+<td>Thread is idle.</td>
+<td><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/32.png" alt="_pic32"></td>
+</tr>
+<tr>
+<td>Event Dispatch Thread that is busy.</td>
+<td><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/33.png" alt="_pic33"></td>
+</tr>
+<tr>
+<td>Thread is executing disk operation.</td>
+<td><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/34.png" alt="_pic34"></td>
+</tr>
+</tbody></table>
+<h2 id="Settings"><a href="#Settings" class="headerlink" title="Settings"></a>Settings</h2><p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/35.jpg" alt="_pic35"></p>
+<p>点击该按钮将打开有关设置的列表:</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/36.jpg" alt="_pic36"></p>
+<p>我们对其中的几个进行说明:</p>
+<h3 id="Show-Values-Inline"><a href="#Show-Values-Inline" class="headerlink" title="Show Values Inline"></a>Show Values Inline</h3><p>调试过程中开启该功能,将会代码右边显示变量值,即下图中红框所示部分:</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/37.jpg" alt="_pic37"></p>
+<h3 id="Show-Method-Return-Values"><a href="#Show-Method-Return-Values" class="headerlink" title="Show Method Return Values"></a>Show Method Return Values</h3><p>调试过程中启用该功能,将在变量区显示最后执行方法的返回值.举个例子来说,首先,关闭该功能,我们调试这段代码并观察其变量区:</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/38.jpg" alt="_pic38"></p>
+<p>开启该功能之后,再来观察变量区的变化:</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/39.jpg" alt="_pic39"></p>
+<p>继续往下调试:</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/40.jpg" alt="_pic40"></p>
+<p>继续往下调试:</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/41.jpg" alt="_pic41"></p>
+<p>这个功能简直是棒极了,在调试一段代码,并想看该代码中最后调用方法的最终结果时就非常有用了.</p>
+<h3 id="Auto-Variables-Mode"><a href="#Auto-Variables-Mode" class="headerlink" title="Auto-Variables Mode"></a>Auto-Variables Mode</h3><p>开启这个功能后,idea的Debugger会自动评估某些变量,大概就是当你执行在某个断点时,Debugger会检测当前调试点之前或者之后的变量的状态,然后在变量区选择性输出.举个例子来说明,未开启该功能之前,变量区输出所有的变量信息:</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/42.jpg" alt="_pic42"></p>
+<p>开启之后,当你调试到第13行时,Debugger检测到num变量在之后没有被使用,那么在变量区就不会输出该变量的信息.</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/43.jpg" alt="_pic43"></p>
+<h3 id="Sort-values-alphabetically"><a href="#Sort-values-alphabetically" class="headerlink" title="Sort values alphabetically"></a>Sort values alphabetically</h3><p>开启这个功能的化,变量区中的输出内容会按照按字母顺序进行排序,很简单,不常用,还是按照默认的顺序好.</p>
+<h2 id="Help"><a href="#Help" class="headerlink" title="Help"></a>Help</h2><p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/44.jpg" alt="_pic44"></p>
+<p>这个不用说了,有任何不明白的都可以查看官方帮助文档,这是我见到最好的文档之一.</p>
+<p>其他几个操作:Settings,Pin,Close留给各位自己去使用.</p>
+<hr>
+<h1 id="修改变量值"><a href="#修改变量值" class="headerlink" title="修改变量值"></a>修改变量值</h1><p>在调试过程中，我们可以方便的修改某个变量的值，如下：</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/45.png" alt="_pic45"></p>
+<p>在上图中，当前result的值经过计算为10，这里我们通过Set Value将其计算结果修改为100.</p>
+<hr>
+<h1 id="变量观察区"><a href="#变量观察区" class="headerlink" title="变量观察区"></a>变量观察区</h1><p>该区域将显示你所感兴趣的变量的值。在调试模式下，你可以通过Add to Watches将某个变量添加到观察区，该值的变化将会在变量观察区显示。操作如下：</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/46.jpg" alt="_pic46"></p>
+<p>这里我们对name比较感兴趣，希望看到它的值的变化情况，因此我们将其“特殊关照”。需要注意，此时因为name是成员变量，因此在对象观察区也可看到该值。如果是局部变量，无疑只能用这种方式了。</p>
+<hr>
+<h1 id="断点的分类"><a href="#断点的分类" class="headerlink" title="断点的分类"></a>断点的分类</h1><p>到目前为止，我们已经简单的介绍了调试功能区，断点管理区，求值表达式，这三个区域的功能。在上面，我们不断的提到了断点一次，但是断点是什么呢？想必大部分人已经知道了，我们这里在简单的说明下：</p>
+<p>断点是调试器的功能之一，可以让程序暂停在需要的地方，帮助我们进行分析程序的运行过程。</p>
+<p>在Android Studio中，断点又被以下五类：</p>
+<ol>
+<li>条件断点</li>
+<li>日志断点</li>
+<li>异常断点</li>
+<li>方法断点</li>
+<li>属性断点</li>
+</ol>
+<p>其中方法断点是我们最熟悉的断点类型，相信没有人不会。下面我们着重介绍其他四种类型的断点。</p>
+<h2 id="条件断点"><a href="#条件断点" class="headerlink" title="条件断点"></a>条件断点</h2><p>所谓的条件断点就是在特定条件发生的断点，也就是，我们可将某个断点设置为只对某种事件感兴趣，最典型的应用就是在列表循环中，我们希望在某特定的元素出现时暂停程序运行。比如，现在我们有个list中，其中包含了q，1q，2q,3q四个元素，我们希望在遍历到2q时暂停程序运行，那么需要进行如下操作：</p>
+<p>在需要的地方添加断点，如下：</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/47.png" alt="_pic47"></p>
+<p>断点处左键单击，在Condition处填写过滤条件.此处我们只关心2q，因此填写</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">s.equals(&quot;2q&quot;)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/48.png" alt="_pic48"></p>
+<h2 id="日志断点"><a href="#日志断点" class="headerlink" title="日志断点"></a>日志断点</h2><p>该类型的断点不会使程序停下来，而是在输出我们要它输出的日志信息，然后继续执行。具体操作如下：</p>
+<p>同样在断点处左键单击，在弹出的对话框中取消选中Suspend。</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/49.png" alt="_pic49"></p>
+<p>在弹出的控制面板中，选中Log evaluated expression，然后再填写想要输出的日志信息，如下：</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/50.png" alt="_pic50"></p>
+<p>当调试过程遇到该断点将会输出结果，如下：</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/51.png" alt="_pic51"></p>
+<h2 id="异常断点"><a href="#异常断点" class="headerlink" title="异常断点"></a>异常断点</h2><p>所谓的异常断点就是在调试过程中，一旦发生异常（可以指定某类异常），则会立刻定位到异常抛出的地方。比如在调试异常中，我们非常关注运行时异常，希望在产生任何运行异常时及时定位，那么此时就可以利用该类型异常，在上线之前，进行异常断点调试非常有利于减少正式环境中发生crash的几率。</p>
+<p>具体操作如下：在Run菜单项中，选择View Breakpoints（也可以在断点管理面板中点击<br><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/52.png" alt="_pic52"></p>
+<p>），如下：</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/53.png" alt="_pic53"></p>
+<p>在管理断点面板中，点击<strong>+</strong></p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/54.png" alt="_pic54"></p>
+<p>在弹出的下拉选择列表中，我们选择Java Exception Breakpoints</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/55.png" alt="_pic55"></p>
+<p>这里我们选中Search By Name,在下面的输入框中输入我们所关心的异常类型。此处我们关心NullPointerException，在调试过程一旦发生NullPointerException，调试器就会定位到异常发生处。</p>
+<p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/56.png" alt="_pic56"></p>
+<h2 id="方法断点"><a href="#方法断点" class="headerlink" title="方法断点"></a>方法断点</h2><p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/57.jpg" alt="_pic57"></p>
+<p>（略过吧，应该没人不知道了）</p>
+<h2 id="Filed-WatchPoint"><a href="#Filed-WatchPoint" class="headerlink" title="Filed WatchPoint"></a>Filed WatchPoint</h2><p><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/58.jpg" alt="_pic58"></p>
+<p>Filed WatchPoint是本质上是一种特殊的断点，也称为属性断点：当我们某个字段值被修改的时候，程序暂停在修改处。通常在调试多线程时尤为可用，能帮我们及时的定位并发错误的问题。其使用和添加普通的断点并无不同，断点图标稍有不同</p>
+<hr>
+<h1 id="调试的两种方式"><a href="#调试的两种方式" class="headerlink" title="调试的两种方式"></a>调试的两种方式</h1><p>到目前，调试的相关基础我们已经介绍完了，但是不少童鞋对Android Studio中<br><img src="/2017/10/26/你所不知道的Android-Studio调试技巧/59.png" alt="_pic59"></p>
+<p>这两个按钮感到困惑：Debug和Attach process。</p>
+<p>这里我们就简单介绍一下这两者的区别：</p>
+<ul>
+<li>Debug：以调试模式安装运行，断点可以在运行之前设置，也可在运行后设置，是多数人最常用的调式方式</li>
+<li>Attach process：和Debug方式相比，能够将调试器attach到任何正在运行的进程。比如，我们可以通过attach process到想要调试的进程。然后，在需要的地方设置相关断点即可。</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/应用/" rel="tag"># 应用</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/10/26/Android四大图片缓存（Imageloader-Picasso-Glide-Fresco）原理、特性对比/" rel="next" title="Android四大图片缓存（Imageloader,Picasso,Glide,Fresco）原理、特性对比">
+                <i class="fa fa-chevron-left"></i> Android四大图片缓存（Imageloader,Picasso,Glide,Fresco）原理、特性对比
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/11/11/Android-判断通知栏权限的问题/" rel="prev" title="Android 判断通知栏权限的问题">
+                Android 判断通知栏权限的问题 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#单步调试区"><span class="nav-number">1.</span> <span class="nav-text">单步调试区</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Show-Execution-Point"><span class="nav-number">1.1.</span> <span class="nav-text">Show Execution Point</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Step-Over"><span class="nav-number">1.2.</span> <span class="nav-text">Step Over</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Step-Into"><span class="nav-number">1.3.</span> <span class="nav-text">Step Into</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Force-Step-Into"><span class="nav-number">1.4.</span> <span class="nav-text">Force Step Into</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Drop-Frame"><span class="nav-number">1.5.</span> <span class="nav-text">Drop Frame</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Force-Run-to-Cursor"><span class="nav-number">1.6.</span> <span class="nav-text">Force Run to Cursor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Evaluate-expression"><span class="nav-number">1.7.</span> <span class="nav-text">Evaluate expression</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#断点管理区"><span class="nav-number">2.</span> <span class="nav-text">断点管理区</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Return"><span class="nav-number">2.1.</span> <span class="nav-text">Return</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pause-Program"><span class="nav-number">2.2.</span> <span class="nav-text">Pause Program</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Resume-Program"><span class="nav-number">2.3.</span> <span class="nav-text">Resume Program</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Stop"><span class="nav-number">2.4.</span> <span class="nav-text">Stop</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#View-Breakpoints"><span class="nav-number">2.5.</span> <span class="nav-text">View Breakpoints</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mute-Breakpoints"><span class="nav-number">2.6.</span> <span class="nav-text">Mute Breakpoints</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Get-thread-dump"><span class="nav-number">2.7.</span> <span class="nav-text">Get thread dump</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Settings"><span class="nav-number">2.8.</span> <span class="nav-text">Settings</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Show-Values-Inline"><span class="nav-number">2.8.1.</span> <span class="nav-text">Show Values Inline</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Show-Method-Return-Values"><span class="nav-number">2.8.2.</span> <span class="nav-text">Show Method Return Values</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Auto-Variables-Mode"><span class="nav-number">2.8.3.</span> <span class="nav-text">Auto-Variables Mode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Sort-values-alphabetically"><span class="nav-number">2.8.4.</span> <span class="nav-text">Sort values alphabetically</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Help"><span class="nav-number">2.9.</span> <span class="nav-text">Help</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#修改变量值"><span class="nav-number">3.</span> <span class="nav-text">修改变量值</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#变量观察区"><span class="nav-number">4.</span> <span class="nav-text">变量观察区</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#断点的分类"><span class="nav-number">5.</span> <span class="nav-text">断点的分类</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#条件断点"><span class="nav-number">5.1.</span> <span class="nav-text">条件断点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#日志断点"><span class="nav-number">5.2.</span> <span class="nav-text">日志断点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#异常断点"><span class="nav-number">5.3.</span> <span class="nav-text">异常断点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方法断点"><span class="nav-number">5.4.</span> <span class="nav-text">方法断点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Filed-WatchPoint"><span class="nav-number">5.5.</span> <span class="nav-text">Filed WatchPoint</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#调试的两种方式"><span class="nav-number">6.</span> <span class="nav-text">调试的两种方式</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

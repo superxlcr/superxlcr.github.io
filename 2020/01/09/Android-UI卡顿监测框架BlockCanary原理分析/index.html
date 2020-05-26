@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,源码,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="（转载）基本使用、基本原理、源码分析、参考资料、博主总结">
+<meta name="keywords" content="android,源码">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android UI卡顿监测框架BlockCanary原理分析">
+<meta property="og:url" content="https://superxlcr.github.io/2020/01/09/Android-UI卡顿监测框架BlockCanary原理分析/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="（转载）基本使用、基本原理、源码分析、参考资料、博主总结">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2020/01/09/Android-UI卡顿监测框架BlockCanary原理分析/1.png">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.519Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android UI卡顿监测框架BlockCanary原理分析">
+<meta name="twitter:description" content="（转载）基本使用、基本原理、源码分析、参考资料、博主总结">
+<meta name="twitter:image" content="https://superxlcr.github.io/2020/01/09/Android-UI卡顿监测框架BlockCanary原理分析/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2020/01/09/Android-UI卡顿监测框架BlockCanary原理分析/">
+
+
+
+
+
+  <title>Android UI卡顿监测框架BlockCanary原理分析 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2020/01/09/Android-UI卡顿监测框架BlockCanary原理分析/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android UI卡顿监测框架BlockCanary原理分析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-09T16:35:07+08:00">
+                2020-01-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3.8k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文转载自：<a href="https://www.jianshu.com/p/e58992439793" target="_blank" rel="noopener">https://www.jianshu.com/p/e58992439793</a></p>
+<p>BlockCanary是国内开发者MarkZhai开发的一套性能监控组件，它对主线程操作进行了完全透明的监控，并能输出有效的信息，帮助开发分析、定位到问题所在，迅速优化应用。<br>其特点有：</p>
+<ul>
+<li>非侵入式，简单的两行就打开监控，不需要到处打点，破坏代码优雅性。</li>
+<li>精准，输出的信息可以帮助定位到问题所在（精确到行），不需要像Logcat一样，慢慢去找。目前包括了核心监控输出文件，以及UI显示卡顿信息功能</li>
+</ul>
+<h1 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h1><p>使用非常方便,引入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">    compile &apos;com.github.markzhai:blockcanary-android:1.5.0&apos;</span><br><span class="line"></span><br><span class="line">    // 仅在debug包启用BlockCanary进行卡顿监控和提示的话，可以这么用</span><br><span class="line">    debugCompile &apos;com.github.markzhai:blockcanary-android:1.5.0&apos;</span><br><span class="line">    releaseCompile &apos;com.github.markzhai:blockcanary-no-op:1.5.0&apos;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在应用的application中完成初始化</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DemoApplication</span> <span class="keyword">extends</span> <span class="title">Application</span> </span>&#123;</span><br><span class="line"> </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate();</span><br><span class="line">        BlockCanary.install(<span class="keyword">this</span>, <span class="keyword">new</span> AppContext()).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment">//参数设置</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AppContext</span> <span class="keyword">extends</span> <span class="title">BlockCanaryContext</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">"AppContext"</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">provideQualifier</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        String qualifier = <span class="string">""</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            PackageInfo info = DemoApplication.getAppContext().getPackageManager()</span><br><span class="line">                    .getPackageInfo(DemoApplication.getAppContext().getPackageName(), <span class="number">0</span>);</span><br><span class="line">            qualifier += info.versionCode + <span class="string">"_"</span> + info.versionName + <span class="string">"_YYB"</span>;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (PackageManager.NameNotFoundException e) &#123;</span><br><span class="line">            Log.e(TAG, <span class="string">"provideQualifier exception"</span>, e);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> qualifier;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">provideBlockThreshold</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">500</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">displayNotification</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> BuildConfig.DEBUG;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">stopWhenDebugging</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h1><p>我们都知道Android应用程序只有一个主线程ActivityThread，这个主线程会创建一个Looper(Looper.prepare)，而Looper又会关联一个MessageQueue，主线程Looper会在应用的生命周期内不断轮询(Looper.loop)，从MessageQueue取出Message 更新UI。<br>我们来看一个代码片段</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">loop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">        ...</span><br><span class="line">        <span class="comment">// This must be in a local variable, in case a UI event sets the logger</span></span><br><span class="line">        Printer logging = me.mLogging;</span><br><span class="line">        <span class="keyword">if</span> (logging != <span class="keyword">null</span>) &#123;</span><br><span class="line">            logging.println(<span class="string">"&gt;&gt;&gt;&gt;&gt; Dispatching to "</span> + msg.target + <span class="string">" "</span> +</span><br><span class="line">                    msg.callback + <span class="string">": "</span> + msg.what);</span><br><span class="line">        &#125;</span><br><span class="line">        msg.target.dispatchMessage(msg);</span><br><span class="line">        <span class="keyword">if</span> (logging != <span class="keyword">null</span>) &#123;</span><br><span class="line">            logging.println(<span class="string">"&lt;&lt;&lt;&lt;&lt; Finished to "</span> + msg.target + <span class="string">" "</span> + msg.callback);</span><br><span class="line">        &#125;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>msg.target其实就是Handler，看一下dispatchMessage的逻辑</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Handle system messages here.</span></span><br><span class="line"><span class="comment"> */</span> </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">dispatchMessage</span><span class="params">(Message msg)</span> </span>&#123; </span><br><span class="line">    <span class="keyword">if</span> (msg.callback != <span class="keyword">null</span>) &#123; </span><br><span class="line">        handleCallback(msg); </span><br><span class="line">    &#125; <span class="keyword">else</span> &#123; </span><br><span class="line">        <span class="keyword">if</span> (mCallback != <span class="keyword">null</span>) &#123; </span><br><span class="line">            <span class="keyword">if</span> (mCallback.handleMessage(msg)) &#123; </span><br><span class="line">                <span class="keyword">return</span>; </span><br><span class="line">            &#125; </span><br><span class="line">        &#125; </span><br><span class="line">        handleMessage(msg); </span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>如果消息是通过Handler.post(runnable)方式投递到MQ中的，那么就回调runnable#run方法；</li>
+<li>如果消息是通过Handler.sendMessage的方式投递到MQ中，那么回调handleMessage方法；</li>
+</ul>
+<p>不管是哪种回调方式，回调一定发生在UI线程。因此如果应用发生卡顿，一定是在dispatchMessage中执行了耗时操作。我们通过给主线程的Looper设置一个Printer，打点统计dispatchMessage方法执行的时间，如果超出阀值，表示发生卡顿，则dump出各种信息，提供开发者分析性能瓶颈。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">println</span><span class="params">(String x)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!mStartedPrinting) &#123;</span><br><span class="line">        mStartTimeMillis = System.currentTimeMillis();</span><br><span class="line">        mStartThreadTimeMillis = SystemClock.currentThreadTimeMillis();</span><br><span class="line">        mStartedPrinting = <span class="keyword">true</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">long</span> endTime = System.currentTimeMillis();</span><br><span class="line">        mStartedPrinting = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">if</span> (isBlock(endTime)) &#123;</span><br><span class="line">            notifyBlockEvent(endTime);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">isBlock</span><span class="params">(<span class="keyword">long</span> endTime)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> endTime - mStartTimeMillis &gt; mBlockThresholdMillis;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h1><p>源码分析主要分为框架初始化过程和监控过程</p>
+<h2 id="框架初始化过程"><a href="#框架初始化过程" class="headerlink" title="框架初始化过程"></a>框架初始化过程</h2><p>初始化过程主要通过下面第一行代码发起</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BlockCanary.install(<span class="keyword">this</span>, <span class="keyword">new</span> AppContext()).start();</span><br></pre></td></tr></table></figure>
+
+<p>在内部我们细分为install和start过程</p>
+<h3 id="install"><a href="#install" class="headerlink" title="install"></a>install</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> BlockCanary <span class="title">install</span><span class="params">(Context context, BlockCanaryContext blockCanaryContext)</span> </span>&#123;</span><br><span class="line">    BlockCanaryContext.init(context, blockCanaryContext);</span><br><span class="line">    setEnabled(context, DisplayActivity.class, BlockCanaryContext.get().displayNotification());</span><br><span class="line">    <span class="keyword">return</span> get();</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">setEnabled</span><span class="params">(Context context,</span></span></span><br><span class="line"><span class="function"><span class="params">                               <span class="keyword">final</span> Class&lt;?&gt; componentClass,</span></span></span><br><span class="line"><span class="function"><span class="params">                               <span class="keyword">final</span> <span class="keyword">boolean</span> enabled)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Context appContext = context.getApplicationContext();</span><br><span class="line">    executeOnFileIoThread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            setEnabledBlocking(appContext, componentClass, enabled);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">setEnabledBlocking</span><span class="params">(Context appContext,Class&lt;?&gt; componentClass,<span class="keyword">boolean</span> enabled)</span> </span>&#123;</span><br><span class="line">    ComponentName component = <span class="keyword">new</span> ComponentName(appContext, componentClass);</span><br><span class="line">    PackageManager packageManager = appContext.getPackageManager();</span><br><span class="line">    <span class="keyword">int</span> newState = enabled ? COMPONENT_ENABLED_STATE_ENABLED : COMPONENT_ENABLED_STATE_DISABLED;</span><br><span class="line">    <span class="comment">// Blocks on IPC.</span></span><br><span class="line">    packageManager.setComponentEnabledSetting(component, newState, DONT_KILL_APP);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>BlockCanaryContext.init会将保存应用的applicationContext和用户设置的配置参数；</li>
+<li>setEnabled将根据用户的通知栏消息配置开启（displayNotification=true）或关闭（displayNotification=false）DisplayActivity （DisplayActivity是承载通知栏消息的activity）</li>
+</ul>
+<p>注意该设置过程需要提交到一个单线程的IO线程池去执行。</p>
+<p>接下来是外观类BlockCanary的创建过程</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> BlockCanary <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (sInstance == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (BlockCanary.class) &#123;</span><br><span class="line">            <span class="keyword">if</span> (sInstance == <span class="keyword">null</span>) &#123;</span><br><span class="line">                sInstance = <span class="keyword">new</span> BlockCanary();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> sInstance;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//私有构造函数</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="title">BlockCanary</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    BlockCanaryInternals.setContext(BlockCanaryContext.get());</span><br><span class="line">    mBlockCanaryCore = BlockCanaryInternals.getInstance();</span><br><span class="line">    mBlockCanaryCore.addBlockInterceptor(BlockCanaryContext.get());</span><br><span class="line">    <span class="keyword">if</span> (!BlockCanaryContext.get().displayNotification()) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    mBlockCanaryCore.addBlockInterceptor(<span class="keyword">new</span> DisplayService());</span><br><span class="line"> </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>单例创建BlockCanary</li>
+<li>核心处理类为BlockCanaryInternals</li>
+<li>为BlockCanaryInternals添加拦截器（责任链）</li>
+<li>BlockCanaryContext对BlockInterceptor是空实现，可以忽略；</li>
+<li>DisplayService只在开启通知栏消息的时候添加，当卡顿发生时将通过DisplayService发起通知栏消息</li>
+</ul>
+<p>接下来看核心类BlockCanaryInternals的初始化过程。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">BlockCanaryInternals</span><span class="params">()</span> </span>&#123;</span><br><span class="line"> </span><br><span class="line">    stackSampler = <span class="keyword">new</span> StackSampler(</span><br><span class="line">            Looper.getMainLooper().getThread(),</span><br><span class="line">            sContext.provideDumpInterval());</span><br><span class="line"> </span><br><span class="line">    cpuSampler = <span class="keyword">new</span> CpuSampler(sContext.provideDumpInterval());</span><br><span class="line"> </span><br><span class="line">    setMonitor(<span class="keyword">new</span> LooperMonitor(<span class="keyword">new</span> LooperMonitor.BlockListener() &#123;</span><br><span class="line"> </span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onBlockEvent</span><span class="params">(<span class="keyword">long</span> realTimeStart, <span class="keyword">long</span> realTimeEnd,</span></span></span><br><span class="line"><span class="function"><span class="params">                                 <span class="keyword">long</span> threadTimeStart, <span class="keyword">long</span> threadTimeEnd)</span> </span>&#123;</span><br><span class="line">            <span class="comment">// Get recent thread-stack entries and cpu usage</span></span><br><span class="line">            ArrayList&lt;String&gt; threadStackEntries = stackSampler</span><br><span class="line">                    .getThreadStackEntries(realTimeStart, realTimeEnd);</span><br><span class="line">            <span class="keyword">if</span> (!threadStackEntries.isEmpty()) &#123;</span><br><span class="line">                BlockInfo blockInfo = BlockInfo.newInstance()</span><br><span class="line">                        .setMainThreadTimeCost(realTimeStart, realTimeEnd, threadTimeStart, threadTimeEnd)</span><br><span class="line">                        .setCpuBusyFlag(cpuSampler.isCpuBusy(realTimeStart, realTimeEnd))</span><br><span class="line">                        .setRecentCpuRate(cpuSampler.getCpuRateInfo())</span><br><span class="line">                        .setThreadStackEntries(threadStackEntries)</span><br><span class="line">                        .flushString();</span><br><span class="line">                LogWriter.save(blockInfo.toString());</span><br><span class="line"> </span><br><span class="line">                <span class="keyword">if</span> (mInterceptorChain.size() != <span class="number">0</span>) &#123;</span><br><span class="line">                    <span class="keyword">for</span> (BlockInterceptor interceptor : mInterceptorChain) &#123;</span><br><span class="line">                        interceptor.onBlock(getContext().provideContext(), blockInfo);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;, getContext().provideBlockThreshold(), getContext().stopWhenDebugging()));</span><br><span class="line"> </span><br><span class="line">    LogWriter.cleanObsolete();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>创建了两个采样类StackSampler和CpuSampler，即线程堆栈采样和CPU采样。</p>
+<p>随后创建一个LooperMonitor，LooperMonitor实现了android.util.Printer接口。</p>
+<p>随后通过调用setMonitor把创建的LooperMonitor赋值给BlockCanaryInternals的成员变量monitor。</p>
+<h3 id="start"><a href="#start" class="headerlink" title="start"></a>start</h3><p>即调用BlockCanary的start方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!mMonitorStarted) &#123;</span><br><span class="line">        mMonitorStarted = <span class="keyword">true</span>;</span><br><span class="line">        Looper.getMainLooper().setMessageLogging(mBlockCanaryCore.monitor);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>将在BlockCanaryInternals中创建的LooperMonitor给主线程Looper的mLogging变量赋值。这样主线程Looper就可以消息分发前后使用LooperMonitor#println输出日志。</p>
+<h2 id="卡顿监控过程"><a href="#卡顿监控过程" class="headerlink" title="卡顿监控过程"></a>卡顿监控过程</h2><p>根据上面原理的分析，监控的对象主要是Main Looper的Message分发耗时情况。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Looper</span></span><br><span class="line"><span class="keyword">for</span> (;;) &#123;</span><br><span class="line">    Message msg = queue.next();</span><br><span class="line">    <span class="comment">// This must be in a local variable, in case a UI event sets the logger</span></span><br><span class="line">    Printer logging = me.mLogging;</span><br><span class="line">    <span class="keyword">if</span> (logging != <span class="keyword">null</span>) &#123;</span><br><span class="line">        logging.println(<span class="string">"&gt;&gt;&gt;&gt;&gt; Dispatching to "</span> + msg.target + <span class="string">" "</span> +</span><br><span class="line">                msg.callback + <span class="string">": "</span> + msg.what);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    msg.target.dispatchMessage(msg);</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (logging != <span class="keyword">null</span>) &#123;</span><br><span class="line">        logging.println(<span class="string">"&lt;&lt;&lt;&lt;&lt; Finished to "</span> + msg.target + <span class="string">" "</span> + msg.callback);</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>主线程的所有消息都在这里调度！！</p>
+<p>每从MQ中取出一个消息，由于我们设置了Printer为LooperMonitor，因此在调用dispatchMessage前后都可以交由我们LooperMonitor接管。</p>
+<p>我们再次从下面这段代码入手。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">println</span><span class="params">(String x)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (mStopWhenDebugging &amp;&amp; Debug.isDebuggerConnected()) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!mPrintingStarted) &#123;</span><br><span class="line">        mStartTimestamp = System.currentTimeMillis();</span><br><span class="line">        mStartThreadTimestamp = SystemClock.currentThreadTimeMillis();</span><br><span class="line">        mPrintingStarted = <span class="keyword">true</span>;</span><br><span class="line">        startDump();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">long</span> endTime = System.currentTimeMillis();</span><br><span class="line">        mPrintingStarted = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">if</span> (isBlock(endTime)) &#123;</span><br><span class="line">            notifyBlockEvent(endTime);</span><br><span class="line">        &#125;</span><br><span class="line">        stopDump();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于单个Message而言，这个方法一定的成对调用的。</p>
+<h3 id="卡顿监控记录"><a href="#卡顿监控记录" class="headerlink" title="卡顿监控记录"></a>卡顿监控记录</h3><p>第一次调用时，记录开始时间，并开始dump堆栈和CPU信息。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//LooperMonitor</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">startDump</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">null</span> != BlockCanaryInternals.getInstance().stackSampler) &#123;</span><br><span class="line">        BlockCanaryInternals.getInstance().stackSampler.start();</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">null</span> != BlockCanaryInternals.getInstance().cpuSampler) &#123;</span><br><span class="line">        BlockCanaryInternals.getInstance().cpuSampler.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment">//AbstractSampler</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (mShouldSample.get()) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    mShouldSample.set(<span class="keyword">true</span>);</span><br><span class="line"> </span><br><span class="line">    HandlerThreadFactory.getTimerThreadHandler().removeCallbacks(mRunnable);</span><br><span class="line">    HandlerThreadFactory.getTimerThreadHandler().postDelayed(mRunnable,</span><br><span class="line">            BlockCanaryInternals.getInstance().getSampleDelay());</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="keyword">private</span> Runnable mRunnable = <span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        doSample();</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">if</span> (mShouldSample.get()) &#123;</span><br><span class="line">            HandlerThreadFactory.getTimerThreadHandler()</span><br><span class="line">                    .postDelayed(mRunnable, mSampleInterval);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>两种采样依次提交到HandlerThread中进行，从而保证采样过程是在一个后台线程执行;</li>
+<li>两种采样有个共同的父类AbstractSampler，采用了模板方法模式，即在父类定义了采样的抽象算法doSample及采样生命周期的管控（start和stop），不同的子类采样的算法实现是不一样的;</li>
+<li>采样会周期性执行，间隔时间与卡顿阀值一致（可由开发者设置）;</li>
+</ul>
+<h4 id="堆栈采样"><a href="#堆栈采样" class="headerlink" title="堆栈采样"></a>堆栈采样</h4><p>堆栈采样很简单，直接通过Main Looper获取到主线程Thread对象，调用Thread#getStackTrace即可获取到堆栈信息</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doSample</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    StringBuilder stringBuilder = <span class="keyword">new</span> StringBuilder();</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">for</span> (StackTraceElement stackTraceElement : mCurrentThread.getStackTrace()) &#123;</span><br><span class="line">        stringBuilder</span><br><span class="line">                .append(stackTraceElement.toString())</span><br><span class="line">                .append(BlockInfo.SEPARATOR);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">synchronized</span> (sStackMap) &#123;</span><br><span class="line">        <span class="keyword">if</span> (sStackMap.size() == mMaxEntryCount &amp;&amp; mMaxEntryCount &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            sStackMap.remove(sStackMap.keySet().iterator().next());</span><br><span class="line">        &#125;</span><br><span class="line">        sStackMap.put(System.currentTimeMillis(), stringBuilder.toString());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>将堆栈拼成String，保存在LinkedHashMap中，当然保存有一定阀值，默认最多保存100条。</p>
+<h4 id="CPU采样"><a href="#CPU采样" class="headerlink" title="CPU采样"></a>CPU采样</h4><p>在分析代码之前我们需要先了解一下Android平台CPU的一些常识。</p>
+<p>我们都知道Android是基于Linux系统的，Android平台关于CPU的计算是跟Linux是完全一样的。</p>
+<p>/proc/stat文件</p>
+<p>在Linux中CPU活动信息是保存在该文件中，该文件中的所有值都是从系统启动开始累计到当前时刻。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">~$ cat /proc/stat</span><br><span class="line">cpu  38082 627 27594 893908 12256 581 895 0 0</span><br><span class="line">cpu0 22880 472 16855 430287 10617 576 661 0 0</span><br><span class="line">cpu1 15202 154 10739 463620 1639 4 234 0 0</span><br><span class="line">intr 120053 222 2686 0 1 1 0 5 0 3 0 0 0 47302 0 0 34194 29775 0 5019 845 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</span><br><span class="line">ctxt 1434984</span><br><span class="line">btime 1252028243</span><br><span class="line">processes 8113</span><br><span class="line">procs_running 1</span><br><span class="line">procs_blocked 0</span><br></pre></td></tr></table></figure>
+
+<p>第二行的数值表示的是CPU总的使用情况，所以我们只要用第一行的数字计算就可以了</p>
+<p>下表解析第一行各数值的含义</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>解析 (以下数值都是从系统启动累计到当前时刻)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>user (38082)</td>
+<td>处于用户态的运行时间，不包含 nice值为负进程</td>
+</tr>
+<tr>
+<td>nice (627)</td>
+<td>nice值为负的进程所占用的CPU时间</td>
+</tr>
+<tr>
+<td>system (27594)</td>
+<td>处于核心态的运行时间</td>
+</tr>
+<tr>
+<td>idle (893908)</td>
+<td>除IO等待时间以外的其它等待时间iowait (12256) 从系统启动开始累计到当前时刻，IO等待时间</td>
+</tr>
+<tr>
+<td>irq (581)</td>
+<td>硬中断时间</td>
+</tr>
+<tr>
+<td>irq (581)</td>
+<td>软中断时间</td>
+</tr>
+<tr>
+<td>stealstolen(0)</td>
+<td>一个其他的操作系统运行在虚拟环境下所花费的时间</td>
+</tr>
+<tr>
+<td>guest(0)</td>
+<td>这是在Linux内核控制下为客户操作系统运行虚拟CPU所花费的时间</td>
+</tr>
+</tbody></table>
+<p>总结：总的cpu时间totalCpuTime = user + nice + system + idle + iowait + irq + softirq + stealstolen  +  guest<br>/proc/pid/stat文件</p>
+<p>该文件包含了某一进程所有的活动的信息，该文件中的所有值都是从系统启动开始累计到当前时刻</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">~$ cat /proc/6873/stat</span><br><span class="line">6873 (a.out) R 6723 6873 6723 34819 6873 8388608 77 0 0 0 41958 31 0 0 25 0 3 0 5882654 1409024 56 4294967295 134512640 134513720 3215579040 0 2097798 0 0 0 0 0 0 0 17 0 0 0</span><br></pre></td></tr></table></figure>
+
+<p>以下只解释对我们计算Cpu使用率有用相关参数</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>解析</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>pid=6873</td>
+<td>进程号</td>
+</tr>
+<tr>
+<td>utime=1587</td>
+<td>该任务在用户态运行的时间，单位为jiffies</td>
+</tr>
+<tr>
+<td>stime=41958</td>
+<td>该任务在核心态运行的时间，单位为jiffies</td>
+</tr>
+<tr>
+<td>cutime=0</td>
+<td>所有已死线程在用户态运行的时间，单位为jiffies</td>
+</tr>
+<tr>
+<td>cstime=0</td>
+<td>所有已死在核心态运行的时间，单位为jiffies</td>
+</tr>
+</tbody></table>
+<p>结论：进程的总Cpu时间processCpuTime = utime + stime + cutime + cstime，该值包括其所有线程的cpu时间。<br>CPU采样的代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doSample</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    BufferedReader cpuReader = <span class="keyword">null</span>;</span><br><span class="line">    BufferedReader pidReader = <span class="keyword">null</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        cpuReader = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(</span><br><span class="line">                <span class="keyword">new</span> FileInputStream(<span class="string">"/proc/stat"</span>)), BUFFER_SIZE);</span><br><span class="line">        String cpuRate = cpuReader.readLine();</span><br><span class="line">        <span class="keyword">if</span> (cpuRate == <span class="keyword">null</span>) &#123;</span><br><span class="line">            cpuRate = <span class="string">""</span>;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">if</span> (mPid == <span class="number">0</span>) &#123;</span><br><span class="line">            mPid = android.os.Process.myPid();</span><br><span class="line">        &#125;</span><br><span class="line">        pidReader = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(</span><br><span class="line">                <span class="keyword">new</span> FileInputStream(<span class="string">"/proc/"</span> + mPid + <span class="string">"/stat"</span>)), BUFFER_SIZE);</span><br><span class="line">        String pidCpuRate = pidReader.readLine();</span><br><span class="line">        <span class="keyword">if</span> (pidCpuRate == <span class="keyword">null</span>) &#123;</span><br><span class="line">            pidCpuRate = <span class="string">""</span>;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        parse(cpuRate, pidCpuRate);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Throwable throwable) &#123;</span><br><span class="line">        Log.e(TAG, <span class="string">"doSample: "</span>, throwable);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (cpuReader != <span class="keyword">null</span>) &#123;</span><br><span class="line">                cpuReader.close();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (pidReader != <span class="keyword">null</span>) &#123;</span><br><span class="line">                pidReader.close();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException exception) &#123;</span><br><span class="line">            Log.e(TAG, <span class="string">"doSample: "</span>, exception);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">parse</span><span class="params">(String cpuRate, String pidCpuRate)</span> </span>&#123;</span><br><span class="line">    String[] cpuInfoArray = cpuRate.split(<span class="string">" "</span>);</span><br><span class="line">    <span class="keyword">if</span> (cpuInfoArray.length &lt; <span class="number">9</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">long</span> user = Long.parseLong(cpuInfoArray[<span class="number">2</span>]);</span><br><span class="line">    <span class="keyword">long</span> nice = Long.parseLong(cpuInfoArray[<span class="number">3</span>]);</span><br><span class="line">    <span class="keyword">long</span> system = Long.parseLong(cpuInfoArray[<span class="number">4</span>]);</span><br><span class="line">    <span class="keyword">long</span> idle = Long.parseLong(cpuInfoArray[<span class="number">5</span>]);</span><br><span class="line">    <span class="keyword">long</span> ioWait = Long.parseLong(cpuInfoArray[<span class="number">6</span>]);</span><br><span class="line">    <span class="keyword">long</span> total = user + nice + system + idle + ioWait</span><br><span class="line">            + Long.parseLong(cpuInfoArray[<span class="number">7</span>])</span><br><span class="line">            + Long.parseLong(cpuInfoArray[<span class="number">8</span>]);</span><br><span class="line"> </span><br><span class="line">    String[] pidCpuInfoList = pidCpuRate.split(<span class="string">" "</span>);</span><br><span class="line">    <span class="keyword">if</span> (pidCpuInfoList.length &lt; <span class="number">17</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">long</span> appCpuTime = Long.parseLong(pidCpuInfoList[<span class="number">13</span>])</span><br><span class="line">            + Long.parseLong(pidCpuInfoList[<span class="number">14</span>])</span><br><span class="line">            + Long.parseLong(pidCpuInfoList[<span class="number">15</span>])</span><br><span class="line">            + Long.parseLong(pidCpuInfoList[<span class="number">16</span>]);</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (mTotalLast != <span class="number">0</span>) &#123;</span><br><span class="line">        StringBuilder stringBuilder = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">        <span class="keyword">long</span> idleTime = idle - mIdleLast;</span><br><span class="line">        <span class="keyword">long</span> totalTime = total - mTotalLast;</span><br><span class="line"> </span><br><span class="line">        stringBuilder</span><br><span class="line">                .append(<span class="string">"cpu:"</span>)</span><br><span class="line">                .append((totalTime - idleTime) * <span class="number">100L</span> / totalTime)</span><br><span class="line">                .append(<span class="string">"% "</span>)</span><br><span class="line">                .append(<span class="string">"app:"</span>)</span><br><span class="line">                .append((appCpuTime - mAppCpuTimeLast) * <span class="number">100L</span> / totalTime)</span><br><span class="line">                .append(<span class="string">"% "</span>)</span><br><span class="line">                .append(<span class="string">"["</span>)</span><br><span class="line">                .append(<span class="string">"user:"</span>).append((user - mUserLast) * <span class="number">100L</span> / totalTime)</span><br><span class="line">                .append(<span class="string">"% "</span>)</span><br><span class="line">                .append(<span class="string">"system:"</span>).append((system - mSystemLast) * <span class="number">100L</span> / totalTime)</span><br><span class="line">                .append(<span class="string">"% "</span>)</span><br><span class="line">                .append(<span class="string">"ioWait:"</span>).append((ioWait - mIoWaitLast) * <span class="number">100L</span> / totalTime)</span><br><span class="line">                .append(<span class="string">"% ]"</span>);</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">synchronized</span> (mCpuInfoEntries) &#123;</span><br><span class="line">            mCpuInfoEntries.put(System.currentTimeMillis(), stringBuilder.toString());</span><br><span class="line">            <span class="keyword">if</span> (mCpuInfoEntries.size() &gt; MAX_ENTRY_COUNT) &#123;</span><br><span class="line">                <span class="keyword">for</span> (Map.Entry&lt;Long, String&gt; entry : mCpuInfoEntries.entrySet()) &#123;</span><br><span class="line">                    Long key = entry.getKey();</span><br><span class="line">                    mCpuInfoEntries.remove(key);</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    mUserLast = user;</span><br><span class="line">    mSystemLast = system;</span><br><span class="line">    mIdleLast = idle;</span><br><span class="line">    mIoWaitLast = ioWait;</span><br><span class="line">    mTotalLast = total;</span><br><span class="line"> </span><br><span class="line">    mAppCpuTimeLast = appCpuTime;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="卡顿条件判断及事后处理"><a href="#卡顿条件判断及事后处理" class="headerlink" title="卡顿条件判断及事后处理"></a>卡顿条件判断及事后处理</h3><p>当LooperMonitor第二次调用时，会判断第二次与第一次的时间间隔是否会超过阀值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">isBlock</span><span class="params">(<span class="keyword">long</span> endTime)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> endTime - mStartTimestamp &gt; mBlockThresholdMillis;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>若超过，将视作一次卡顿。满足卡顿条件将会调用下面方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">notifyBlockEvent</span><span class="params">(<span class="keyword">final</span> <span class="keyword">long</span> endTime)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">long</span> startTime = mStartTimestamp;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">long</span> startThreadTime = mStartThreadTimestamp;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">long</span> endThreadTime = SystemClock.currentThreadTimeMillis();</span><br><span class="line">    HandlerThreadFactory.getWriteLogThreadHandler().post(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            mBlockListener.onBlockEvent(startTime, endTime, startThreadTime, endThreadTime);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到日志的写入执行在工作线程（HandlerThread），将回调BlockListener#onBlockEvent</p>
+<p><img src="/2020/01/09/Android-UI卡顿监测框架BlockCanary原理分析/1.png" alt="pic1"></p>
+<p>将堆栈采样和CPU采样数据封装为一个BlockInfo。</p>
+<p>接下来将进行卡顿事后处理。</p>
+<p>主要有两件事情：</p>
+<ul>
+<li>将卡顿发生时的堆栈和CPU信息写入日志；</li>
+<li>如果开启走通知栏，那么将发出一条通知栏消息；</li>
+</ul>
+<h4 id="卡顿日志记录"><a href="#卡顿日志记录" class="headerlink" title="卡顿日志记录"></a>卡顿日志记录</h4><p>通过LogWriter.save(blockInfo.toString())完成</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">save</span><span class="params">(String str)</span> </span>&#123;</span><br><span class="line">    String path;</span><br><span class="line">    <span class="keyword">synchronized</span> (SAVE_DELETE_LOCK) &#123;</span><br><span class="line">        path = save(<span class="string">"looper"</span>, str);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> path;</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">save</span><span class="params">(String logFileName, String str)</span> </span>&#123;</span><br><span class="line">    String path = <span class="string">""</span>;</span><br><span class="line">    BufferedWriter writer = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        File file = BlockCanaryInternals.detectedBlockDirectory();</span><br><span class="line">        <span class="keyword">long</span> time = System.currentTimeMillis();</span><br><span class="line">        path = file.getAbsolutePath() + <span class="string">"/"</span></span><br><span class="line">                + logFileName + <span class="string">"-"</span></span><br><span class="line">                + FILE_NAME_FORMATTER.format(time) + <span class="string">".log"</span>;</span><br><span class="line"> </span><br><span class="line">        OutputStreamWriter out =</span><br><span class="line">                <span class="keyword">new</span> OutputStreamWriter(<span class="keyword">new</span> FileOutputStream(path, <span class="keyword">true</span>), <span class="string">"UTF-8"</span>);</span><br><span class="line"> </span><br><span class="line">        writer = <span class="keyword">new</span> BufferedWriter(out);</span><br><span class="line"> </span><br><span class="line">        writer.write(BlockInfo.SEPARATOR);</span><br><span class="line">        writer.write(<span class="string">"**********************"</span>);</span><br><span class="line">        writer.write(BlockInfo.SEPARATOR);</span><br><span class="line">        writer.write(TIME_FORMATTER.format(time) + <span class="string">"(write log time)"</span>);</span><br><span class="line">        writer.write(BlockInfo.SEPARATOR);</span><br><span class="line">        writer.write(BlockInfo.SEPARATOR);</span><br><span class="line">        writer.write(str);</span><br><span class="line">        writer.write(BlockInfo.SEPARATOR);</span><br><span class="line"> </span><br><span class="line">        writer.flush();</span><br><span class="line">        writer.close();</span><br><span class="line">        writer = <span class="keyword">null</span>;</span><br><span class="line"> </span><br><span class="line">    &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">        Log.e(TAG, <span class="string">"save: "</span>, t);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (writer != <span class="keyword">null</span>) &#123;</span><br><span class="line">                writer.close();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            Log.e(TAG, <span class="string">"save: "</span>, e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> path;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意：以上代码的调用执行在工作线程HandlerThread（writer）中</p>
+<h4 id="通知栏消息"><a href="#通知栏消息" class="headerlink" title="通知栏消息"></a>通知栏消息</h4><p>通知栏消息由下面代码触发</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (mInterceptorChain.size() != <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">for</span> (BlockInterceptor interceptor : mInterceptorChain) &#123;</span><br><span class="line">        interceptor.onBlock(getContext().provideContext(), blockInfo);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中BlockInterceptor的一个实现类为DisplayService</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">DisplayService</span> <span class="keyword">implements</span> <span class="title">BlockInterceptor</span> </span>&#123;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">"DisplayService"</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onBlock</span><span class="params">(Context context, BlockInfo blockInfo)</span> </span>&#123;</span><br><span class="line">        Intent intent = <span class="keyword">new</span> Intent(context, DisplayActivity.class);</span><br><span class="line">        intent.putExtra(<span class="string">"show_latest"</span>, blockInfo.timeStart);</span><br><span class="line">        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);</span><br><span class="line">        PendingIntent pendingIntent = PendingIntent.getActivity(context, <span class="number">1</span>, intent, FLAG_UPDATE_CURRENT);</span><br><span class="line">        String contentTitle = context.getString(R.string.block_canary_class_has_blocked, blockInfo.timeStart);</span><br><span class="line">        String contentText = context.getString(R.string.block_canary_notification_message);</span><br><span class="line">        show(context, contentTitle, contentText, pendingIntent);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="meta">@TargetApi</span>(HONEYCOMB)</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">show</span><span class="params">(Context context, String contentTitle, String contentText, PendingIntent pendingIntent)</span> </span>&#123;</span><br><span class="line">        NotificationManager notificationManager = (NotificationManager)</span><br><span class="line">                context.getSystemService(Context.NOTIFICATION_SERVICE);</span><br><span class="line"> </span><br><span class="line">        Notification notification;</span><br><span class="line">        <span class="keyword">if</span> (SDK_INT &lt; HONEYCOMB) &#123;</span><br><span class="line">            notification = <span class="keyword">new</span> Notification();</span><br><span class="line">            notification.icon = R.drawable.block_canary_notification;</span><br><span class="line">            notification.when = System.currentTimeMillis();</span><br><span class="line">            notification.flags |= Notification.FLAG_AUTO_CANCEL;</span><br><span class="line">            notification.defaults = Notification.DEFAULT_SOUND;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Method deprecatedMethod = notification.getClass().getMethod(<span class="string">"setLatestEventInfo"</span>, Context.class, CharSequence.class, CharSequence.class, PendingIntent.class);</span><br><span class="line">                deprecatedMethod.invoke(notification, context, contentTitle, contentText, pendingIntent);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (NoSuchMethodException | IllegalAccessException | IllegalArgumentException</span><br><span class="line">                    | InvocationTargetException e) &#123;</span><br><span class="line">                Log.w(TAG, <span class="string">"Method not found"</span>, e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            Notification.Builder builder = <span class="keyword">new</span> Notification.Builder(context)</span><br><span class="line">                    .setSmallIcon(R.drawable.block_canary_notification)</span><br><span class="line">                    .setWhen(System.currentTimeMillis())</span><br><span class="line">                    .setContentTitle(contentTitle)</span><br><span class="line">                    .setContentText(contentText)</span><br><span class="line">                    .setAutoCancel(<span class="keyword">true</span>)</span><br><span class="line">                    .setContentIntent(pendingIntent)</span><br><span class="line">                    .setDefaults(Notification.DEFAULT_SOUND);</span><br><span class="line">            <span class="keyword">if</span> (SDK_INT &lt; JELLY_BEAN) &#123;</span><br><span class="line">                notification = builder.getNotification();</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                notification = builder.build();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        notificationManager.notify(<span class="number">0xDEAFBEEF</span>, notification);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
+<li><a href="https://link.jianshu.com?t=http://blog.zhaiyifan.cn/2016/01/16/BlockCanaryTransparentPerformanceMonitor/" target="_blank" rel="noopener">BlockCanary — 轻松找出Android App界面卡顿元凶</a></li>
+<li><a href="https://link.jianshu.com?t=https://github.com/markzhai/AndroidPerformanceMonitor" target="_blank" rel="noopener">AndroidPerformanceMonitor</a></li>
+<li><a href="https://link.jianshu.com?t=http://www.blogjava.net/fjzag/articles/317773.html" target="_blank" rel="noopener">Linux平台Cpu使用率的计算</a></li>
+</ul>
+<h1 id="博主总结"><a href="#博主总结" class="headerlink" title="博主总结"></a>博主总结</h1><p>博主在看过转载这篇博客后，总结如下：</p>
+<p>BlockCanary原理是通过在主线程Handler中调用dispatchMessage方法的前后，通过Printer打印日志的地方，分别开始或者结束计时/堆栈dump/cpu采样，最终通过计算该方法耗时判断是否发生了主线程卡顿，并上报相关信息</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/源码/" rel="tag"># 源码</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/11/27/Android音视频学习笔记（三）/" rel="next" title="Android音视频学习笔记（三）">
+                <i class="fa fa-chevron-left"></i> Android音视频学习笔记（三）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/01/11/关于CPU、内存、硬盘及网络传输速度的整理/" rel="prev" title="关于CPU、内存、硬盘及网络传输速度的整理">
+                关于CPU、内存、硬盘及网络传输速度的整理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#基本使用"><span class="nav-number">1.</span> <span class="nav-text">基本使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基本原理"><span class="nav-number">2.</span> <span class="nav-text">基本原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#源码分析"><span class="nav-number">3.</span> <span class="nav-text">源码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#框架初始化过程"><span class="nav-number">3.1.</span> <span class="nav-text">框架初始化过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#install"><span class="nav-number">3.1.1.</span> <span class="nav-text">install</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#start"><span class="nav-number">3.1.2.</span> <span class="nav-text">start</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#卡顿监控过程"><span class="nav-number">3.2.</span> <span class="nav-text">卡顿监控过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#卡顿监控记录"><span class="nav-number">3.2.1.</span> <span class="nav-text">卡顿监控记录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#堆栈采样"><span class="nav-number">3.2.1.1.</span> <span class="nav-text">堆栈采样</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CPU采样"><span class="nav-number">3.2.1.2.</span> <span class="nav-text">CPU采样</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#卡顿条件判断及事后处理"><span class="nav-number">3.2.2.</span> <span class="nav-text">卡顿条件判断及事后处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#卡顿日志记录"><span class="nav-number">3.2.2.1.</span> <span class="nav-text">卡顿日志记录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#通知栏消息"><span class="nav-number">3.2.2.2.</span> <span class="nav-text">通知栏消息</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#博主总结"><span class="nav-number">5.</span> <span class="nav-text">博主总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

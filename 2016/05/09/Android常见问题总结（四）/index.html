@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,基础知识,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Android三种动画、Handler、Looper消息队列模型、怎样退出终止App、Asset目录与res目录的区别、">
+<meta name="keywords" content="android,基础知识">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android常见问题总结（四）">
+<meta property="og:url" content="https://superxlcr.github.io/2016/05/09/Android常见问题总结（四）/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="Android三种动画、Handler、Looper消息队列模型、怎样退出终止App、Asset目录与res目录的区别、">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2016/05/09/Android常见问题总结（四）/1.gif">
+<meta property="og:image" content="https://superxlcr.github.io/2016/05/09/Android常见问题总结（四）/2.gif">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.586Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android常见问题总结（四）">
+<meta name="twitter:description" content="Android三种动画、Handler、Looper消息队列模型、怎样退出终止App、Asset目录与res目录的区别、">
+<meta name="twitter:image" content="https://superxlcr.github.io/2016/05/09/Android常见问题总结（四）/1.gif">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2016/05/09/Android常见问题总结（四）/">
+
+
+
+
+
+  <title>Android常见问题总结（四） | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2016/05/09/Android常见问题总结（四）/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android常见问题总结（四）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-09T11:29:34+08:00">
+                2016-05-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.2k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上一篇文章的传送门：<a href="/2016/05/02/Android常见问题总结（三）/">Android常见问题总结（三）</a></p>
+<h1 id="Android三种动画"><a href="#Android三种动画" class="headerlink" title="Android三种动画"></a>Android三种动画</h1><p>如今Android的动画主要有三种，分别是：逐帧（Frame）动画，补间（Tween）动画，属性（Property）动画</p>
+<h2 id="逐帧（Frame）动画"><a href="#逐帧（Frame）动画" class="headerlink" title="逐帧（Frame）动画"></a>逐帧（Frame）动画</h2><p>逐帧动画是最容易理解的动画，它要求我们把动画过程的每张静态图片都准备好，然后依次显示，利用人眼“视觉暂留”的原理形成动画效果。<br>例子：肥波跳舞？<br>素材准备（共27帧）：</p>
+<p>fat_po.xml，animation-list的oneshot属性用于设置动画是否只播放一次，true是，false表示循环播放</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;  </span><br><span class="line"><span class="tag">&lt;<span class="name">animation-list</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span>  </span></span><br><span class="line"><span class="tag">    <span class="attr">android:oneshot</span> = <span class="string">"false"</span> &gt;</span>  </span><br><span class="line">  </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/fat_po_f01"</span> <span class="attr">android:duration</span>=<span class="string">"60"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/fat_po_f02"</span> <span class="attr">android:duration</span>=<span class="string">"60"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/fat_po_f03"</span> <span class="attr">android:duration</span>=<span class="string">"60"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/fat_po_f04"</span> <span class="attr">android:duration</span>=<span class="string">"60"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/fat_po_f05"</span> <span class="attr">android:duration</span>=<span class="string">"60"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/fat_po_f06"</span> <span class="attr">android:duration</span>=<span class="string">"60"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/fat_po_f07"</span> <span class="attr">android:duration</span>=<span class="string">"60"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/fat_po_f08"</span> <span class="attr">android:duration</span>=<span class="string">"60"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/fat_po_f09"</span> <span class="attr">android:duration</span>=<span class="string">"60"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/fat_po_f10"</span> <span class="attr">android:duration</span>=<span class="string">"60"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/fat_po_f11"</span> <span class="attr">android:duration</span>=<span class="string">"60"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/fat_po_f12"</span> <span class="attr">android:duration</span>=<span class="string">"60"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/fat_po_f13"</span> <span class="attr">android:duration</span>=<span class="string">"60"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/fat_po_f14"</span> <span class="attr">android:duration</span>=<span class="string">"60"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/fat_po_f15"</span> <span class="attr">android:duration</span>=<span class="string">"60"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/fat_po_f16"</span> <span class="attr">android:duration</span>=<span class="string">"60"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/fat_po_f17"</span> <span class="attr">android:duration</span>=<span class="string">"60"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/fat_po_f18"</span> <span class="attr">android:duration</span>=<span class="string">"60"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/fat_po_f19"</span> <span class="attr">android:duration</span>=<span class="string">"60"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/fat_po_f20"</span> <span class="attr">android:duration</span>=<span class="string">"60"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/fat_po_f21"</span> <span class="attr">android:duration</span>=<span class="string">"60"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/fat_po_f22"</span> <span class="attr">android:duration</span>=<span class="string">"60"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/fat_po_f23"</span> <span class="attr">android:duration</span>=<span class="string">"60"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/fat_po_f24"</span> <span class="attr">android:duration</span>=<span class="string">"60"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/fat_po_f25"</span> <span class="attr">android:duration</span>=<span class="string">"60"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/fat_po_f26"</span> <span class="attr">android:duration</span>=<span class="string">"60"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/fat_po_f27"</span> <span class="attr">android:duration</span>=<span class="string">"60"</span> /&gt;</span>  </span><br><span class="line">      </span><br><span class="line"><span class="tag">&lt;/<span class="name">animation-list</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>Activity布局xml，把逐帧（Frame）动画设置为ImageView的背景：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span>  </span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span>  </span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span>  </span></span><br><span class="line"><span class="tag">    <span class="attr">android:gravity</span>=<span class="string">"center"</span>&gt;</span>  </span><br><span class="line">  </span><br><span class="line">    <span class="tag">&lt;<span class="name">ImageView</span>   </span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/image_view"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:background</span>=<span class="string">"@animator/fat_po"</span>/&gt;</span>  </span><br><span class="line">  </span><br><span class="line"><span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>Activity的Java代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyActivity</span> <span class="keyword">extends</span> <span class="title">Activity</span> </span>&#123;  </span><br><span class="line">      </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);  </span><br><span class="line">        setContentView(R.layout.activity_main);  </span><br><span class="line">        ImageView imageView = (ImageView)findViewById(R.id.image_view);  </span><br><span class="line">        <span class="comment">// 开始动画，默认为停止  </span></span><br><span class="line">        ((AnimationDrawable)imageView.getBackground()).start();  </span><br><span class="line">    &#125;  </span><br><span class="line">      </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于逐帧动画默认是停止，因此我们需要调用其start方法才能播放动画。</p>
+<p>动画效果如下：<br><img src="/2016/05/09/Android常见问题总结（四）/1.gif" alt="肥波跳舞动画"></p>
+<h2 id="补间（Tween）动画"><a href="#补间（Tween）动画" class="headerlink" title="补间（Tween）动画"></a>补间（Tween）动画</h2><p>相比与逐帧动画要求我们把动画的每一帧都列出来，补间动画只需要我们指定动画开始、动画结束等“关键帧”，而其中动画变化的“中间帧”由系统计算补齐。<br>例子：花瓣开合<br>花瓣动画xml文件：<br>花瓣关闭xml文件，使用了scale（大小变化），alpha（透明度变化），rotate（旋转变化）三种动画，执行的速度是linear线性的</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;  </span><br><span class="line"><span class="tag">&lt;<span class="name">set</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span>  </span></span><br><span class="line"><span class="tag">    <span class="attr">android:interpolator</span>=<span class="string">"@android:anim/linear_interpolator"</span>&gt;</span>  </span><br><span class="line">      </span><br><span class="line">    <span class="tag">&lt;<span class="name">scale</span> <span class="attr">android:fromXScale</span>=<span class="string">"1.0"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:toXScale</span>=<span class="string">"0.01"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:fromYScale</span>=<span class="string">"1.0"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:toYScale</span>=<span class="string">"0.01"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:pivotX</span>=<span class="string">"50%"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:pivotY</span>=<span class="string">"50%"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:fillAfter</span>=<span class="string">"true"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:duration</span>=<span class="string">"3000"</span>/&gt;</span>  </span><br><span class="line">      </span><br><span class="line">    <span class="tag">&lt;<span class="name">alpha</span>   </span></span><br><span class="line"><span class="tag">        <span class="attr">android:fromAlpha</span>=<span class="string">"1"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:toAlpha</span>=<span class="string">"0.05"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:duration</span>=<span class="string">"3000"</span>/&gt;</span>  </span><br><span class="line">  </span><br><span class="line">    <span class="tag">&lt;<span class="name">rotate</span>   </span></span><br><span class="line"><span class="tag">        <span class="attr">android:fromDegrees</span>=<span class="string">"0"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:toDegrees</span>=<span class="string">"1800"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:pivotX</span>=<span class="string">"50%"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:pivotY</span>=<span class="string">"50%"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:duration</span>=<span class="string">"3000"</span>/&gt;</span>  </span><br><span class="line"><span class="tag">&lt;/<span class="name">set</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>花瓣打开xml文件</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;  </span><br><span class="line"><span class="tag">&lt;<span class="name">set</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span>  </span></span><br><span class="line"><span class="tag">    <span class="attr">android:interpolator</span>=<span class="string">"@android:anim/linear_interpolator"</span>&gt;</span>  </span><br><span class="line">      </span><br><span class="line">    <span class="tag">&lt;<span class="name">scale</span> <span class="attr">android:fromXScale</span>=<span class="string">"0.01"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:toXScale</span>=<span class="string">"1.0"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:fromYScale</span>=<span class="string">"0.01"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:toYScale</span>=<span class="string">"1.0"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:pivotX</span>=<span class="string">"50%"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:pivotY</span>=<span class="string">"50%"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:fillAfter</span>=<span class="string">"true"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:duration</span>=<span class="string">"3000"</span>/&gt;</span>  </span><br><span class="line">      </span><br><span class="line">    <span class="tag">&lt;<span class="name">alpha</span>   </span></span><br><span class="line"><span class="tag">        <span class="attr">android:fromAlpha</span>=<span class="string">"0.05"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:toAlpha</span>=<span class="string">"1"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:duration</span>=<span class="string">"3000"</span>/&gt;</span>  </span><br><span class="line">  </span><br><span class="line">    <span class="tag">&lt;<span class="name">rotate</span>   </span></span><br><span class="line"><span class="tag">        <span class="attr">android:fromDegrees</span>=<span class="string">"1800"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:toDegrees</span>=<span class="string">"0"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:pivotX</span>=<span class="string">"50%"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:pivotY</span>=<span class="string">"50%"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:duration</span>=<span class="string">"3000"</span>/&gt;</span>  </span><br><span class="line"><span class="tag">&lt;/<span class="name">set</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>界面的xml文件，只有一个简单的imageView：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span>  </span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span>  </span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span>  </span></span><br><span class="line"><span class="tag">    <span class="attr">android:gravity</span>=<span class="string">"center"</span>&gt;</span>  </span><br><span class="line">  </span><br><span class="line">    <span class="tag">&lt;<span class="name">ImageView</span>   </span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/image_view"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:src</span>=<span class="string">"@drawable/flower"</span>/&gt;</span>  </span><br><span class="line">  </span><br><span class="line"><span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>Activity的Java代码，加载了close与open动画后，通过Timer的重复任务不断发送消息给handler，通过handler来播放动画:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyActivity</span> <span class="keyword">extends</span> <span class="title">Activity</span> </span>&#123;  </span><br><span class="line">      </span><br><span class="line">    <span class="keyword">private</span> Handler handler = <span class="keyword">new</span> Handler() &#123;  </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(android.os.Message msg)</span> </span>&#123;  </span><br><span class="line">            <span class="keyword">if</span> (flag)  </span><br><span class="line">                imageView.startAnimation(close);  </span><br><span class="line">            <span class="keyword">else</span>  </span><br><span class="line">                imageView.startAnimation(open);  </span><br><span class="line">            flag = !flag;  </span><br><span class="line">        &#125;;  </span><br><span class="line">    &#125;;  </span><br><span class="line">      </span><br><span class="line">    <span class="keyword">private</span> Animation open, close;  </span><br><span class="line">    <span class="keyword">private</span> ImageView imageView;  </span><br><span class="line">    <span class="keyword">boolean</span> flag = <span class="keyword">true</span>; <span class="comment">// 花瓣状态，true开，false合  </span></span><br><span class="line">      </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);  </span><br><span class="line">        setContentView(R.layout.activity_main);  </span><br><span class="line">        imageView = (ImageView)findViewById(R.id.image_view);  </span><br><span class="line">        <span class="comment">// 花瓣张开  </span></span><br><span class="line">        open = AnimationUtils.loadAnimation(<span class="keyword">this</span>, R.anim.open);  </span><br><span class="line">        <span class="comment">// 保留动画变化后的状态  </span></span><br><span class="line">        open.setFillAfter(<span class="keyword">true</span>);  </span><br><span class="line">        <span class="comment">// 花瓣关闭  </span></span><br><span class="line">        close = AnimationUtils.loadAnimation(<span class="keyword">this</span>, R.anim.close);  </span><br><span class="line">        <span class="comment">// 保留动画变化后的状态  </span></span><br><span class="line">        close.setFillAfter(<span class="keyword">true</span>);  </span><br><span class="line">        <span class="comment">// 设置重复任务  </span></span><br><span class="line">        <span class="keyword">new</span> Timer().schedule(<span class="keyword">new</span> TimerTask() &#123;  </span><br><span class="line">              </span><br><span class="line">            <span class="meta">@Override</span>  </span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">                <span class="comment">// 通过handler发送消息刷新UI  </span></span><br><span class="line">                handler.sendEmptyMessage(<span class="number">0</span>);  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;, <span class="number">0</span>, <span class="number">3500</span>);  </span><br><span class="line">    &#125;  </span><br><span class="line">      </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>效果如下：<br><img src="/2016/05/09/Android常见问题总结（四）/2.gif" alt="花瓣开合动画"></p>
+<p>对于补间（Tween）动画我们只需要准备动画开始与结束的关键帧即可，其中的“中间帧”使用Android提供的多种变换（Scale，Alpha，Rotate，translate）生成即可</p>
+<h2 id="属性（Property）动画"><a href="#属性（Property）动画" class="headerlink" title="属性（Property）动画"></a>属性（Property）动画</h2><p>从某种角度来看，属性动画是增强版的补间动画，属性动画的强大主要体现在两个方面：</p>
+<ol>
+<li>补间动画只能定义两个关键帧在“透明度”、“旋转”、“缩放”、“位移”4个方面的变化，但属性动画可以定义任何属性的变化</li>
+<li>补间动画只能对UI组件执行动画，但属性动画几乎可以对任何对象执行动画</li>
+</ol>
+<p>由于属性动画比较复杂，本文在此不展开讨论了，推荐两篇大神博客供大家参考：<br><a href="https://blog.csdn.net/lmj623565791/article/details/38067475" target="_blank" rel="noopener">Android 属性动画（Property Animation） 完全解析 （上）</a><br><a href="https://blog.csdn.net/lmj623565791/article/details/38092093" target="_blank" rel="noopener">Android 属性动画（Property Animation） 完全解析 （下）</a></p>
+<h1 id="Handler、Looper消息队列模型"><a href="#Handler、Looper消息队列模型" class="headerlink" title="Handler、Looper消息队列模型"></a>Handler、Looper消息队列模型</h1><p>简单提提Handler、Looper模型中各部分的作用，主要有以下三部分：</p>
+<ul>
+<li>MessageQueue：消息队列，存储待处理的消息</li>
+<li>Looper：封装了消息队列与Handler，线程绑定，使用loop方法循环处理消息</li>
+<li>Handler：消息处理的辅助类，里面封装了消息的投递、处理和获取等一系列操作</li>
+</ul>
+<p>详细的情况请参考看我另一篇博文：<br><a href="/2016/03/08/Android-Looper和Handler小结">Android Looper和Handler小结</a></p>
+<h1 id="怎样退出终止App"><a href="#怎样退出终止App" class="headerlink" title="怎样退出终止App"></a>怎样退出终止App</h1><p>测试方案：<br>依次打开3个Activity（ActivityA，ActivityB，ActivityC），并在第3个Activity中终止App</p>
+<h2 id="System-exit（0）"><a href="#System-exit（0）" class="headerlink" title="System.exit（0）"></a>System.exit（0）</h2><p>暴露一个Application的public方法:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyApplication</span> <span class="keyword">extends</span> <span class="title">Application</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exit</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        System.exit(<span class="number">0</span>);  </span><br><span class="line">    &#125;  </span><br><span class="line">      </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在第三个Activity中调用该方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ActivityC</span> <span class="keyword">extends</span> <span class="title">Activity</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);  </span><br><span class="line">        setContentView(R.layout.activity);  </span><br><span class="line">        Button button = (Button)findViewById(R.id.btn);  </span><br><span class="line">        button.setText(<span class="string">"Finish app"</span>);  </span><br><span class="line">        button.setOnClickListener(<span class="keyword">new</span> OnClickListener() &#123;  </span><br><span class="line">              </span><br><span class="line">            <span class="meta">@Override</span>  </span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span> </span>&#123;  </span><br><span class="line">                <span class="comment">// 退出App  </span></span><br><span class="line">                ((MyApplication)getApplication()).exit();  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>失败</strong>，应用进程被杀死，然而过会应用重启了……并且ActivityA和ActivityB都被“复活了”，只杀死了ActivityC</p>
+<h2 id="android-os-Process-killProcess-android-os-Process-myPid"><a href="#android-os-Process-killProcess-android-os-Process-myPid" class="headerlink" title="android.os.Process.killProcess(android.os.Process.myPid())"></a>android.os.Process.killProcess(android.os.Process.myPid())</h2><p><strong>失败</strong>，与System.exit（0）一样，虽然杀死了进程，但过会就被重启了，并且ActivityA和ActivityB都被“复活了”</p>
+<h2 id="ActivityManager-killBackgroundProcesses"><a href="#ActivityManager-killBackgroundProcesses" class="headerlink" title="ActivityManager#killBackgroundProcesses()"></a>ActivityManager#killBackgroundProcesses()</h2><p><strong>失败</strong>，毫无反应</p>
+<h2 id="自定义BaseActivity维护Activity列表"><a href="#自定义BaseActivity维护Activity列表" class="headerlink" title="自定义BaseActivity维护Activity列表"></a>自定义BaseActivity维护Activity列表</h2><p>自定义一个BaseActivity：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BaseActivity</span> <span class="keyword">extends</span> <span class="title">Activity</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 维护一个Activity软引用的列表  </span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> List&lt;SoftReference&lt;Activity&gt;&gt; list = <span class="keyword">new</span> ArrayList&lt;SoftReference&lt;Activity&gt;&gt;();  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);  </span><br><span class="line">        list.add(<span class="keyword">new</span> SoftReference&lt;Activity&gt;(<span class="keyword">this</span>));  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onDestroy</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">super</span>.onDestroy();  </span><br><span class="line">        list.remove(<span class="keyword">new</span> SoftReference&lt;Activity&gt;(<span class="keyword">this</span>));  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="comment">/** </span></span><br><span class="line"><span class="comment">     * 关闭所有的Activity </span></span><br><span class="line"><span class="comment">     */</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">finishAll</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">for</span> (SoftReference&lt;Activity&gt; sr : list) &#123;  </span><br><span class="line">            <span class="keyword">if</span> (sr.get() != <span class="keyword">null</span>) &#123;  </span><br><span class="line">                sr.get().finish();  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于ActivityA、ActivityB和ActivityC继承BaseActivity而不是Activity，在ActivityC中调用finishAll方法即可关闭所有Activity进而退出App</p>
+<h2 id="finishAffinity"><a href="#finishAffinity" class="headerlink" title="finishAffinity()"></a>finishAffinity()</h2><p>直接关闭相同任务栈中的所用Activity，与上一个方法效果差不多，但是是Android自带的，方便多了</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>综上所述，测试结果如下：</p>
+<ol>
+<li>System.exit（0）：只能关闭当前Activity，关闭进程可能导致数据存储问题，不推荐</li>
+<li>android.os.Process.killProcess(android.os.Process.myPid())：同上</li>
+<li>ActivityManager#killBackgroundProcesses()：测试无效</li>
+<li>自定义BaseActivity维护Activity列表：可以关闭依次启动的所用Activity，进而退出整个App</li>
+<li>finishAffinity()：可以关闭同一个任务栈中的所有Activity，Android自带方法，比较方便</li>
+</ol>
+<h1 id="Asset目录与res目录的区别"><a href="#Asset目录与res目录的区别" class="headerlink" title="Asset目录与res目录的区别"></a>Asset目录与res目录的区别</h1><p>Asset目录和res目录均为Android中用来存放资源的目录，其中：</p>
+<ul>
+<li>asset目录下存放的资源代表应用无法直接访问的原生资源，应用程序需要通过AssetManager以二进制流的形式来读取资源</li>
+<li>res目录下的资源可通过R资源清单类访问，Android SDK会在编译时在R类中为他们创建对应的索引项</li>
+</ul>
+<h1 id="Android怎么加速启动Activity"><a href="#Android怎么加速启动Activity" class="headerlink" title="Android怎么加速启动Activity"></a>Android怎么加速启动Activity</h1><p>个人认为，影响Activity启动时间的主要有两个地方：</p>
+<ol>
+<li>onCreate、onStart、onResume等回调方法的执行时间</li>
+<li>Activity对应的界面的inflate时间</li>
+</ol>
+<p>对于第一点，我们应该尽量减少在这些回调方法中执行耗时操作（涉及数据库，图片等），如果一定要执行耗时操作，可以考虑新开子线程处理。<br>对于第二点，我们应该合理使用各种xml的优化标签，并界面上减少View的嵌套层数与绘制时间。（可参考Android常见问题总结（三））</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/基础知识/" rel="tag"># 基础知识</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/02/Android常见问题总结（三）/" rel="next" title="Android常见问题总结（三）">
+                <i class="fa fa-chevron-left"></i> Android常见问题总结（三）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/09/Github-之-SSH-key的创建于配置（Windows）/" rel="prev" title="Github 之 SSH key的创建与配置（Windows）">
+                Github 之 SSH key的创建与配置（Windows） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Android三种动画"><span class="nav-number">1.</span> <span class="nav-text">Android三种动画</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#逐帧（Frame）动画"><span class="nav-number">1.1.</span> <span class="nav-text">逐帧（Frame）动画</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#补间（Tween）动画"><span class="nav-number">1.2.</span> <span class="nav-text">补间（Tween）动画</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#属性（Property）动画"><span class="nav-number">1.3.</span> <span class="nav-text">属性（Property）动画</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Handler、Looper消息队列模型"><span class="nav-number">2.</span> <span class="nav-text">Handler、Looper消息队列模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#怎样退出终止App"><span class="nav-number">3.</span> <span class="nav-text">怎样退出终止App</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#System-exit（0）"><span class="nav-number">3.1.</span> <span class="nav-text">System.exit（0）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#android-os-Process-killProcess-android-os-Process-myPid"><span class="nav-number">3.2.</span> <span class="nav-text">android.os.Process.killProcess(android.os.Process.myPid())</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ActivityManager-killBackgroundProcesses"><span class="nav-number">3.3.</span> <span class="nav-text">ActivityManager#killBackgroundProcesses()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自定义BaseActivity维护Activity列表"><span class="nav-number">3.4.</span> <span class="nav-text">自定义BaseActivity维护Activity列表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#finishAffinity"><span class="nav-number">3.5.</span> <span class="nav-text">finishAffinity()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.6.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Asset目录与res目录的区别"><span class="nav-number">4.</span> <span class="nav-text">Asset目录与res目录的区别</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Android怎么加速启动Activity"><span class="nav-number">5.</span> <span class="nav-text">Android怎么加速启动Activity</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

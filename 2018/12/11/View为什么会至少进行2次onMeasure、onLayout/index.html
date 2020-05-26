@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,源码,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="（转载）前言、原因猜想、验证一、二、验证三、总结">
+<meta name="keywords" content="android,源码">
+<meta property="og:type" content="article">
+<meta property="og:title" content="View为什么会至少进行2次onMeasure、onLayout">
+<meta property="og:url" content="https://superxlcr.github.io/2018/12/11/View为什么会至少进行2次onMeasure、onLayout/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="（转载）前言、原因猜想、验证一、二、验证三、总结">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2018/12/11/View为什么会至少进行2次onMeasure、onLayout/1.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2018/12/11/View为什么会至少进行2次onMeasure、onLayout/2.png">
+<meta property="og:image" content="https://superxlcr.github.io/2018/12/11/View为什么会至少进行2次onMeasure、onLayout/3.png">
+<meta property="og:image" content="https://superxlcr.github.io/2018/12/11/View为什么会至少进行2次onMeasure、onLayout/4.png">
+<meta property="og:image" content="https://superxlcr.github.io/2018/12/11/View为什么会至少进行2次onMeasure、onLayout/5.png">
+<meta property="og:image" content="https://superxlcr.github.io/2018/12/11/View为什么会至少进行2次onMeasure、onLayout/6.png">
+<meta property="og:image" content="https://superxlcr.github.io/2018/12/11/View为什么会至少进行2次onMeasure、onLayout/7.png">
+<meta property="og:image" content="https://superxlcr.github.io/2018/12/11/View为什么会至少进行2次onMeasure、onLayout/8.png">
+<meta property="og:image" content="https://superxlcr.github.io/2018/12/11/View为什么会至少进行2次onMeasure、onLayout/9.png">
+<meta property="og:image" content="https://superxlcr.github.io/2018/12/11/View为什么会至少进行2次onMeasure、onLayout/10.png">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.747Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="View为什么会至少进行2次onMeasure、onLayout">
+<meta name="twitter:description" content="（转载）前言、原因猜想、验证一、二、验证三、总结">
+<meta name="twitter:image" content="https://superxlcr.github.io/2018/12/11/View为什么会至少进行2次onMeasure、onLayout/1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2018/12/11/View为什么会至少进行2次onMeasure、onLayout/">
+
+
+
+
+
+  <title>View为什么会至少进行2次onMeasure、onLayout | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2018/12/11/View为什么会至少进行2次onMeasure、onLayout/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">View为什么会至少进行2次onMeasure、onLayout</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-11T20:03:29+08:00">
+                2018-12-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.5k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文转载自：<a href="https://www.jianshu.com/p/733c7e9fb284" target="_blank" rel="noopener">https://www.jianshu.com/p/733c7e9fb284</a></p>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>郭前辈的<a href="https://link.jianshu.com?t=http://blog.csdn.net/guolin_blog/article/details/44996879" target="_blank" rel="noopener">ListView源码解析</a>一文，曾提到View至少会进行2次onMeasure、onLayout，但限于篇幅，并未解释原因，好奇就尝试找了找原因。</p>
+<h1 id="原因猜想"><a href="#原因猜想" class="headerlink" title="原因猜想"></a>原因猜想</h1><p><img src="/2018/12/11/View为什么会至少进行2次onMeasure、onLayout/1.jpg" alt="pic1"></p>
+<p>害怕.jpg</p>
+<p>由于不知道具体原因，只能结合已有的知识，先做出如下猜想：</p>
+<ol>
+<li>View自身进行了2次onMeasure、onLayout</li>
+<li>ViewGroup对Child进行了2次measure、layout</li>
+<li>我们知道View的绘制流程都始于ViewRootImpl的performTraversals方法，有理由怀疑performTranversals执行了2次。</li>
+</ol>
+<p><strong>PS:</strong>赶时间的朋友，可直接阅读验证三</p>
+<h1 id="验证一、二"><a href="#验证一、二" class="headerlink" title="验证一、二"></a>验证一、二</h1><p>按照上面的猜想，先进入View类查找总共就2处调用了onMeasure方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">measure</span><span class="params">(<span class="keyword">int</span> widthMeasureSpec, <span class="keyword">int</span> heightMeasureSpec)</span> </span>&#123;</span><br><span class="line"> .........</span><br><span class="line">  <span class="keyword">final</span> <span class="keyword">boolean</span> forceLayout = (mPrivateFlags &amp; PFLAG_FORCE_LAYOUT) == PFLAG_FORCE_LAYOUT;</span><br><span class="line"> .........</span><br><span class="line">  <span class="keyword">int</span> cacheIndex = forceLayout ? -<span class="number">1</span> : mMeasureCache.indexOfKey(key);</span><br><span class="line">  <span class="keyword">if</span> (cacheIndex &lt; <span class="number">0</span> || sIgnoreMeasureCache) &#123;</span><br><span class="line">                <span class="comment">// measure ourselves, this should set the measured dimension flag back</span></span><br><span class="line">                onMeasure(widthMeasureSpec, heightMeasureSpec);</span><br><span class="line">                mPrivateFlags3 &amp;= ~PFLAG3_MEASURE_NEEDED_BEFORE_LAYOUT;</span><br><span class="line">  &#125;</span><br><span class="line">.........</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>第二处：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">layout</span><span class="params">(<span class="keyword">int</span> l, <span class="keyword">int</span> t, <span class="keyword">int</span> r, <span class="keyword">int</span> b)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> ((mPrivateFlags3 &amp; PFLAG3_MEASURE_NEEDED_BEFORE_LAYOUT) != <span class="number">0</span>) &#123;</span><br><span class="line">            onMeasure(mOldWidthMeasureSpec, mOldHeightMeasureSpec);</span><br><span class="line">            mPrivateFlags3 &amp;= ~PFLAG3_MEASURE_NEEDED_BEFORE_LAYOUT;</span><br><span class="line">        &#125;</span><br><span class="line">   ..........</span><br><span class="line">&#125;</span><br><span class="line"> <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Flag indicating that a call to measure() was skipped and should be done</span></span><br><span class="line"><span class="comment">     * instead when layout() is invoked.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> PFLAG3_MEASURE_NEEDED_BEFORE_LAYOUT = <span class="number">0x8</span>;</span><br></pre></td></tr></table></figure>
+
+<p>第二次onMeasure，但是注释说的很明确，只有当measure方法未被调用的时候，才会在layout里面执行一次onMeasure方法，正常的view树测量流程，每个view的measure方法确实的都被调用过，所以猜想一排除。<br>关于猜想二，以FrameLayout为例，确实是在onMeasure方法中对child进行了2次测量，但这是有条件限制的，需要FrameLayout的layout_width/height属性不能为match_parent或具体的值，且child的layout属性必须为match_parent，具有特殊性，实际上即使不满足以上条件依旧会进行2次测量，故排除猜想二。<br>PS：关于一、二的源码分析，可参考<a href="">View measure源码分析</a></p>
+<h1 id="验证三"><a href="#验证三" class="headerlink" title="验证三"></a>验证三</h1><p>看了看代码，发现会执行2次performTranversals，也就会执行2次测量。</p>
+<p>ViewRootImpl#performTraversals()代码片段一</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">//1.由于第一次执行newSurface必定为true，需要先创建Surface嘛</span><br><span class="line">//为true则会执行else语句，所以第一次执行并不会执行 performDraw方法，即View的onDraw方法不会得到调用</span><br><span class="line">//第二次执行则为false，并未创建新的Surface，第二次才会执行 performDraw方法</span><br><span class="line">if (!cancelDraw &amp;&amp; !newSurface) &#123;</span><br><span class="line">    if (!skipDraw || mReportNextDraw) &#123;</span><br><span class="line">        if (mPendingTransitions != null &amp;&amp; mPendingTransitions.size() &gt; 0) &#123;</span><br><span class="line">            for (int i = 0; i &lt; mPendingTransitions.size(); ++i) &#123;</span><br><span class="line">                mPendingTransitions.get(i).startChangingAnimations();</span><br><span class="line">            &#125;</span><br><span class="line">            mPendingTransitions.clear();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        performDraw();</span><br><span class="line">    &#125;</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    //2.viewVisibility是wm.add的那个View的属性，View的默认值都是可见的</span><br><span class="line">    if (viewVisibility == View.VISIBLE) &#123;</span><br><span class="line">        // Try again</span><br><span class="line">        //3.再执行一次 scheduleTraversals，也就是会再执行一次performTraversals</span><br><span class="line">        scheduleTraversals();</span><br><span class="line">    &#125; else if (mPendingTransitions != null &amp;&amp; mPendingTransitions.size() &gt; 0) &#123;</span><br><span class="line">        for (int i = 0; i &lt; mPendingTransitions.size(); ++i) &#123;</span><br><span class="line">            mPendingTransitions.get(i).endChangingAnimations();</span><br><span class="line">        &#125;</span><br><span class="line">        mPendingTransitions.clear();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>断点SDK-23源码结果如下图所示：</p>
+<p><strong>PS:</strong>断点源码建议使用模拟器，真机一般都是修改过的，与SDK代码不一致。</p>
+<p><img src="/2018/12/11/View为什么会至少进行2次onMeasure、onLayout/2.png" alt="pic2"></p>
+<p>第一次performTranversals</p>
+<p><img src="/2018/12/11/View为什么会至少进行2次onMeasure、onLayout/3.png" alt="pic3"></p>
+<p>第二次performTranversals</p>
+<p>既然确定了performTravelsals会执行2次，那么肯定会执行2次measure方法，但是执行2次measure方法就一定会执行2次onMeasure方法吗？</p>
+<p>答案是否定，分析过View measure方法源码的都应知道measure方法做了2级测量优化：</p>
+<ol>
+<li>如果flag不为forceLayout或者与上次测量规格（MeasureSpec）相比未改变，那么将不会进行重新测量（执行onMeasure方法），直接使用上次的测量值；</li>
+<li>如果满足非强制测量的条件，即前后二次测量规格不一致，会先根据目前测量规格生成的key索引缓存数据，索引到就无需进行重新测量;如果targetSDK小于API 20则二级测量优化无效，依旧会重新测量，不会采用缓存测量值。<br>照理第二次测量应该会取测量的缓存值，并不会重新测量（调用onMeasure）的。然而实际上确重新测量了，那么极有可能就是第二次performMeasure传入的测量规格与第一次不同，因为在layout执行中已经将flag force_layout置为false了，代码如下：</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">layout</span><span class="params">(<span class="keyword">int</span> l, <span class="keyword">int</span> t, <span class="keyword">int</span> r, <span class="keyword">int</span> b)</span> </span>&#123;</span><br><span class="line">      .........</span><br><span class="line">      <span class="comment">//mPrivateFlags第16位设置为0,0表示不强制layout</span></span><br><span class="line">      <span class="comment">//PFLAG_FORCE_LAYOUT = 0x00001000</span></span><br><span class="line">      mPrivateFlags &amp;= ~PFLAG_FORCE_LAYOUT;</span><br><span class="line">      mPrivateFlags3 |= PFLAG3_IS_LAID_OUT;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>按照刚才的分析，前后二次的传入的测量规格应该不一致，然而事实是2次传入onMeasure()的测量规格一致，结果如下：</p>
+<p><img src="/2018/12/11/View为什么会至少进行2次onMeasure、onLayout/4.png" alt="pic4"></p>
+<p>log信息</p>
+<p>那么问题又来了，为什么会测量三次呢？首先声明的是，并不是因为FrameLayout的多次测量，此处的自定义View并不满足FrameLayout测量2次child的条件。经过断点跟踪SDK源码发现：</p>
+<p><strong>第一次performTranversals会执行2次performMeasure：</strong></p>
+<p>先执行measureHierarchy方法中的performMeasure方法</p>
+<p><img src="/2018/12/11/View为什么会至少进行2次onMeasure、onLayout/5.png" alt="pic5"></p>
+<p>第一次执行处</p>
+<p><img src="/2018/12/11/View为什么会至少进行2次onMeasure、onLayout/6.png" alt="pic6"></p>
+<p>方法调用栈</p>
+<p>接着执行后面的performMeasure，</p>
+<p><img src="/2018/12/11/View为什么会至少进行2次onMeasure、onLayout/7.png" alt="pic7"></p>
+<p>第二次执行处</p>
+<p><img src="/2018/12/11/View为什么会至少进行2次onMeasure、onLayout/8.png" alt="pic8"></p>
+<p>方法调用栈</p>
+<p><strong>第二次performTranversals则是只执行measureHierarchy中的performMeasure方法</strong></p>
+<p>这就能解释为什么前2次测量都执行了onMeasure方法，而未采用测量优化策略，因为前2次performMeasure并未经过performLayout，也即forceLayout的标志位一直为true，自然不会取缓存优化。理论上第三次测量经过第一次performTranversals中的performLayout，强制layout的flag应该为false，然而实际上却又变成了true，至于在哪儿恢复为true的，我在源码中并没有找到答案。</p>
+<p>但是这在api24、25上却及其符合我们的推论，第三次强制layout的flag为false，即第二次performTranversals并不会导致View的onMeasure方法的调用，由于未调用onMeasure方法，也不会调用onLayout方法，即api 25只会执行2次onMeasure、一次onLayout、一次onDraw，如下图所示：</p>
+<p><img src="/2018/12/11/View为什么会至少进行2次onMeasure、onLayout/9.png" alt="pic9"></p>
+<p>SDK-24</p>
+<p><img src="/2018/12/11/View为什么会至少进行2次onMeasure、onLayout/10.png" alt="pic10"></p>
+<p>SDK-25</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p><strong>api25-24：</strong>执行2次onMeasure、2次onLayout、1次onDraw，理论上执行三次测量，但由于测量优化策略，第三次不会执行onMeasure。</p>
+<p><strong>api23-21：</strong>执行3次onMeasure、2次onLayout、1次onDraw，forceLayout标志位，离奇被置为true，导致无测量优化。</p>
+<p><strong>api19-16：</strong>执行2次onMeasure、2次onLayout、1次onDraw，原因第一次performTranversals中只会执行measureHierarchy中的performMeasure，forceLayout标志位，离奇被置位true，导致无测量优化。</p>
+<p>总之，造成这个现象的根本原因是performTranversal函数在View的测量流程中会执行2次。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/源码/" rel="tag"># 源码</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/19/（转载）带你了解腾讯开源的多渠道打包技术-VasDolly源码解析/" rel="next" title="带你了解腾讯开源的多渠道打包技术 VasDolly源码解析">
+                <i class="fa fa-chevron-left"></i> 带你了解腾讯开源的多渠道打包技术 VasDolly源码解析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/18/LeakCanary，30分钟从入门到精通/" rel="prev" title="LeakCanary，30分钟从入门到精通">
+                LeakCanary，30分钟从入门到精通 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#原因猜想"><span class="nav-number">2.</span> <span class="nav-text">原因猜想</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#验证一、二"><span class="nav-number">3.</span> <span class="nav-text">验证一、二</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#验证三"><span class="nav-number">4.</span> <span class="nav-text">验证三</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

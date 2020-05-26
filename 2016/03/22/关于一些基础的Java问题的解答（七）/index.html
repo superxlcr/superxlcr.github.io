@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="基础知识,java,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="反射的作用与原理、泛型常用特点，List&amp;ltString&amp;gt能否转为List&amp;ltObject&amp;gt、解析XML的几种方式的原理与特点：DOM、SAX、PULL、Java与C++对比、Java1.5、1.7与1.8新特性">
+<meta name="keywords" content="基础知识,java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于一些基础的Java问题的解答（七）">
+<meta property="og:url" content="https://superxlcr.github.io/2016/03/22/关于一些基础的Java问题的解答（七）/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="反射的作用与原理、泛型常用特点，List&amp;ltString&amp;gt能否转为List&amp;ltObject&amp;gt、解析XML的几种方式的原理与特点：DOM、SAX、PULL、Java与C++对比、Java1.5、1.7与1.8新特性">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2016/03/22/关于一些基础的Java问题的解答（七）/1.jpg">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.828Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="关于一些基础的Java问题的解答（七）">
+<meta name="twitter:description" content="反射的作用与原理、泛型常用特点，List&amp;ltString&amp;gt能否转为List&amp;ltObject&amp;gt、解析XML的几种方式的原理与特点：DOM、SAX、PULL、Java与C++对比、Java1.5、1.7与1.8新特性">
+<meta name="twitter:image" content="https://superxlcr.github.io/2016/03/22/关于一些基础的Java问题的解答（七）/1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2016/03/22/关于一些基础的Java问题的解答（七）/">
+
+
+
+
+
+  <title>关于一些基础的Java问题的解答（七） | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2016/03/22/关于一些基础的Java问题的解答（七）/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">关于一些基础的Java问题的解答（七）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-22T15:04:54+08:00">
+                2016-03-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3.9k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上一篇文章的传送门：<a href="/2016/03/20/关于一些基础的Java问题的解答（六）/">关于一些基础的Java问题的解答（六）</a></p>
+<h1 id="反射的作用与原理"><a href="#反射的作用与原理" class="headerlink" title="反射的作用与原理"></a>反射的作用与原理</h1><p>简单的来说，反射机制其实就是指程序在运行的时候能够获取自身的信息。如果知道一个类的名称或者它的一个实例对象， 就能把这个类的所有方法和变量的信息(方法名，变量名，方法，修饰符，类型，方法参数等等所有信息)找出来。如果明确知道这个类里的某个方法名+参数个数 类型，还能通过传递参数来运行那个类里的那个方法，这就是反射。<br>在Java中，Class类与java.lang.reflect类库一起对反射的概念提供了支持，该类库包含了Field、Method以及Constructor类（每个类都实现了Member接口）。我们知道对RTTI（运行时类型识别）来说，编译器在编译时打开和检查.class文件。而对于反射机制来说，.class文件在编译时是不可获取的，所以是在运行时打开和检查.class文件的。<br>说了这么多，反射究竟有什么用呢？我们来看一下以下的例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> varA;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">myPublicA</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        System.out.println(<span class="string">"I am public in A !"</span>);  </span><br><span class="line">    &#125;;  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">myPrivateA</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        System.out.println(<span class="string">"I am private in A !"</span>);  </span><br><span class="line">    &#125;;  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">extends</span> <span class="title">A</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> varB;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">myPublicB</span><span class="params">()</span></span>&#123;&#125;;  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;  </span><br><span class="line">          </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;  </span><br><span class="line">        B b = <span class="keyword">new</span> B();  </span><br><span class="line">        <span class="comment">// 子类方法  </span></span><br><span class="line">        Method methods[] = b.getClass().getMethods();  </span><br><span class="line">        <span class="keyword">for</span> (Method method : methods)  </span><br><span class="line">            System.out.println(method);  </span><br><span class="line">        System.out.println(<span class="string">""</span>);  </span><br><span class="line">        <span class="comment">// 子类变量  </span></span><br><span class="line">        Field fields[] = b.getClass().getFields();  </span><br><span class="line">        <span class="keyword">for</span> (Field field : fields)  </span><br><span class="line">            System.out.println(field);  </span><br><span class="line">        <span class="comment">// 基类  </span></span><br><span class="line">        System.out.println(<span class="string">"\n"</span> + b.getClass().getSuperclass() + <span class="string">"\n"</span>);  </span><br><span class="line">        <span class="comment">// 基类private方法也不能避免  </span></span><br><span class="line">        Class superClass = b.getClass().getSuperclass();  </span><br><span class="line">        methods = superClass.getDeclaredMethods();  </span><br><span class="line">        <span class="keyword">for</span> (Method method : methods) &#123;  </span><br><span class="line">            System.out.println(method);  </span><br><span class="line">            method.setAccessible(<span class="keyword">true</span>);  </span><br><span class="line">            <span class="comment">// 实例化A来调用private方法！  </span></span><br><span class="line">            method.invoke(superClass.newInstance(), <span class="keyword">null</span>);  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在上面的例子中，我们用一个子类B，通过反射找到了他的数据域、与方法，还找到了他的基类A。更甚者，我们实例化了基类A，还调用了A里面的所有方法，甚至是private方法。从以上的例子相信大家都感受到了反射的威力了，运用使用class对象和反射提供的方法我们可以轻易的获取一个类的所有信息，包括被封装隐藏起来的信息，不仅如此我们还可以调用获取的信息来构造实例和调用方法。以上的展示只是反射的冰山一角，反射在动态代理和调用隐藏API等黑科技方面还发挥着重要的作用，博主在此不做深入探讨。</p>
+<h1 id="泛型常用特点，List-lt-String-gt-能否转为List-lt-Object-gt"><a href="#泛型常用特点，List-lt-String-gt-能否转为List-lt-Object-gt" class="headerlink" title="泛型常用特点，List&lt;String&gt;能否转为List&lt;Object&gt;"></a>泛型常用特点，List&lt;String&gt;能否转为List&lt;Object&gt;</h1><p>泛型是Java SE5引入的一种新特性，泛型实现了<strong>参数化类型</strong>概念，使得我们的代码可以应用于更多类型，更多场景。在以往的J2SE中，没有泛型的情况下，通常是使用Object类型来进行多种类型数据的操作。这个时候操作最多的就是针对该Object进行数据的强制转换，而这种转换是基于开发者对该数据类型明确的情况下进行的（例如将Object型转换为String型）。如果类型不一致，编译器在编译过程中不会报错，但在运行时会出错。相比之下，使用泛型的好处在于，它在编译的时候进行类型安全检查，并且在运行时所有的转换都是强制的，隐式的，大大提高了代码的重用率。<br>先来回答List<string>能否转为List<object>的问题，答案是不行的，因为String的list不是Object的list，String的list持有String类和其子类型，Object的list持有任何类型的Object，String的list在类型上不等价于Object的list。但List<string>可以转为List&lt;? extends Object&gt;，Java代码如下：</string></object></string></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; listString = <span class="keyword">new</span> ArrayList&lt;&gt;();  </span><br><span class="line"><span class="comment">// error : Type mismatch: cannot convert from List&lt;String&gt; to List&lt;Object&gt;  </span></span><br><span class="line">List&lt;Object&gt; listObject = listString;  </span><br><span class="line"><span class="comment">// it's ok !  </span></span><br><span class="line">List&lt;? extends Object&gt; listExtendsObject = listString;  </span><br><span class="line"><span class="comment">// error : The method add(capture#1-of ? extends Object) in the type List&lt;capture#1-of ? extends Object&gt; is not applicable for the   </span></span><br><span class="line"><span class="comment">// arguments (String)  </span></span><br><span class="line">listExtendsObject.add(<span class="string">"string"</span>);  </span><br><span class="line"><span class="comment">// it's ok !  </span></span><br><span class="line">listExtendsObject.add(<span class="keyword">null</span>);  </span><br><span class="line"><span class="comment">// it's ok !  </span></span><br><span class="line">Object object = listExtendsObject.get(<span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+
+<p>接下来讲讲泛型常用的特点，利用泛型我们可以实现以下内容：</p>
+<h2 id="带参数类型的类，泛型类"><a href="#带参数类型的类，泛型类" class="headerlink" title="带参数类型的类，泛型类"></a>带参数类型的类，泛型类</h2><p>类的参数类型写在类名的后面，多个参数类型用逗号分隔，定义完类型参数后，我们可以在定义位置之后的类的几乎任意地方（静态块，静态属性，静态方法除外）使用类型参数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span>&lt;<span class="title">T</span>,<span class="title">S</span>&gt; </span>&#123;  </span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="带参数类型的方法，泛型方法"><a href="#带参数类型的方法，泛型方法" class="headerlink" title="带参数类型的方法，泛型方法"></a>带参数类型的方法，泛型方法</h2><p>除了可以定义泛型类，我们还可以把泛型应用于方法之上，要定义泛型方法只需把泛型参数列表置于返回值之前：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 泛型参数</span></span><br><span class="line"><span class="keyword">public</span> &lt;T&gt; <span class="function"><span class="keyword">void</span> <span class="title">f</span><span class="params">(T x)</span> </span>&#123;  </span><br><span class="line">      </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 泛型返回值，根据返回值判断泛型</span></span><br><span class="line"><span class="keyword">public</span> &lt;T&gt; <span class="function">T <span class="title">f</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用泛型方法时通常不必指明参数类型，编译器会为我们找出具体类型，这称为类型参数推断。</p>
+<h2 id="关键字"><a href="#关键字" class="headerlink" title="关键字"></a>关键字</h2><p>泛型还有两个重要的关键字extends和super，这两个关键字用于限制泛型的范围。extends把类型参数限制为某个类的子类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;&#125;  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">extends</span> <span class="title">A</span> </span>&#123;&#125;  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span> </span>&#123;&#125;;  </span><br><span class="line"><span class="comment">//代表了T为A或A的子类  </span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">D</span> &lt;<span class="title">T</span> <span class="keyword">extends</span> <span class="title">A</span>&gt; </span>&#123;&#125;;  </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;  </span><br><span class="line">        D&lt;A&gt; a;  </span><br><span class="line">        D&lt;B&gt; b;  </span><br><span class="line">        <span class="comment">// no work!  </span></span><br><span class="line">        D&lt;C&gt; c;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>super与extends相反，把类型参数限制为某个类的父类。（此处博主研究不够深入，故对super关键字不够了解，在此不深入讨论）</p>
+<h2 id="擦除"><a href="#擦除" class="headerlink" title="擦除"></a>擦除</h2><p>Java的泛型不是完美的泛型，Java的泛型为了考虑兼容性的问题，使用了擦除来实现。看一下下面的例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;&#125;  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">extends</span> <span class="title">A</span> </span>&#123;&#125;  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span> <span class="keyword">extends</span> <span class="title">B</span> </span>&#123;&#125;;  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">D</span> &lt;<span class="title">T</span>&gt; </span>&#123;  </span><br><span class="line">    T t;  </span><br><span class="line">    D(T t) &#123;  </span><br><span class="line">        <span class="keyword">this</span>.t = t;  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">f</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        System.out.println(Arrays.toString(<span class="keyword">this</span>.getClass().getTypeParameters()));  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;;  </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;  </span><br><span class="line">        D&lt;A&gt; a = <span class="keyword">new</span> D&lt;A&gt;(<span class="keyword">new</span> A());  </span><br><span class="line">        D&lt;B&gt; b = <span class="keyword">new</span> D&lt;B&gt;(<span class="keyword">new</span> B());  </span><br><span class="line">        D&lt;C&gt; c = <span class="keyword">new</span> D&lt;C&gt;(<span class="keyword">new</span> C());  </span><br><span class="line">        a.f();  </span><br><span class="line">        b.f();  </span><br><span class="line">        c.f();  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>D中的f方法通过获取D的Class类来获取其类型信息，其打印的结果如下：<br><img src="/2016/03/22/关于一些基础的Java问题的解答（七）/1.jpg" alt="运行时泛型获取结果"></p>
+<p>并不是我们传入的参数A、B、C，真是太失望了。这就是Java泛型擦除的特点，残酷的现实告诉我们在泛型代码的内部，我们无法获得任何有关泛型的参数类型信息，擦除会把类的类型信息给擦除到它的边界（如果有多个边界会擦除到第一个）。也就是说，对于上面例子中的T，我们只能把其当做Object类来处理（Object类为所有类的父类）。擦除使得所有与类型信息相关的操作都无法在泛型代码中进行，extends会稍微改善一点这种情况：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fa</span><span class="params">()</span> </span>&#123;&#125;;  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span> &lt;<span class="title">T</span>&gt; </span>&#123; <span class="comment">// 擦除到Object  </span></span><br><span class="line">    T t;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">f</span><span class="params">(Object a)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">if</span> (a <span class="keyword">instanceof</span> T) &#123;&#125; <span class="comment">// error，不知道具体的类型信息  </span></span><br><span class="line">        T var = <span class="keyword">new</span> T(); <span class="comment">// error，不知道该类型是否有默认构造函数  </span></span><br><span class="line">        T[] array = <span class="keyword">new</span> T[<span class="number">1</span>]; <span class="comment">// error    </span></span><br><span class="line">        t.fa(); <span class="comment">// error  </span></span><br><span class="line">    &#125;  </span><br><span class="line">&#125;;  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">D</span> &lt;<span class="title">T</span> <span class="keyword">extends</span> <span class="title">A</span>&gt; </span>&#123; <span class="comment">// 擦除到A  </span></span><br><span class="line">    T t;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">f</span><span class="params">(Object a)</span> </span>&#123;  </span><br><span class="line">        t.fa(); <span class="comment">// this works  </span></span><br><span class="line">    &#125;  </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h1 id="解析XML的几种方式的原理与特点：DOM、SAX、PULL"><a href="#解析XML的几种方式的原理与特点：DOM、SAX、PULL" class="headerlink" title="解析XML的几种方式的原理与特点：DOM、SAX、PULL"></a>解析XML的几种方式的原理与特点：DOM、SAX、PULL</h1><h2 id="DOM"><a href="#DOM" class="headerlink" title="DOM"></a>DOM</h2><p>DOM解析方法首先把xml文件读取到内存中，保存为节点树的形式，然后我们使用其API来读取树上的节点的信息。由于DOM解析xml文件时需要将其载入到内存，故xml文件较大时或内存较小的设备不适用该方法。<br>使用DOM解析xml主要步骤如下：</p>
+<ol>
+<li>使用DocumentBuilderFactory.newInstance方法获取DOM工厂实例</li>
+<li>使用工厂的newDocumentBuilder方法获取builder</li>
+<li>使用builder的parse方法解析xml获取生成的Document对象</li>
+<li>使用Document的getDocumentElement方法获取根节点</li>
+<li>调用根节点的getChildNodes方法遍历子节点</li>
+</ol>
+<h2 id="SAX"><a href="#SAX" class="headerlink" title="SAX"></a>SAX</h2><p>与DOM不同，SAX全称为Simple API for XML ，是基于事件驱动的解析手段。对于SAX而言分析xml能够立即开始，而不用等待所有的数据被处理。而且，由于SAX只是在读取数据时检查数据，因此不需要将数据存储在内存中。一般来说SAX解析比DOM解析快许多，但由于SAX解析xml文件是一次性处理，因此相对DOM而言没有那么灵活方便。<br>使用SAX解析主要步骤如下：</p>
+<ol>
+<li>调用SAXParserFactory.newInstance获取SAX工厂实例</li>
+<li>调用工厂的newSAXParser方法获取解析器</li>
+<li>调用解析器的getXMLReader获取事件源reader</li>
+<li>调用setContentHandler方法为事件源reader设置处理器</li>
+<li>调用parse方法开始解析数据</li>
+</ol>
+<h2 id="PULL"><a href="#PULL" class="headerlink" title="PULL"></a>PULL</h2><p>与SAX类似，Pull也是一种基于事件驱动的xml解析器。与SAX不同在于Pull让我们手动控制解析进度，通过返回eventType来让我们自行处理xml的节点，而不是调用回调函数，eventType有如下几种：</p>
+<ul>
+<li>读取到xml的声明返回      START_DOCUMENT</li>
+<li>读取到xml的结束返回       END_DOCUMENT </li>
+<li>读取到xml的开始标签返回 START_TAG </li>
+<li>读取到xml的结束标签返回 END_TAG</li>
+<li>读取到xml的文本返回       TEXT</li>
+</ul>
+<p>使用Pull解析的主要步骤如下：</p>
+<ol>
+<li>使用XmlPullParserFactory.newInstance方法获取Pull工厂</li>
+<li>调用工厂newPullParser方法返回解析器</li>
+<li>使用解析器setInput方法设置解析文件</li>
+<li>调用next方法解析下一行，调用getEventType方法获取当前的解析情况</li>
+</ol>
+<p>3种解析方法的代码如下：<br>DOM与SAX：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;  </span><br><span class="line">        <span class="comment">// 桌面的xml文件,文件内容如下  </span></span><br><span class="line">        <span class="comment">// &lt;all name="testData"&gt;  </span></span><br><span class="line">        <span class="comment">// &lt;item first="1" second="A" third="一"/&gt;  </span></span><br><span class="line">        <span class="comment">// &lt;item first="2" second="B" third="二"/&gt;  </span></span><br><span class="line">        <span class="comment">// &lt;item first="3" second="C" third="三"/&gt;  </span></span><br><span class="line">        <span class="comment">// &lt;item first="4" second="D" third="四"/&gt;  </span></span><br><span class="line">        <span class="comment">// &lt;item first="5" second="E" third="五"/&gt;  </span></span><br><span class="line">        <span class="comment">// &lt;/all&gt;  </span></span><br><span class="line">        File file = <span class="keyword">new</span> File(<span class="string">"C:/Users/Administrator/Desktop/test.xml"</span>);  </span><br><span class="line">        <span class="comment">// 文件流  </span></span><br><span class="line">        FileInputStream fis = <span class="keyword">new</span> FileInputStream(file);  </span><br><span class="line">  </span><br><span class="line">        &#123;  </span><br><span class="line">            <span class="comment">// DOM解析xml  </span></span><br><span class="line">            System.out.println(<span class="string">"DOM:"</span>);  </span><br><span class="line">            <span class="comment">// 获取DOM工厂实例  </span></span><br><span class="line">            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();  </span><br><span class="line">            <span class="comment">// 生成builder  </span></span><br><span class="line">            DocumentBuilder builder = factory.newDocumentBuilder();  </span><br><span class="line">            <span class="comment">// 解析文件  </span></span><br><span class="line">            Document document = builder.parse(file);  </span><br><span class="line">            <span class="comment">// 获取根节点  </span></span><br><span class="line">            Element element = document.getDocumentElement();  </span><br><span class="line">            System.out.println(element.getTagName() + <span class="string">" "</span> + element.getAttribute(<span class="string">"name"</span>));  </span><br><span class="line">            <span class="comment">// 获取子节点列表  </span></span><br><span class="line">            NodeList nodeList = element.getChildNodes();  </span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nodeList.getLength(); i++) &#123;  </span><br><span class="line">                Node node = nodeList.item(i);  </span><br><span class="line">                <span class="comment">// 节点类型为元素节点  </span></span><br><span class="line">                <span class="keyword">if</span> (node.getNodeType() == Node.ELEMENT_NODE) &#123;  </span><br><span class="line">                    Element child = (Element) node;  </span><br><span class="line">                    <span class="comment">// 输出标签名和元素内容  </span></span><br><span class="line">                    System.out.println(child.getTagName() + <span class="string">" "</span> + child.getAttribute(<span class="string">"first"</span>) + <span class="string">" "</span>  </span><br><span class="line">                            + child.getAttribute(<span class="string">"second"</span>) + <span class="string">" "</span> + child.getAttribute(<span class="string">"third"</span>));  </span><br><span class="line">                &#125;  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;  </span><br><span class="line">        System.out.println(<span class="string">""</span>); <span class="comment">// empty line  </span></span><br><span class="line">        &#123;  </span><br><span class="line">            <span class="comment">// SAX解析xml  </span></span><br><span class="line">            System.out.println(<span class="string">"SAX:"</span>);  </span><br><span class="line">            <span class="comment">// 获取SAX工厂实例  </span></span><br><span class="line">            SAXParserFactory factory = SAXParserFactory.newInstance();  </span><br><span class="line">            <span class="comment">// 获取SAX解析器  </span></span><br><span class="line">            SAXParser parser = factory.newSAXParser();  </span><br><span class="line">            <span class="comment">// 获取reader  </span></span><br><span class="line">            XMLReader reader = parser.getXMLReader();  </span><br><span class="line">            <span class="comment">// 设置解析源和处理器  </span></span><br><span class="line">            reader.setContentHandler(<span class="keyword">new</span> MySAXHandler()); <span class="comment">// 在parse之前设置  </span></span><br><span class="line">            reader.parse(<span class="keyword">new</span> InputSource(fis));  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="comment">// 自定义SAX处理器  </span></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">MySAXHandler</span> <span class="keyword">extends</span> <span class="title">DefaultHandler</span> </span>&#123;  </span><br><span class="line">        <span class="meta">@Override</span>  </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">startDocument</span><span class="params">()</span> <span class="keyword">throws</span> SAXException </span>&#123;  </span><br><span class="line">            <span class="comment">// 解析文档开始时调用  </span></span><br><span class="line">            <span class="keyword">super</span>.startDocument();  </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="meta">@Override</span>  </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">startElement</span><span class="params">(String uri, String localName, String qName, Attributes attributes)</span>  </span></span><br><span class="line"><span class="function">                <span class="keyword">throws</span> SAXException </span>&#123;  </span><br><span class="line">            <span class="comment">// 解析元素开始时调用  </span></span><br><span class="line">            <span class="comment">// 打印元素名  </span></span><br><span class="line">            System.out.print(qName);  </span><br><span class="line">            <span class="comment">// 打印元素属性  </span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; attributes.getLength(); i++)  </span><br><span class="line">                System.out.print(<span class="string">" "</span> + attributes.getValue(i));  </span><br><span class="line">            System.out.println(<span class="string">""</span>);  </span><br><span class="line">            <span class="keyword">super</span>.startElement(uri, localName, qName, attributes);  </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="meta">@Override</span>  </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">endElement</span><span class="params">(String uri, String localName, String qName)</span> <span class="keyword">throws</span> SAXException </span>&#123;  </span><br><span class="line">            <span class="comment">// 解析元素结束时调用  </span></span><br><span class="line">            <span class="keyword">super</span>.endElement(uri, localName, qName);  </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="meta">@Override</span>  </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">endDocument</span><span class="params">()</span> <span class="keyword">throws</span> SAXException </span>&#123;  </span><br><span class="line">            <span class="comment">// 解析文档结束时调用  </span></span><br><span class="line">            <span class="keyword">super</span>.endDocument();  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>Pull（此为Android解析中国天气网省份信息xml文件的例子）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">XmlPullParserFactory factory = XmlPullParserFactory  </span><br><span class="line">        .newInstance();  </span><br><span class="line">XmlPullParser xmlPullParser = factory.newPullParser();  </span><br><span class="line"><span class="comment">// use gb2312 encode  </span></span><br><span class="line">ByteArrayInputStream is = <span class="keyword">new</span> ByteArrayInputStream(  </span><br><span class="line">        response.getBytes(<span class="string">"GB2312"</span>));  </span><br><span class="line">xmlPullParser.setInput(is, <span class="string">"GB2312"</span>);  </span><br><span class="line"><span class="keyword">int</span> eventType = xmlPullParser.getEventType();  </span><br><span class="line">String provinceName = <span class="string">""</span>;  </span><br><span class="line">String provinceCode = <span class="string">""</span>;  </span><br><span class="line"><span class="keyword">while</span> (eventType != XmlPullParser.END_DOCUMENT) &#123;  </span><br><span class="line">    String nodeName = xmlPullParser.getName();  </span><br><span class="line">    <span class="keyword">switch</span> (eventType) &#123;  </span><br><span class="line">    <span class="comment">// start parse node  </span></span><br><span class="line">    <span class="keyword">case</span> XmlPullParser.START_TAG:  </span><br><span class="line">        <span class="keyword">if</span> (<span class="string">"city"</span>.equals(nodeName)) &#123;  </span><br><span class="line">            provinceName = xmlPullParser.getAttributeValue(<span class="string">""</span>,  </span><br><span class="line">                    <span class="string">"quName"</span>);  </span><br><span class="line">            provinceCode = xmlPullParser.getAttributeValue(<span class="string">""</span>,  </span><br><span class="line">                    <span class="string">"pyName"</span>);  </span><br><span class="line">            Province province = <span class="keyword">new</span> Province();  </span><br><span class="line">            province.setProvinceName(provinceName);  </span><br><span class="line">            province.setProvinceCode(provinceCode);  </span><br><span class="line">            coolWeatherDB.saveProvince(province);  </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="keyword">break</span>;  </span><br><span class="line">    <span class="keyword">default</span>:  </span><br><span class="line">        <span class="keyword">break</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">    eventType = xmlPullParser.next();  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>本人对三种解析方法的总结如下：</p>
+<ul>
+<li>需要解析小的xml文件，需要重复解析xml文件或需要对xml文件中的节点进行删除修改排序等操作：使用DOM</li>
+<li>需要解析较大的xml文件，只需要解析一次的xml文件：使用SAX或Pull</li>
+<li>只需要手动解析部分的xml文件：使用Pull</li>
+</ul>
+<h1 id="Java与C-对比"><a href="#Java与C-对比" class="headerlink" title="Java与C++对比"></a>Java与C++对比</h1><p>Java是由C++发展而来的，保留了C++的大部分内容，其编程方式类似于C++，但是摒弃了C++的诸多不合理之处，Java是纯面向对象的编程语言。Java和C++的区别主要如下：</p>
+<h2 id="都是类与对象"><a href="#都是类与对象" class="headerlink" title="都是类与对象"></a>都是类与对象</h2><p>在Java中，一切的组件都是类与对象，没有单独的函数、方法与全局变量。C++中由于可以使用C代码，故C++中类对象与单独的函数方法共存。</p>
+<h2 id="多重继承"><a href="#多重继承" class="headerlink" title="多重继承"></a>多重继承</h2><p>在C++中类可以多重继承，但这有可能会引起菱形问题。而在Java中类不允许多重继承，一个类只能继承一个基类，但可以实现多个接口，避免了菱形问题的产生。</p>
+<h2 id="操作符重载"><a href="#操作符重载" class="headerlink" title="操作符重载"></a>操作符重载</h2><p>C++允许重载操作符，而Java不允许。</p>
+<h2 id="数据类型大小"><a href="#数据类型大小" class="headerlink" title="数据类型大小"></a>数据类型大小</h2><p>在C++中，不同的平台上，编译器对基本数据类型分别分配不同的字节数，导致了代码数据的不可移植性。在Java中，采用基于IEEE标准的数据类型，无论任何硬件平台上对数据类型的位数分配总是固定的。（然而boolean基本类型要看JVM的实现）</p>
+<h2 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h2><p>C++需要程序员显式地声明和释放内存。Java中有垃圾回收器，会在程序内存不足或空闲之时在后台自行回收不再使用的内存，不需要程序员管理。</p>
+<h2 id="指针"><a href="#指针" class="headerlink" title="指针"></a>指针</h2><p>指针是C++中最灵活也最容易出错的数据类型。Java中为了简单安全去掉了指针类型。</p>
+<h2 id="类型转换"><a href="#类型转换" class="headerlink" title="类型转换"></a>类型转换</h2><p>C++中，会出现数据类型的隐含转换,涉及到自动强制类型转换。Java中系统要对对象的处理进行严格的相容性检查，防止不安全的转换。如果需要，必须由程序显式进行强制类型转换。（如int类型不能直接转换为boolean类型）</p>
+<h2 id="方法绑定"><a href="#方法绑定" class="headerlink" title="方法绑定"></a>方法绑定</h2><p>C++默认的方法绑定为静态绑定，如果要使用动态绑定实现多态需要用到关键字virtual。Java默认的方法绑定为动态绑定，只有final方法和static方法为静态绑定。</p>
+<p>目前博主就想到这么多，还有的以后再补充。</p>
+<h1 id="Java1-5、1-7与1-8新特性"><a href="#Java1-5、1-7与1-8新特性" class="headerlink" title="Java1.5、1.7与1.8新特性"></a>Java1.5、1.7与1.8新特性</h1><h2 id="JDK1-5"><a href="#JDK1-5" class="headerlink" title="JDK1.5"></a>JDK1.5</h2><ol>
+<li>自动装箱与拆箱：基本类型与包装类型自动互换</li>
+<li>枚举类型的引入</li>
+<li>静态导入：import static，可直接使用静态变量与方法</li>
+<li>可变参数类型</li>
+<li>泛型</li>
+<li>for-each循环</li>
+</ol>
+<h2 id="JDK1-7"><a href="#JDK1-7" class="headerlink" title="JDK1.7"></a>JDK1.7</h2><ol>
+<li>switch允许传入字符串</li>
+<li>泛型实例化类型自动推断：List<string> tempList = new ArrayList&lt;&gt;()</string></li>
+<li>对集合的支持，创建List / Set / Map 时写法更简单了，如：List&lt; String&gt; list = [“item”]，String item = list[0]，Set&lt; String &gt; set = {“item”}等</li>
+<li>允许在数字中使用下划线</li>
+<li>二进制符号加入，可用作二进制字符前加上 0b 来创建一个二进制类型：int binary = 0b1001_1001</li>
+<li>一个catch里捕捉多个异常类型，‘|’分隔</li>
+</ol>
+<h2 id="JDK1-8"><a href="#JDK1-8" class="headerlink" title="JDK1.8"></a>JDK1.8</h2><ol>
+<li>允许为接口添加默认方法，又称为拓展方法，使用关键字default实现</li>
+<li>Lambda 表达式</li>
+<li>Date API</li>
+<li>多重注解</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/基础知识/" rel="tag"># 基础知识</a>
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/03/22/算法导论之红黑树的学习/" rel="next" title="算法导论之红黑树的学习">
+                <i class="fa fa-chevron-left"></i> 算法导论之红黑树的学习
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/03/26/算法二叉搜索树之AVL树/" rel="prev" title="算法二叉搜索树之AVL树">
+                算法二叉搜索树之AVL树 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#反射的作用与原理"><span class="nav-number">1.</span> <span class="nav-text">反射的作用与原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#泛型常用特点，List-lt-String-gt-能否转为List-lt-Object-gt"><span class="nav-number">2.</span> <span class="nav-text">泛型常用特点，List&lt;String&gt;能否转为List&lt;Object&gt;</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#带参数类型的类，泛型类"><span class="nav-number">2.1.</span> <span class="nav-text">带参数类型的类，泛型类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#带参数类型的方法，泛型方法"><span class="nav-number">2.2.</span> <span class="nav-text">带参数类型的方法，泛型方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关键字"><span class="nav-number">2.3.</span> <span class="nav-text">关键字</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#擦除"><span class="nav-number">2.4.</span> <span class="nav-text">擦除</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解析XML的几种方式的原理与特点：DOM、SAX、PULL"><span class="nav-number">3.</span> <span class="nav-text">解析XML的几种方式的原理与特点：DOM、SAX、PULL</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#DOM"><span class="nav-number">3.1.</span> <span class="nav-text">DOM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SAX"><span class="nav-number">3.2.</span> <span class="nav-text">SAX</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PULL"><span class="nav-number">3.3.</span> <span class="nav-text">PULL</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java与C-对比"><span class="nav-number">4.</span> <span class="nav-text">Java与C++对比</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#都是类与对象"><span class="nav-number">4.1.</span> <span class="nav-text">都是类与对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多重继承"><span class="nav-number">4.2.</span> <span class="nav-text">多重继承</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#操作符重载"><span class="nav-number">4.3.</span> <span class="nav-text">操作符重载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据类型大小"><span class="nav-number">4.4.</span> <span class="nav-text">数据类型大小</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内存管理"><span class="nav-number">4.5.</span> <span class="nav-text">内存管理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#指针"><span class="nav-number">4.6.</span> <span class="nav-text">指针</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#类型转换"><span class="nav-number">4.7.</span> <span class="nav-text">类型转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方法绑定"><span class="nav-number">4.8.</span> <span class="nav-text">方法绑定</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java1-5、1-7与1-8新特性"><span class="nav-number">5.</span> <span class="nav-text">Java1.5、1.7与1.8新特性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#JDK1-5"><span class="nav-number">5.1.</span> <span class="nav-text">JDK1.5</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JDK1-7"><span class="nav-number">5.2.</span> <span class="nav-text">JDK1.7</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JDK1-8"><span class="nav-number">5.3.</span> <span class="nav-text">JDK1.8</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

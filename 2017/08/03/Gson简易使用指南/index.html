@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,应用,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="（转载）Gson的基本用法、属性重命名 @SerializedName 注解的使用、Gson中使用泛型、结语">
+<meta name="keywords" content="android,应用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Gson简易使用指南">
+<meta property="og:url" content="https://superxlcr.github.io/2017/08/03/Gson简易使用指南/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="（转载）Gson的基本用法、属性重命名 @SerializedName 注解的使用、Gson中使用泛型、结语">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.684Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Gson简易使用指南">
+<meta name="twitter:description" content="（转载）Gson的基本用法、属性重命名 @SerializedName 注解的使用、Gson中使用泛型、结语">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2017/08/03/Gson简易使用指南/">
+
+
+
+
+
+  <title>Gson简易使用指南 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2017/08/03/Gson简易使用指南/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Gson简易使用指南</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-03T10:34:22+08:00">
+                2017-08-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.1k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="你真的会用Gson吗-Gson使用指南"><a href="#你真的会用Gson吗-Gson使用指南" class="headerlink" title="你真的会用Gson吗?Gson使用指南"></a>你真的会用Gson吗?Gson使用指南</h1><p>本文为作者根据日常使用结合Gson源码注释及wiki所作的原创内容，转载请注明出处。</p>
+<p>本文链接：<a href="http://www.jianshu.com/p/e740196225a4" target="_blank" rel="noopener">http://www.jianshu.com/p/e740196225a4</a></p>
+<p>JSON (<a href="http://json.org/json-zh.html" target="_blank" rel="noopener">官网</a>) 是一种文本形式的数据交换格式，它比XML更轻量、比二进制容易阅读和编写，调式也更加方便。其重要性不言而喻。解析和生成的方式很多，Java中最常用的类库有：JSON-Java、Gson、Jackson、FastJson等。</p>
+<p><strong>注：此系列基于Gson 2.4。</strong><br>对Gson使用很自信的大大可以点击关闭啦。<br>本篇文章的主要内容：</p>
+<ul>
+<li>Gson的基本用法</li>
+<li>属性重命名 @SerializedName 注解的使用</li>
+<li>Gson中使用泛型</li>
+</ul>
+<h1 id="Gson的基本用法"><a href="#Gson的基本用法" class="headerlink" title="Gson的基本用法"></a>Gson的基本用法</h1><p>Gson提供了fromJson() 和toJson() 两个直接用于解析和生成的方法，前者实现反序列化，后者实现了序列化。同时每个方法都提供了重载方法，我常用的总共有5个。<br><strong>基本数据类型的解析</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Gson gson = <span class="keyword">new</span> Gson();</span><br><span class="line"><span class="keyword">int</span> i = gson.fromJson(<span class="string">"100"</span>, <span class="keyword">int</span>.class);              <span class="comment">//100</span></span><br><span class="line"><span class="keyword">double</span> d = gson.fromJson(<span class="string">"\"99.99\""</span>, <span class="keyword">double</span>.class);  <span class="comment">//99.99</span></span><br><span class="line"><span class="keyword">boolean</span> b = gson.fromJson(<span class="string">"true"</span>, <span class="keyword">boolean</span>.class);     <span class="comment">// true</span></span><br><span class="line">String str = gson.fromJson(<span class="string">"String"</span>, String.class);   <span class="comment">// String</span></span><br></pre></td></tr></table></figure>
+
+<p>注：不知道你是否注意到了第2、3行有什么不一样没<br><strong>基本数据类型的生成</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Gson gson = <span class="keyword">new</span> Gson();</span><br><span class="line">String jsonNumber = gson.toJson(<span class="number">100</span>);       <span class="comment">// 100</span></span><br><span class="line">String jsonBoolean = gson.toJson(<span class="keyword">false</span>);    <span class="comment">// false</span></span><br><span class="line">String jsonString = gson.toJson(<span class="string">"String"</span>); <span class="comment">//"String"</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>POJO类的生成与解析</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line">    <span class="comment">//省略其它</span></span><br><span class="line">    <span class="keyword">public</span> String name;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> age;</span><br><span class="line">    <span class="keyword">public</span> String emailAddress;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>生成JSON：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Gson gson = <span class="keyword">new</span> Gson();</span><br><span class="line">User user = <span class="keyword">new</span> User(<span class="string">"怪盗kidou"</span>,<span class="number">24</span>);</span><br><span class="line">String jsonObject = gson.toJson(user); <span class="comment">// &#123;"name":"怪盗kidou","age":24&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>解析JSON：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Gson gson = <span class="keyword">new</span> Gson();</span><br><span class="line">String jsonString = <span class="string">"&#123;\"name\":\"怪盗kidou\",\"age\":24&#125;"</span>;</span><br><span class="line">User user = gson.fromJson(jsonString, User.class);</span><br></pre></td></tr></table></figure>
+
+<h1 id="属性重命名-SerializedName-注解的使用"><a href="#属性重命名-SerializedName-注解的使用" class="headerlink" title="属性重命名 @SerializedName 注解的使用"></a>属性重命名 @SerializedName 注解的使用</h1><p>从上面POJO的生成与解析可以看出json的字段和值是的名称和类型是一一对应的，但也有一定容错机制(如第一个例子第3行将字符串的99.99转成double型，你可别告诉我都是字符串啊)，但有时候也会出现一些不和谐的情况，如：</p>
+<p>期望的json格式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;name&quot;:&quot;怪盗kidou&quot;,&quot;age&quot;:24,&quot;emailAddress&quot;:&quot;ikidou@example.com&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>实际</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;name&quot;:&quot;怪盗kidou&quot;,&quot;age&quot;:24,&quot;email_address&quot;:&quot;ikidou@example.com&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这对于使用PHP作为后台开发语言时很常见的情况，php和js在命名时一般采用下划线风格，而Java中一般采用的驼峰法，让后台的哥们改吧 前端和后台都不爽，但要自己使用下划线风格时我会感到不适应，怎么办?难到没有两全齐美的方法么?<br>我们知道Gson在序列化和反序列化时需要使用反射，说到反射就不得不想到注解,一般各类库都将注解放到annotations包下，打开源码在com.google.gson包下果然有一个annotations，里面有一个SerializedName的注解类，这应该就是我们要找的。<br>那么对于json中email_address这个属性对应POJO的属性则变成：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SerializedName</span>(<span class="string">"email_address"</span>)</span><br><span class="line"><span class="keyword">public</span> String emailAddress;</span><br></pre></td></tr></table></figure>
+
+<p>这样的话，很好的保留了前端、后台、Android/java各自的命名习惯。<br>你以为这样就完了么?<br>如果接中设计不严谨或者其它地方可以重用该类，其它字段都一样，就emailAddress 字段不一样，比如有下面三种情况那怎么?重新写一个?</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;name&quot;:&quot;怪盗kidou&quot;,&quot;age&quot;:24,&quot;emailAddress&quot;:&quot;ikidou@example.com&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;name&quot;:&quot;怪盗kidou&quot;,&quot;age&quot;:24,&quot;email_address&quot;:&quot;ikidou@example.com&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;name&quot;:&quot;怪盗kidou&quot;,&quot;age&quot;:24,&quot;email&quot;:&quot;ikidou@example.com&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>为POJO字段提供备选属性名</strong></p>
+<p>SerializedName注解提供了两个属性，上面用到了其中一个，别外还有一个属性alternate，接收一个String数组。</p>
+<p>注：alternate需要2.4版本 </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SerializedName</span>(value = <span class="string">"emailAddress"</span>, alternate = &#123;<span class="string">"email"</span>, <span class="string">"email_address"</span>&#125;)</span><br><span class="line"><span class="keyword">public</span> String emailAddress;</span><br></pre></td></tr></table></figure>
+
+<p>当上面的三个属性(email_address、email、emailAddress)都中出现任意一个时均可以得到正确的结果。</p>
+<p>注：当多种情况同时出时，以最后一个出现的值为准。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Gson gson = <span class="keyword">new</span> Gson();</span><br><span class="line">String json = <span class="string">"&#123;\"name\":\"怪盗kidou\",\"age\":24,\"emailAddress\":\"ikidou_1@example.com\",\"email\":\"ikidou_2@example.com\",\"email_address\":\"ikidou_3@example.com\"&#125;"</span>;</span><br><span class="line">User user = gson.fromJson(json, User.class);</span><br><span class="line">System.out.println(user.emailAddress); <span class="comment">// ikidou_3@example.com</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="Gson中使用泛型"><a href="#Gson中使用泛型" class="headerlink" title="Gson中使用泛型"></a>Gson中使用泛型</h1><p>上面了解的JSON中的Number、boolean、Object和String，现在说一下Array。<br>例：JSON字符串数组</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[&quot;Android&quot;,&quot;Java&quot;,&quot;PHP&quot;]</span><br></pre></td></tr></table></figure>
+
+<p>当我们要通过Gson解析这个json时，一般有两种方式：使用数组，使用List。而List对于增删都是比较方便的，所以实际使用是还是List比较多。<br>数组比较简单</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Gson gson = <span class="keyword">new</span> Gson();</span><br><span class="line">String jsonArray = <span class="string">"[\"Android\",\"Java\",\"PHP\"]"</span>;</span><br><span class="line">String[] strings = gson.fromJson(jsonArray, String[].class);</span><br></pre></td></tr></table></figure>
+
+<p>但对于List将上面的代码中的 String[].class 直接改为 List&lt;String&gt;.class 是行不通的。对于Java来说List&lt;String&gt; 和List&lt;User&gt; 这俩个的字节码文件只一个那就是List.class，这是Java泛型使用时要注意的问题<br><strong>泛型擦除</strong>。<br>为了解决的上面的问题，Gson为我们提供了TypeToken来实现对泛型的支持，所以当我们希望使用将以上的数据解析为List&lt;String&gt;时需要这样写。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Gson gson = <span class="keyword">new</span> Gson();</span><br><span class="line">String jsonArray = <span class="string">"[\"Android\",\"Java\",\"PHP\"]"</span>;</span><br><span class="line">String[] strings = gson.fromJson(jsonArray, String[].class);</span><br><span class="line">List&lt;String&gt; stringList = gson.fromJson(jsonArray, <span class="keyword">new</span> TypeToken&lt;List&lt;String&gt;&gt;() &#123;&#125;.getType());</span><br></pre></td></tr></table></figure>
+
+<p>注：<br>TypeToken的构造方法是protected修饰的,所以上面才会写成</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">new TypeToken&lt;List&lt;String&gt;&gt;() &#123;&#125;.getType()</span><br></pre></td></tr></table></figure>
+
+<p>而不是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">new TypeToken&lt;List&lt;String&gt;&gt;().getType()</span><br></pre></td></tr></table></figure>
+
+<p><strong>泛型解析对接口POJO的设计影响</strong></p>
+<p>泛型的引入可以减少无关的代码，如我现在所在公司接口返回的数据分为两类：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;code&quot;:&quot;0&quot;,&quot;message&quot;:&quot;success&quot;,&quot;data&quot;:&#123;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;code&quot;:&quot;0&quot;,&quot;message&quot;:&quot;success&quot;,&quot;data&quot;:[]&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们真正需要的data所包含的数据，而code只使用一次，message则几乎不用。如果Gson不支持泛型或不知道Gson支持泛型的同学一定会这么定义POJO。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserResponse</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> code;</span><br><span class="line">    <span class="keyword">public</span> String message;</span><br><span class="line">    <span class="keyword">public</span> User data;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当其它接口的时候又重新定义一个XXResponse将data的类型改成XX，很明显code，和message被重复定义了多次，通过泛型的话我们可以将code和message字段抽取到一个Result的类中，这样我们只需要编写data字段所对应的POJO即可，更专注于我们的业务逻辑。如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Result</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> code;</span><br><span class="line">    <span class="keyword">public</span> String message;</span><br><span class="line">    <span class="keyword">public</span> T data;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>那么对于data字段是User时则可以写为 Result&lt;User&gt; ,当是个列表的时候为Result&lt;List&lt;User&gt;&gt;，其它同理。</p>
+<h1 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h1><p>本文主要通过代码向各位读者讲解了Gson的基本用法，以后还会更新更多更高级的用法，如果你还不熟悉 <strong>注解</strong>和<strong>泛型</strong> 那么你要多多努力啦。<br>如果你有其它的想了解的内容(不限于Gson)请给我留言评论，水平有限，欢迎拍砖。<br><strong>补充</strong></p>
+<p>有说看不懂Result那段怎么个简化法，下面给个两个完整的例子，User和List&lt;User&gt; 。<br>没有引入泛型之前时写法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public class UserResult &#123;</span><br><span class="line">    public int code;</span><br><span class="line">    public String message;</span><br><span class="line">    public User data;</span><br><span class="line">&#125;</span><br><span class="line">//=========</span><br><span class="line">public class UserListResult &#123;</span><br><span class="line">    public int code;</span><br><span class="line">    public String message;</span><br><span class="line">    public List&lt;User&gt; data;</span><br><span class="line">&#125;</span><br><span class="line">//=========</span><br><span class="line">String json = &quot;&#123;..........&#125;&quot;;</span><br><span class="line">Gson gson = new Gson();</span><br><span class="line">UserResult userResult = gson.fromJson(json,UserResult.class);</span><br><span class="line">User user = userResult.data;</span><br><span class="line"></span><br><span class="line">UserListResult userListResult = gson.fromJson(json,UserListResult.class);</span><br><span class="line">List&lt;User&gt; users = userListResult.data;</span><br></pre></td></tr></table></figure>
+
+<p>上面有两个类UserResult和UserListResult，有两个字段重复，一两个接口就算了，如果有上百个怎么办?不得累死?所以引入泛型。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">//不再重复定义Result类</span><br><span class="line">Type userType = new TypeToken&lt;Result&lt;User&gt;&gt;()&#123;&#125;.getType();</span><br><span class="line">Result&lt;User&gt; userResult = gson.fromJson(json,userType);</span><br><span class="line">User user = userResult.data;</span><br><span class="line"></span><br><span class="line">Type userListType = new TypeToken&lt;Result&lt;List&lt;User&gt;&gt;&gt;()&#123;&#125;.getType();</span><br><span class="line">Result&lt;List&lt;User&gt;&gt; userListResult = gson.fromJson(json,userListType);</span><br><span class="line">List&lt;User&gt; users = userListResult.data;</span><br></pre></td></tr></table></figure>
+
+<p>看出区别了么?引入了泛型之后虽然要多写一句话用于获取泛型信息，但是返回值类型很直观，也少定义了很多无关类。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/应用/" rel="tag"># 应用</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/" rel="next" title="用SpannableString打造绚丽多彩的文本显示效果">
+                <i class="fa fa-chevron-left"></i> 用SpannableString打造绚丽多彩的文本显示效果
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/03/Android列表滑动加载实现/" rel="prev" title="Android列表滑动加载实现">
+                Android列表滑动加载实现 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#你真的会用Gson吗-Gson使用指南"><span class="nav-number">1.</span> <span class="nav-text">你真的会用Gson吗?Gson使用指南</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Gson的基本用法"><span class="nav-number">2.</span> <span class="nav-text">Gson的基本用法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#属性重命名-SerializedName-注解的使用"><span class="nav-number">3.</span> <span class="nav-text">属性重命名 @SerializedName 注解的使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Gson中使用泛型"><span class="nav-number">4.</span> <span class="nav-text">Gson中使用泛型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#结语"><span class="nav-number">5.</span> <span class="nav-text">结语</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="基础知识,java,jvm,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="常见的GC收集器以及特点、Minor GC与Full GC执行时机、类加载的五个过程、类加载双亲委派模型、静态分派与动态分派">
+<meta name="keywords" content="基础知识,java,jvm">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于JVM的常见问题（二）">
+<meta property="og:url" content="https://superxlcr.github.io/2016/04/01/关于JVM的常见问题（二）/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="常见的GC收集器以及特点、Minor GC与Full GC执行时机、类加载的五个过程、类加载双亲委派模型、静态分派与动态分派">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2016/04/01/关于JVM的常见问题（二）/1.png">
+<meta property="og:image" content="https://superxlcr.github.io/2016/04/01/关于JVM的常见问题（二）/2.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2016/04/01/关于JVM的常见问题（二）/3.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2016/04/01/关于JVM的常见问题（二）/4.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2016/04/01/关于JVM的常见问题（二）/5.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2016/04/01/关于JVM的常见问题（二）/6.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2016/04/01/关于JVM的常见问题（二）/7.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2016/04/01/关于JVM的常见问题（二）/8.jpg">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.823Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="关于JVM的常见问题（二）">
+<meta name="twitter:description" content="常见的GC收集器以及特点、Minor GC与Full GC执行时机、类加载的五个过程、类加载双亲委派模型、静态分派与动态分派">
+<meta name="twitter:image" content="https://superxlcr.github.io/2016/04/01/关于JVM的常见问题（二）/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2016/04/01/关于JVM的常见问题（二）/">
+
+
+
+
+
+  <title>关于JVM的常见问题（二） | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2016/04/01/关于JVM的常见问题（二）/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">关于JVM的常见问题（二）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-01T10:56:14+08:00">
+                2016-04-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/jvm/" itemprop="url" rel="index">
+                    <span itemprop="name">jvm</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上一篇文章的传送门：<a href="/2016/03/28/关于JVM的常见问题（一）/">关于JVM的常见问题（一）</a></p>
+<h1 id="常见的GC收集器以及特点"><a href="#常见的GC收集器以及特点" class="headerlink" title="常见的GC收集器以及特点"></a>常见的GC收集器以及特点</h1><p>常见的GC收集器如下图所示，连线代表可搭配使用：<br><img src="/2016/04/01/关于JVM的常见问题（二）/1.png" alt="常见的GC收集器示意图"></p>
+<h2 id="Serial收集器（串行收集器）"><a href="#Serial收集器（串行收集器）" class="headerlink" title="Serial收集器（串行收集器）"></a>Serial收集器（串行收集器）</h2><p>用于新生代的单线程收集器，收集时需要暂停所有工作线程（Stop the world）。优点在于：简单高效，单个CPU时没有线程交互的开销，堆较小时停顿时间不长。常与Serial Old 收集器一起使用，示意图如下所示：<br><img src="/2016/04/01/关于JVM的常见问题（二）/2.jpg" alt="Serial收集器示意图"></p>
+<h2 id="ParNew收集器（parallel-new-收集器，新生代并行收集器）"><a href="#ParNew收集器（parallel-new-收集器，新生代并行收集器）" class="headerlink" title="ParNew收集器（parallel new 收集器，新生代并行收集器）"></a>ParNew收集器（parallel new 收集器，新生代并行收集器）</h2><p>Serial收集器多线程版本，除了使用多线程外和Serial收集器一模一样。常与Serial Old 收集器一起使用，示意图如下：<br><img src="/2016/04/01/关于JVM的常见问题（二）/3.jpg" alt="ParNew收集器示意图"></p>
+<h2 id="Parallel-Scavenge收集器"><a href="#Parallel-Scavenge收集器" class="headerlink" title="Parallel Scavenge收集器"></a>Parallel Scavenge收集器</h2><p>与ParNew收集器一样是一款多线程收集器，其特点在于关注点与别的GC收集器不同：一般的GC收集器关注于缩短工作线程暂停的时间，而该收集器关注于吞吐量，因此也被称为吞吐量优先收集器。（吞吐量 = 用户运行代码时间 /  (用户运行代码时间 + 垃圾回收时间)）高吞吐量与停顿时间短相比主要强调任务快完成，因此常和Parallel Old 收集器一起使用（没有Parallel Old之前与Serial Old一起使用），示意图如下：<br><img src="/2016/04/01/关于JVM的常见问题（二）/4.jpg" alt="Parallel Scavenge收集器示意图"></p>
+<h2 id="Serial-Old收集器"><a href="#Serial-Old收集器" class="headerlink" title="Serial Old收集器"></a>Serial Old收集器</h2><p>Serial收集器的年老代版本，不再赘述。</p>
+<h2 id="Parallel-Old收集器"><a href="#Parallel-Old收集器" class="headerlink" title="Parallel Old收集器"></a>Parallel Old收集器</h2><p>年老代的并行收集器，在JDK1.6开始使用。</p>
+<h2 id="CMS收集器（Concurrent-Mark-Sweep，并发标记清除收集器）"><a href="#CMS收集器（Concurrent-Mark-Sweep，并发标记清除收集器）" class="headerlink" title="CMS收集器（Concurrent Mark Sweep，并发标记清除收集器）"></a>CMS收集器（Concurrent Mark Sweep，并发标记清除收集器）</h2><p>CMS收集器是一个年老代的收集器，是以最短回收停顿时间为目标的收集器，其示意图如下所示：<br><img src="/2016/04/01/关于JVM的常见问题（二）/5.jpg" alt="CMS收集器"></p>
+<p>CMS收集器基于标记清除算法实现，主要分为4个步骤：</p>
+<ul>
+<li>初始标记，需要stop the world，标记GC Root能关联到的对象，速度快</li>
+<li>并发标记，对GC Root执行可达性算法</li>
+<li>重新标记，需要stop the world，修复并发标记时因用户线程运行而产生的标记变化，所需时间比初始标记长，但远比并发标记短</li>
+<li>并发清理</li>
+</ul>
+<p>CMS收集器的缺点在于：</p>
+<ul>
+<li>其对于CPU资源很敏感。在并发阶段，虽然CMS收集器不会暂停用户线程，但是会因为占用了一部分CPU资源而导致应用程序变慢，总吞吐量降低。其默认启动的回收线程数是（cpu数量+3）/4，当cpu数较少的时候，会分掉大部分的cpu去执行收集器线程</li>
+<li>无法处理浮动垃圾，浮动垃圾即在并发清除阶段因为是并发执行，还会产生垃圾，这一部分垃圾即为浮动垃圾，要等下次收集</li>
+<li>CMS收集器使用的是标记清除算法，GC后会产生碎片</li>
+</ul>
+<h2 id="G1收集器（Garbage-First收集器）"><a href="#G1收集器（Garbage-First收集器）" class="headerlink" title="G1收集器（Garbage First收集器）"></a>G1收集器（Garbage First收集器）</h2><p>相比CMS收集器，G1收集器主要有两处改进：</p>
+<ul>
+<li>使用标记整理算法，确保GC后不会产生内存碎片</li>
+<li>可以精确控制停顿，允许指定消耗在垃圾回收上的时间</li>
+</ul>
+<p>G1收集器可以实现在基本不牺牲吞吐量的前提下完成低停顿的内存回收，这是由于它能够极力地避免全区域的垃圾收集，之前的收集器进行收集的范围都是整个新生代或老年代，而G1将整个Java堆（包括新生代、老年代）划分为多个大小固定的独立区域（Region），并且跟踪这些区域里面的垃圾堆积程度，在后台维护一个优先列表，每次根据允许的收集时间，优先回收垃圾最多的区域（这就是Garbage First名称的来由）。区域划分及有优先级的区域回收，保证了G1收集器在有限的时间内可以获得最高的收集效率。</p>
+<h1 id="Minor-GC与Full-GC执行时机"><a href="#Minor-GC与Full-GC执行时机" class="headerlink" title="Minor GC与Full GC执行时机"></a>Minor GC与Full GC执行时机</h1><p>Minor GC也叫Young GC，当年轻代内存满的时候会触发，会对年轻代进行GC<br>Full GC也叫Major GC，当年老代满的时候会触发，当我们调用System.gc时也可能会触发，会对年轻代和年老代进行GC</p>
+<h1 id="类加载的五个过程"><a href="#类加载的五个过程" class="headerlink" title="类加载的五个过程"></a>类加载的五个过程</h1><p>JVM把class文件加载的内存，并对数据进行校验、转换解析和初始化，最终形成JVM可以直接使用的Java类型的过程就是加载机制。<br>类从被加载到虚拟机内存中开始，到卸载出内存为止，它的生命周期包括了：加载(Loading)、验证(Verification)、准备(Preparation)、解析(Resolution)、初始化(Initialization)、使用(Using)、卸载(Unloading)七个阶段，其中验证、准备、解析三个部分统称链接。</p>
+<h2 id="加载"><a href="#加载" class="headerlink" title="加载"></a>加载</h2><p>在加载阶段，虚拟机需要完成以下事情：</p>
+<ol>
+<li>通过一个类的权限定名来获取定义此类的二进制字节流</li>
+<li>将这个字节流所代表的静态存储结构转化为方法区的运行时数据结构</li>
+<li>在java堆中生成一个代表这个类的java.lang.Class对象，作为方法去这些数据的访问入口</li>
+</ol>
+<h2 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h2><p>在验证阶段，虚拟机主要完成：</p>
+<ol>
+<li>文件格式验证：验证class文件格式规范</li>
+<li>元数据验证：这个阶段是对字节码描述的信息进行语义分析，以保证起描述的信息符合java语言规范要求</li>
+<li>字节码验证：进行数据流和控制流分析，这个阶段对类的方法体进行校验分析，这个阶段的任务是保证被校验类的方法在运行时不会做出危害虚拟机安全的行为</li>
+<li>符号引用验证：符号引用中通过字符串描述的全限定名是否能找到对应的类、符号引用类中的类，字段和方法的访问性(private、protected、public、default)是否可被当前类访问</li>
+</ol>
+<h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><p>准备阶段是正式为类变量（被static修饰的变量）分配内存并设置变量初始值（0值）的阶段，这些内存都将在方法区中进行分配</p>
+<h2 id="解析"><a href="#解析" class="headerlink" title="解析"></a>解析</h2><p>解析阶段是虚拟机将常量池内的符号引用替换为直接引用的过程<br>常见的解析有四种：</p>
+<ol>
+<li>类或接口的解析</li>
+<li>字段解析</li>
+<li>类方法解析</li>
+<li>接口方法解析</li>
+</ol>
+<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>初始化阶段才真正开始执行类中定义的java程序代码，初始化阶段是执行类构造器<clinit>()方法的过程</clinit></p>
+<h1 id="类加载双亲委派模型"><a href="#类加载双亲委派模型" class="headerlink" title="类加载双亲委派模型"></a>类加载双亲委派模型</h1><p>JVM运行的是Java字节码，而Java字节码需要通过类加载器找到对应的.class文件，并加载在内存中生成Class类供我们使用。类加载器的主要工作流程如下：</p>
+<p>loadClass（Java方法，确认由哪个加载器进行加载）-&gt;findClass（Java方法，寻找.class文件）-&gt;defineClass（native方法，通过.class文件在内存中生成Class类供使用）</p>
+<p>JVM的类加载有多个， 不同的类加载器用于搜索不同位置的.class文件，Java中的类加载器体系结构如下：<br><img src="/2016/04/01/关于JVM的常见问题（二）/6.jpg" alt="Java类加载器体系示意图"></p>
+<ul>
+<li>启动类加载器（Bootstrap ClassLoader）：是用本地代码实现的类装入器，它负责将 <java_runtime_home>/lib下面的类库加载到内存中（比如rt.jar）。由于引导类加载器涉及到虚拟机本地实现细节，开发者无法直接获取到启动类加载器的引用，所以不允许直接通过引用进行操作.<strong>该类加载器代码在JVM内核中，由native代码实现。</strong></java_runtime_home></li>
+<li>标准扩展类加载器：是由 Sun 的 ExtClassLoader（sun.misc.Launcher$ExtClassLoader）实现的。它负责将&lt; Java_Runtime_Home &gt;/lib/ext或者由系统变量 java.ext.dir指定位置中的类库加载到内存中。开发者可以直接使用标准扩展类加载器。<strong>该类加载器由Java代码实现。</strong></li>
+<li>应用程序类加载器：由sun.misc.Launcher$AppClassLoader实现，负责加载用户类路径classpath上所指定的类库，是类加载器ClassLoader中的getSystemClassLoader()方法的返回值，开发者可以直接使用应用程序类加载器，如果程序中没有自定义过类加载器，该加载器就是程序中默认的类加载器。<strong>该类加载器由Java代码实现。</strong></li>
+</ul>
+<p>值得注意的是：上述三个JDK提供的类加载器虽然是父子类加载器关系，但是没有使用继承，而是使用了组合关系。</p>
+<p>从JDK1.2开始，JVM规范推荐开发者使用双亲委派模式(ParentsDelegation Model)进行类加载，其加载过程如下：</p>
+<ol>
+<li>如果一个类加载器收到了类加载请求，它首先不会自己去尝试加载这个类，而是把类加载请求委派给父类加载器去完成</li>
+<li>每一层的类加载器都把类加载请求委派给父类加载器，直到所有的类加载请求都传递给顶层的启动类加载器</li>
+<li>如果顶层的启动类加载器无法完成加载请求，则子类加载器会尝试去加载，如果连最初发起类加载请求的类加载器也无法完成加载请求时，将会抛出ClassNotFoundException，而不再调用其子类加载器去进行类加载</li>
+</ol>
+<p>采用双亲委派模型的好处在于：使得java类随着它的类加载器一起具备了一种带有优先级的层次关系，越是基础的类，越是被上层的类加载器进行加载，保证了java程序的稳定运行。</p>
+<h1 id="静态分派与动态分派"><a href="#静态分派与动态分派" class="headerlink" title="静态分派与动态分派"></a>静态分派与动态分派</h1><p>要理解分派，我们先来理解Java中的两种类型：</p>
+<ul>
+<li>静态类型：变量声明时的类型</li>
+<li>实际类型：变量实例化时采用的类型</li>
+</ul>
+<p>例子如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Car</span> </span>&#123;&#125;  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Bus</span> <span class="keyword">extends</span> <span class="title">Car</span> </span>&#123;&#125;  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;  </span><br><span class="line">        <span class="comment">// Car 为静态类型，Bus 为实际类型  </span></span><br><span class="line">        Car car = <span class="keyword">new</span> Bus();  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="静态分派"><a href="#静态分派" class="headerlink" title="静态分派"></a>静态分派</h2><p>所有依赖静态类型来定位方法执行版本的分派动作称为静态分派，其典型应用是方法重载（重载是通过参数的静态类型而不是实际类型来选择重载的版本的）。<br>举例Java代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Car</span> </span>&#123;&#125;  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Bus</span> <span class="keyword">extends</span> <span class="title">Car</span> </span>&#123;&#125;  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Jeep</span> <span class="keyword">extends</span> <span class="title">Car</span> </span>&#123;&#125;  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;  </span><br><span class="line">        <span class="comment">// Car 为静态类型，Car 为实际类型  </span></span><br><span class="line">        Car car1 = <span class="keyword">new</span> Car();  </span><br><span class="line">        <span class="comment">// Car 为静态类型，Bus 为实际类型  </span></span><br><span class="line">        Car car2 = <span class="keyword">new</span> Bus();  </span><br><span class="line">        <span class="comment">// Car 为静态类型，Jeep 为实际类型  </span></span><br><span class="line">        Car car3 = <span class="keyword">new</span> Jeep();  </span><br><span class="line">          </span><br><span class="line">        showCar(car1);  </span><br><span class="line">        showCar(car2);  </span><br><span class="line">        showCar(car3);  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">showCar</span><span class="params">(Car car)</span> </span>&#123;  </span><br><span class="line">        System.out.println(<span class="string">"I have a Car !"</span>);  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">showCar</span><span class="params">(Bus bus)</span> </span>&#123;  </span><br><span class="line">        System.out.println(<span class="string">"I have a Bus !"</span>);  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">showCar</span><span class="params">(Jeep jeep)</span> </span>&#123;  </span><br><span class="line">        System.out.println(<span class="string">"I have a Jeep !"</span>);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代码输出如下：<br><img src="/2016/04/01/关于JVM的常见问题（二）/7.jpg" alt="静态分派代码输出"></p>
+<p>从上面的例子我们可以看出重载调用的具体方法版本是由静态类型来决定的。</p>
+<h2 id="动态分派"><a href="#动态分派" class="headerlink" title="动态分派"></a>动态分派</h2><p>与静态分派类似，动态分派指在在运行期根据实际类型确定方法执行版本，其典型应用是方法重写（即多态）。<br>举例Java代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Car</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">showCar</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        System.out.println(<span class="string">"I have a Car !"</span>);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Bus</span> <span class="keyword">extends</span> <span class="title">Car</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">showCar</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        System.out.println(<span class="string">"I have a Bus !"</span>);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Jeep</span> <span class="keyword">extends</span> <span class="title">Car</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">showCar</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        System.out.println(<span class="string">"I have a Jeep !"</span>);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;  </span><br><span class="line">        <span class="comment">// Car 为静态类型，Car 为实际类型  </span></span><br><span class="line">        Car car1 = <span class="keyword">new</span> Car();  </span><br><span class="line">        <span class="comment">// Car 为静态类型，Bus 为实际类型  </span></span><br><span class="line">        Car car2 = <span class="keyword">new</span> Bus();  </span><br><span class="line">        <span class="comment">// Car 为静态类型，Jeep 为实际类型  </span></span><br><span class="line">        Car car3 = <span class="keyword">new</span> Jeep();  </span><br><span class="line">          </span><br><span class="line">        car1.showCar();  </span><br><span class="line">        car2.showCar();  </span><br><span class="line">        car3.showCar();  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果如下：<br><img src="/2016/04/01/关于JVM的常见问题（二）/8.jpg" alt="动态分派代码输出"></p>
+<p>可以看出来重写是一个根据实际类型决定方法版本的动态分派过程。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/基础知识/" rel="tag"># 基础知识</a>
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/jvm/" rel="tag"># jvm</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/03/28/关于JVM的常见问题（一）/" rel="next" title="关于JVM的常见问题（一）">
+                <i class="fa fa-chevron-left"></i> 关于JVM的常见问题（一）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/04/01/操作系统思维导图/" rel="prev" title="操作系统思维导图">
+                操作系统思维导图 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#常见的GC收集器以及特点"><span class="nav-number">1.</span> <span class="nav-text">常见的GC收集器以及特点</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Serial收集器（串行收集器）"><span class="nav-number">1.1.</span> <span class="nav-text">Serial收集器（串行收集器）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ParNew收集器（parallel-new-收集器，新生代并行收集器）"><span class="nav-number">1.2.</span> <span class="nav-text">ParNew收集器（parallel new 收集器，新生代并行收集器）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Parallel-Scavenge收集器"><span class="nav-number">1.3.</span> <span class="nav-text">Parallel Scavenge收集器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Serial-Old收集器"><span class="nav-number">1.4.</span> <span class="nav-text">Serial Old收集器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Parallel-Old收集器"><span class="nav-number">1.5.</span> <span class="nav-text">Parallel Old收集器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CMS收集器（Concurrent-Mark-Sweep，并发标记清除收集器）"><span class="nav-number">1.6.</span> <span class="nav-text">CMS收集器（Concurrent Mark Sweep，并发标记清除收集器）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#G1收集器（Garbage-First收集器）"><span class="nav-number">1.7.</span> <span class="nav-text">G1收集器（Garbage First收集器）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Minor-GC与Full-GC执行时机"><span class="nav-number">2.</span> <span class="nav-text">Minor GC与Full GC执行时机</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#类加载的五个过程"><span class="nav-number">3.</span> <span class="nav-text">类加载的五个过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#加载"><span class="nav-number">3.1.</span> <span class="nav-text">加载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#验证"><span class="nav-number">3.2.</span> <span class="nav-text">验证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#准备"><span class="nav-number">3.3.</span> <span class="nav-text">准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解析"><span class="nav-number">3.4.</span> <span class="nav-text">解析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#初始化"><span class="nav-number">3.5.</span> <span class="nav-text">初始化</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#类加载双亲委派模型"><span class="nav-number">4.</span> <span class="nav-text">类加载双亲委派模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#静态分派与动态分派"><span class="nav-number">5.</span> <span class="nav-text">静态分派与动态分派</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#静态分派"><span class="nav-number">5.1.</span> <span class="nav-text">静态分派</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动态分派"><span class="nav-number">5.2.</span> <span class="nav-text">动态分派</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

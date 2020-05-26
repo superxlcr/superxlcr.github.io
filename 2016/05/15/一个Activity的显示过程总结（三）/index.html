@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,源码,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="ViewRoot、ViewRootImpl#setView">
+<meta name="keywords" content="android,源码">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一个Activity的显示过程总结（三）">
+<meta property="og:url" content="https://superxlcr.github.io/2016/05/15/一个Activity的显示过程总结（三）/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="ViewRoot、ViewRootImpl#setView">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2016/05/15/一个Activity的显示过程总结（三）/1.png">
+<meta property="og:image" content="https://superxlcr.github.io/2016/05/15/一个Activity的显示过程总结（三）/2.png">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.785Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一个Activity的显示过程总结（三）">
+<meta name="twitter:description" content="ViewRoot、ViewRootImpl#setView">
+<meta name="twitter:image" content="https://superxlcr.github.io/2016/05/15/一个Activity的显示过程总结（三）/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2016/05/15/一个Activity的显示过程总结（三）/">
+
+
+
+
+
+  <title>一个Activity的显示过程总结（三） | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2016/05/15/一个Activity的显示过程总结（三）/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">一个Activity的显示过程总结（三）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-15T11:14:28+08:00">
+                2016-05-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  831字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>有兴趣自己看Android源码的同学可以前往：<br><a href="http://grepcode.com/project/repository.grepcode.com/java/ext/com.google.android/android/" target="_blank" rel="noopener">http://grepcode.com/project/repository.grepcode.com/java/ext/com.google.android/android/</a><br>本博客分析的Android版本为4.4</p>
+<p>上一篇博客传送门：<a href="/2016/05/13/一个Activity的显示过程总结（二）/">一个Activity的显示过程总结（二）</a></p>
+<p>上次我们追踪源码，分析到了ViewRoot这个关键的对象，接下来我们就从ViewRoot说起吧（ViewRoot貌似是android 2.x时候的说法了，现在变成了ViewRootImpl）：</p>
+<h1 id="ViewRoot"><a href="#ViewRoot" class="headerlink" title="ViewRoot"></a>ViewRoot</h1><p>首先我们先来说明一下，ViewRoot是什么？<br>官方的注释如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">The top of a view hierarchy, implementing the needed protocol between View and the WindowManager.</span><br></pre></td></tr></table></figure>
+
+<p>翻译为：View层次的顶端，实现View和WindowManager之间所需的协议。ViewRoot是由View组成的视图树状结构的“根”，但它并不处理绘画，而是处理有关于整个树状结构的事情（如遍历初始化、点击分发等）。</p>
+<p>先来看看ViewRoot中的关键对象和构造函数：<br>（android.view.ViewRootImpl）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> IWindowSession mWindowSession;  </span><br><span class="line"><span class="keyword">final</span> W mWindow;  </span><br><span class="line">View mView;  </span><br><span class="line"><span class="comment">// These can be accessed by any thread, must be protected with a lock.  </span></span><br><span class="line"><span class="comment">// Surface can never be reassigned or cleared (use Surface.clear()).  </span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Surface mSurface = <span class="keyword">new</span> Surface();  </span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ViewRootImpl</span><span class="params">(Context context, Display display)</span> </span>&#123;  </span><br><span class="line">    mContext = context;  </span><br><span class="line">    mWindowSession = WindowManagerGlobal.getWindowSession();  </span><br><span class="line">    ...  </span><br><span class="line">    mWindow = <span class="keyword">new</span> W(<span class="keyword">this</span>);  </span><br><span class="line">    ...  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>关键对象有这几个：</p>
+<ol>
+<li>mWindowSession：IWindowSession类型对象，用于Binder通信，在ViewRoot中表示WindowManagerService，用以调用WindowManagerService的服务</li>
+<li>mWindow：W类型对象（实际为IWindow.Stub类型），同样用于Binder通信，用以由WindowManagerService发送消息给ViewRoot</li>
+<li>mView：保存我们的DecorView</li>
+<li>mSurface：Surface对象，官方的注释为：Handle onto a raw buffer that is being managed by the screen compositor。即它的职责是管理一块用于绘制的缓存区，因此Surface也就是我们绘制时的画布</li>
+</ol>
+<p>用一幅图大致说明ViewRoot的关键对象：<br><img src="/2016/05/15/一个Activity的显示过程总结（三）/1.png" alt="ViewRoot对象说明"></p>
+<p>由于IWindowSession、IWindow以及Surface涉及JNI以及Native层的代码，这里就不继续深入分析了。</p>
+<h1 id="ViewRootImpl-setView"><a href="#ViewRootImpl-setView" class="headerlink" title="ViewRootImpl#setView"></a>ViewRootImpl#setView</h1><p>接下来我们来看看ViewRoot的setView方法：<br>（android.view.ViewRootImpl）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setView</span><span class="params">(View view, WindowManager.LayoutParams attrs, View panelParentView)</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;  </span><br><span class="line">        <span class="keyword">if</span> (mView == <span class="keyword">null</span>) &#123;  </span><br><span class="line">            mView = view;  </span><br><span class="line">            ...  </span><br><span class="line">  </span><br><span class="line">            <span class="comment">// Schedule the first layout -before- adding to the window  </span></span><br><span class="line">            <span class="comment">// manager, to make sure we do the relayout before receiving  </span></span><br><span class="line">            <span class="comment">// any other events from the system.  </span></span><br><span class="line">            requestLayout();  </span><br><span class="line">            ...  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>setView方法首先把我们传入的DecorView赋给了mView，然后调用了requestLayout方法：<br>（android.view.ViewRootImpl）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">requestLayout</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">if</span> (!mHandlingLayoutInLayoutRequest) &#123;  </span><br><span class="line">        checkThread();  </span><br><span class="line">        mLayoutRequested = <span class="keyword">true</span>;  </span><br><span class="line">        scheduleTraversals();  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>又调用了scheduleTraversals方法：<br>（android.view.ViewRootImpl）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">scheduleTraversals</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">if</span> (!mTraversalScheduled) &#123;  </span><br><span class="line">        mTraversalScheduled = <span class="keyword">true</span>;  </span><br><span class="line">        mTraversalBarrier = mHandler.getLooper().postSyncBarrier();  </span><br><span class="line">        mChoreographer.postCallback(  </span><br><span class="line">                Choreographer.CALLBACK_TRAVERSAL, mTraversalRunnable, <span class="keyword">null</span>);  </span><br><span class="line">        scheduleConsumeBatchedInput();  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在该方法的第6行，传入了一个关键的Runnable对象mTraversalRunnable作为回调，我们来看看它的run方法：<br>（android.view.ViewRootImpl）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">TraversalRunnable</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        doTraversal();  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="keyword">final</span> TraversalRunnable mTraversalRunnable = <span class="keyword">new</span> TraversalRunnable();</span><br></pre></td></tr></table></figure>
+
+<p>调用了doTraversal方法：<br>（android.view.ViewRootImpl）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">doTraversal</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">if</span> (mTraversalScheduled) &#123;  </span><br><span class="line">        ...  </span><br><span class="line">        <span class="keyword">try</span> &#123;  </span><br><span class="line">            performTraversals();  </span><br><span class="line">        ...  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>doTraversal调用了关键的performTraversals方法：<br>（android.view.ViewRootImpl）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">performTraversals</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">    <span class="comment">// cache mView since it is used so much below...  </span></span><br><span class="line">    <span class="keyword">final</span> View host = mView; <span class="comment">// DecorView  </span></span><br><span class="line">  </span><br><span class="line">    ...  </span><br><span class="line">  </span><br><span class="line">                 <span class="comment">// Ask host how big it wants to be  </span></span><br><span class="line">                performMeasure(childWidthMeasureSpec, childHeightMeasureSpec);  </span><br><span class="line">  </span><br><span class="line">                ...  </span><br><span class="line">        performLayout(lp, desiredWindowWidth, desiredWindowHeight);  </span><br><span class="line">  </span><br><span class="line">       ...  </span><br><span class="line">            performDraw();  </span><br><span class="line">       ...  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>原代码非常长，我挑出了3个最主要的方法：</p>
+<ol>
+<li>performMeasure：与测量View的大小相关</li>
+<li>performLayout：与View的布局有关</li>
+<li>performDraw：与View的绘制相关</li>
+</ol>
+<p>这三个方法与我们涉及View绘制过程时耳熟能详的三部曲Measure、Layout、Draw相关，由于这几个函数间的关系还是比较复杂的，因此我们就留到下一篇博客再分析它们了。最后还是以我们的分析路线结束本篇博客：<br><img src="/2016/05/15/一个Activity的显示过程总结（三）/2.png" alt="分析路线图"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/源码/" rel="tag"># 源码</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/13/一个Activity的显示过程总结（二）/" rel="next" title="一个Activity的显示过程总结（二）">
+                <i class="fa fa-chevron-left"></i> 一个Activity的显示过程总结（二）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/17/一个Activity的显示过程总结（四）/" rel="prev" title="一个Activity的显示过程总结（四）">
+                一个Activity的显示过程总结（四） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ViewRoot"><span class="nav-number">1.</span> <span class="nav-text">ViewRoot</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ViewRootImpl-setView"><span class="nav-number">2.</span> <span class="nav-text">ViewRootImpl#setView</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

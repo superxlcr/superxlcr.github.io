@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,应用,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="使用DeviceId、使用MAC地址、使用UUID、使用Serial Number、使用ANDROID_ID">
+<meta name="keywords" content="android,应用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android 手机识别">
+<meta property="og:url" content="https://superxlcr.github.io/2017/05/03/Android-手机识别/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="使用DeviceId、使用MAC地址、使用UUID、使用Serial Number、使用ANDROID_ID">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/03/Android-手机识别/1.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/03/Android-手机识别/2.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/03/Android-手机识别/3.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/03/Android-手机识别/4.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/03/Android-手机识别/5.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/03/Android-手机识别/6.png">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.534Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android 手机识别">
+<meta name="twitter:description" content="使用DeviceId、使用MAC地址、使用UUID、使用Serial Number、使用ANDROID_ID">
+<meta name="twitter:image" content="https://superxlcr.github.io/2017/05/03/Android-手机识别/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2017/05/03/Android-手机识别/">
+
+
+
+
+
+  <title>Android 手机识别 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2017/05/03/Android-手机识别/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android 手机识别</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-03T12:18:55+08:00">
+                2017-05-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近博主学习了如何通过某些技术来识别不同的Android手机，在此进行一番总结。</p>
+<h1 id="使用DeviceId"><a href="#使用DeviceId" class="headerlink" title="使用DeviceId"></a>使用DeviceId</h1><p>deviceId为Android提供的用于手机识别的识别码，其获取代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">TelephonyManager telephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);</span><br><span class="line">Log.d(<span class="string">"MyLog"</span>, telephonyManager.getDeviceId());</span><br></pre></td></tr></table></figure>
+
+<p>打印Log如下：<br><img src="/2017/05/03/Android-手机识别/1.png" alt="device_id_log_pic1"></p>
+<p>getDeviceId方法的文档如下：<br><img src="/2017/05/03/Android-手机识别/2.png" alt="getDeviceId_method_pic2"><br>该方法会根据手机的类型为GSM（Global System for Mobile Communication，全球移动通信系统）或CDMA（Code Division Multiple Access，码分多址），返回对应的IMEI（International Mobile Equipment Identity，国际移动设备身份码）、MEID（Mobile Equipment Identifier，移动设备识别码）或ESN码（Electronic Serial Number，电子序列号）。</p>
+<p>但该方法获取的deviceId也有一定的缺陷：</p>
+<ol>
+<li>非手机的Android设备没有deviceId</li>
+<li>获取deviceId需要READ_PHONE_STATE权限</li>
+<li>在少数手机上该方法存在bug</li>
+</ol>
+<h1 id="使用MAC地址"><a href="#使用MAC地址" class="headerlink" title="使用MAC地址"></a>使用MAC地址</h1><p>MAC地址即 Media Access Control或者Medium Access Control 地址，意译为媒体访问控制，或称为物理地址、硬件地址，用来定义网络设备的位置。一般而言，每个主机都会有其自己的MAC地址，因此我们可以通过MAC地址来识别一台Android手机。<br>以下为获取MAC地址例子：<br>方法一，使用WifiManager，这种方法需要 ACESS_WIFI_STATE 权限：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">String macAddress = <span class="keyword">null</span>;</span><br><span class="line">WifiManager wifiManager = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE);</span><br><span class="line">WifiInfo info = (<span class="keyword">null</span> == wifiManager ? <span class="keyword">null</span> : wifiManager.getConnectionInfo());</span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">null</span> != info) &#123;</span><br><span class="line">    macAddress = info.getMacAddress();</span><br><span class="line">&#125;</span><br><span class="line">Log.d(<span class="string">"MyLog"</span>, macAddress);</span><br></pre></td></tr></table></figure>
+
+<p>值得注意的是，据说在Android 6.0以上版本中，该方法会不再适用，获取的MAC都会变为 02:00:00:00:00:00 默认值。</p>
+<p>方法二，使用cmd命令直接访问网卡MAC地址：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">String macSerial = <span class="string">""</span>;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    Process pp = Runtime.getRuntime().exec(</span><br><span class="line">            <span class="string">"cat /sys/class/net/wlan0/address"</span>);</span><br><span class="line">    InputStreamReader ir = <span class="keyword">new</span> InputStreamReader(pp.getInputStream());</span><br><span class="line">    LineNumberReader input = <span class="keyword">new</span> LineNumberReader(ir);</span><br><span class="line"></span><br><span class="line">    String line;</span><br><span class="line">    <span class="keyword">while</span> ((line = input.readLine()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">        macSerial += line.trim();</span><br><span class="line">    &#125;</span><br><span class="line">    input.close();</span><br><span class="line">&#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">&#125;</span><br><span class="line">Log.d(<span class="string">"MyLog"</span>, macSerial);</span><br></pre></td></tr></table></figure>
+
+<p>这种方法不需要任何权限即可获取MAC地址，不过当手机未连接wifi时，无法获取MAC地址。</p>
+<p>通过MAC地址来识别我们的手机具有一定的可行性，但这种方法仍存在一定的缺陷：</p>
+<ol>
+<li>不是所有设备都具有网卡或者蓝牙</li>
+<li>如果wifi没有打开过，我们便无法获取其MAC地址</li>
+<li>蓝牙设备只有在打开的时候才能获取MAC地址</li>
+</ol>
+<h1 id="使用UUID"><a href="#使用UUID" class="headerlink" title="使用UUID"></a>使用UUID</h1><p>UUID含义是通用唯一识别码 (Universally Unique Identifier)，是指在一台机器上生成的数字，它保证对在同一时空中的所有机器都是唯一的。UUID由以下几部分组合而成：</p>
+<ol>
+<li>当前日期和时间</li>
+<li>时钟序列</li>
+<li>全局唯一的IEEE机器识别号（如果有网卡，从网卡获得，没有网卡以其他方式获得）</li>
+</ol>
+<p>获取UUID的例子如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">UUID uuid = UUID.randomUUID();</span><br><span class="line">Log.d(<span class="string">"MyLog"</span>, uuid.toString());</span><br></pre></td></tr></table></figure>
+
+<p>打印的log如下：<br><img src="/2017/05/03/Android-手机识别/3.png" alt="uuid_log_pic3"></p>
+<p>使用uuid的缺陷如下：</p>
+<ol>
+<li>uuid生成的结果较长</li>
+<li>uuid需要在用户本地保存，因此有可能被篡改</li>
+</ol>
+<h1 id="使用Serial-Number"><a href="#使用Serial-Number" class="headerlink" title="使用Serial Number"></a>使用Serial Number</h1><p>Serial Number是用于辨识设备的序列号，其获取的例子如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Log.d(<span class="string">"MyLog"</span>, android.os.Build.SERIAL);</span><br></pre></td></tr></table></figure>
+
+<p>打印log如下：<br><img src="/2017/05/03/Android-手机识别/4.png" alt="serial_number_log_pic4"></p>
+<p>该方法的缺陷如下：</p>
+<ol>
+<li>Serial Number在没有IMEI码设备（非手机设备）上必须提供，但手机设备上可能没有</li>
+<li>在Android 版本2.3以前可能没有Serial Number</li>
+</ol>
+<p>因此，Serial Number可以结合DeviceId来使用</p>
+<h1 id="使用ANDROID-ID"><a href="#使用ANDROID-ID" class="headerlink" title="使用ANDROID_ID"></a>使用ANDROID_ID</h1><p>在设备首次启动时，系统会随机生成一个64位的数字，并把这个数字以16进制字符串的形式保存下来，这个16进制的字符串就是ANDROID_ID，当设备被恢复出厂设置后该值可能会被重置</p>
+<p>获取ANDROID_ID的方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String ANDROID_ID = Settings.System.getString(getContentResolver(), Settings.Secure.ANDROID_ID);</span><br><span class="line">Log.d(<span class="string">"MyLog"</span>, ANDROID_ID);</span><br></pre></td></tr></table></figure>
+
+<p>打印Log如下：<br><img src="/2017/05/03/Android-手机识别/5.png" alt="android_id_log_pic5"></p>
+<p>使用ANDROID_ID时，我们需要注意一下问题：</p>
+<ol>
+<li>在Android 2.2版本中可能存在问题</li>
+<li>可能有设备产生相同ANDROID_ID</li>
+<li>由于厂商定制系统可能导致bug，返回null</li>
+</ol>
+<p>综上所述，Android 手机识别的几种方法可以用下图进行总结：</p>
+<p><img src="/2017/05/03/Android-手机识别/6.png" alt="Android 手机识别_pic6"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/应用/" rel="tag"># 应用</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/02/Android-APK-安装包/" rel="next" title="Android APK 安装包">
+                <i class="fa fa-chevron-left"></i> Android APK 安装包
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/05/Android-NDK初次学习/" rel="prev" title="Android NDK初次学习">
+                Android NDK初次学习 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#使用DeviceId"><span class="nav-number">1.</span> <span class="nav-text">使用DeviceId</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用MAC地址"><span class="nav-number">2.</span> <span class="nav-text">使用MAC地址</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用UUID"><span class="nav-number">3.</span> <span class="nav-text">使用UUID</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用Serial-Number"><span class="nav-number">4.</span> <span class="nav-text">使用Serial Number</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用ANDROID-ID"><span class="nav-number">5.</span> <span class="nav-text">使用ANDROID_ID</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

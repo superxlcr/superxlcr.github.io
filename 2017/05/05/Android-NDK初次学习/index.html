@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,cpp,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="下载NDK、编写java文件、链接到Gradle、编写cpp文件">
+<meta name="keywords" content="android,cpp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android NDK初次学习">
+<meta property="og:url" content="https://superxlcr.github.io/2017/05/05/Android-NDK初次学习/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="下载NDK、编写java文件、链接到Gradle、编写cpp文件">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/05/Android-NDK初次学习/1.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/05/Android-NDK初次学习/2.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/05/Android-NDK初次学习/3.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/05/Android-NDK初次学习/4.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/05/Android-NDK初次学习/5.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/05/Android-NDK初次学习/6.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/05/Android-NDK初次学习/7.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/05/Android-NDK初次学习/8.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/05/Android-NDK初次学习/9.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/05/Android-NDK初次学习/10.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/05/Android-NDK初次学习/11.jpg">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.503Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android NDK初次学习">
+<meta name="twitter:description" content="下载NDK、编写java文件、链接到Gradle、编写cpp文件">
+<meta name="twitter:image" content="https://superxlcr.github.io/2017/05/05/Android-NDK初次学习/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2017/05/05/Android-NDK初次学习/">
+
+
+
+
+
+  <title>Android NDK初次学习 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2017/05/05/Android-NDK初次学习/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android NDK初次学习</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-05T15:26:21+08:00">
+                2017-05-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  829字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近博主开始学习如何使用NDK，在此进行一下总结。</p>
+<p>博主的IDE为Android Studio 2.3.1，接下来博主将演示如何在现有的项目上支持NDK。</p>
+<h1 id="下载NDK"><a href="#下载NDK" class="headerlink" title="下载NDK"></a>下载NDK</h1><p>首先，使用SDK Manager下载SDK Tools调试工具LLDB、编译工具CMake以及NDK：<br><img src="/2017/05/05/Android-NDK初次学习/1.png" alt="download_pic1"></p>
+<p>NDK也可以去官网进行下载：<a href="https://developer.android.com/ndk/downloads/index.html" target="_blank" rel="noopener">NDK下载地址</a></p>
+<h1 id="编写java文件"><a href="#编写java文件" class="headerlink" title="编写java文件"></a>编写java文件</h1><p>首先，我们编写一个Native工具类，里面定义了一个native方法获取字符串：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NativeUtils</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">native</span> String <span class="title">getNativeString</span><span class="params">(String str)</span></span>;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后在我们的主界面打印这个字符串：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.activity_main);</span><br><span class="line">        TextView tv = (TextView) findViewById(R.id.tv);</span><br><span class="line">        tv.setText(NativeUtils.getNativeString(<span class="string">"Java world"</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接着我们在app根目录下创建一个jni文件夹：<br><img src="/2017/05/05/Android-NDK初次学习/2.png" alt="create_jni_folder_pic2"></p>
+<p>创建完成后，我们多了一个cpp的文件夹（实际上是jni文件夹，Android视图进行了简化）：<br><img src="/2017/05/05/Android-NDK初次学习/3.png" alt="new_cpp_folder_pic3"></p>
+<p>然后我们Make Project，使其Java代码生成.class文件，并打开终端：<br><img src="/2017/05/05/Android-NDK初次学习/4.png" alt="terminal_pic4"></p>
+<p>定位到生成.class文件的目录下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> app\build\intermediates\classes\debug</span><br></pre></td></tr></table></figure>
+
+<p>使用java命令的jni框架生成.h文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">javah -jni 完整包名.类名</span><br></pre></td></tr></table></figure>
+
+<p>然后使用project 视图找到我们的.h文件：<br><img src="/2017/05/05/Android-NDK初次学习/5.png" alt="cut_h_pic5"></p>
+<p>把生成的.h文件剪贴到我们的jni文件夹中新建的include目录下：</p>
+<p><img src="/2017/05/05/Android-NDK初次学习/6.png" alt="jni_include_h_pic6"></p>
+<h1 id="链接到Gradle"><a href="#链接到Gradle" class="headerlink" title="链接到Gradle"></a>链接到Gradle</h1><p>首先我们需要在工程的Project Structure 下设置NDK 的目录：<br><img src="/2017/05/05/Android-NDK初次学习/7.png" alt="ndk_dir_pic7"></p>
+<p>在local.properties文件中添加ndk.dir属性亦可达到同样效果：<br><img src="/2017/05/05/Android-NDK初次学习/8.png" alt="ndk_dir_2_pic8"></p>
+<p>然后我们在cpp文件夹下创建空白的NativeUtils.cpp文件</p>
+<p>接着打开Project视图，在工程的根目录下新建CMakeLists.txt 文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"># Sets the minimum version of CMake required to build your native library.</span><br><span class="line"># This ensures that a certain set of CMake features is available to</span><br><span class="line"># your build.</span><br><span class="line"></span><br><span class="line">cmake_minimum_required(VERSION 3.4.1)</span><br><span class="line"></span><br><span class="line"># Specifies a library name, specifies whether the library is STATIC or</span><br><span class="line"># SHARED, and provides relative paths to the source code. You can</span><br><span class="line"># define multiple libraries by adding multiple add.library() commands,</span><br><span class="line"># and CMake builds them for you. When you build your app, Gradle</span><br><span class="line"># automatically packages shared libraries with your APK.</span><br><span class="line"></span><br><span class="line">add_library( # Specifies the name of the library.</span><br><span class="line">             # so动态链接库文件名</span><br><span class="line">             NativeUtils</span><br><span class="line"></span><br><span class="line">             # Sets the library as a shared library.</span><br><span class="line">             SHARED</span><br><span class="line"></span><br><span class="line">             # Provides a relative path to your source file(s).</span><br><span class="line">             # cpp文件名</span><br><span class="line">             app/src/main/jni/NativeUtils.cpp )</span><br><span class="line"></span><br><span class="line"># Specifies a path to native header files.</span><br><span class="line"># .h头文件位置</span><br><span class="line">include_directories(app/src/main/jni/)</span><br></pre></td></tr></table></figure>
+
+<p>在Android视图中，选择我们的cpp文件夹，选择链接到Gradle：<br><img src="/2017/05/05/Android-NDK初次学习/9.png" alt="link_cmake_gradle_pic9"></p>
+<p>选择CMake编译系统，并选择我们的CMakeLists.txt：<br><img src="/2017/05/05/Android-NDK初次学习/10.png" alt="select_cmake_lists_pic10"></p>
+<p>我们也可以通过在app模块的build.gradle的android的属性添加一下代码达到相同的效果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">externalNativeBuild &#123;</span><br><span class="line">    cmake &#123;</span><br><span class="line">        path &apos;../CMakeLists.txt&apos;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>进行Gradle sync 同步过后，我们可以开始进行cpp代码编写了。</p>
+<h1 id="编写cpp文件"><a href="#编写cpp文件" class="headerlink" title="编写cpp文件"></a>编写cpp文件</h1><p>首先我们编写NativeUtils.cpp 文件，实现具体的Native方法：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"com_app_superxlcr_myndktest_NativeUtils.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Class:     com_app_superxlcr_myndktest_NativeUtils</span></span><br><span class="line"><span class="comment"> * Method:    getNativeString</span></span><br><span class="line"><span class="comment"> * Signature: (Ljava/lang/String;)Ljava/lang/String;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">JNIEXPORT jstring JNICALL Java_com_app_superxlcr_myndktest_NativeUtils_getNativeString</span><br><span class="line">  (JNIEnv * env, jclass clz, jstring str) &#123;</span><br><span class="line">        <span class="comment">// 获取Java层传来的字符串</span></span><br><span class="line">        jboolean* isCopy;</span><br><span class="line">        <span class="keyword">const</span> <span class="keyword">char</span>* nativeChars = env-&gt;GetStringUTFChars(str, isCopy);</span><br><span class="line">        <span class="comment">// 构造返回字符串</span></span><br><span class="line">        <span class="built_in">string</span> nativeStr = <span class="string">"Native world get Message :"</span>;</span><br><span class="line">        nativeStr.append(nativeChars);</span><br><span class="line">        <span class="comment">// 释放Java字符串资源</span></span><br><span class="line">        env-&gt;ReleaseStringUTFChars(str, nativeChars);</span><br><span class="line">        <span class="comment">// 返回结果</span></span><br><span class="line">        <span class="keyword">return</span> env-&gt;NewStringUTF(nativeStr.c_str());</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后我们在NativeUtils.java 文件中添加如下代码载入动态链接库：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> &#123;</span><br><span class="line">    System.loadLibrary(<span class="string">"NativeUtils"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译运行的效果如下：<br><img src="/2017/05/05/Android-NDK初次学习/11.jpg" alt="_pic11"></p>
+<p>更多关于NDK的信息请参考官方的链接：<a href="https://developer.android.com/ndk/index.html#Revisions" target="_blank" rel="noopener">https://developer.android.com/ndk/index.html#Revisions</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/cpp/" rel="tag"># cpp</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/03/Android-手机识别/" rel="next" title="Android 手机识别">
+                <i class="fa fa-chevron-left"></i> Android 手机识别
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/09/Android-Native进程保活工程解析/" rel="prev" title="Android Native进程保活工程解析">
+                Android Native进程保活工程解析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#下载NDK"><span class="nav-number">1.</span> <span class="nav-text">下载NDK</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编写java文件"><span class="nav-number">2.</span> <span class="nav-text">编写java文件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#链接到Gradle"><span class="nav-number">3.</span> <span class="nav-text">链接到Gradle</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编写cpp文件"><span class="nav-number">4.</span> <span class="nav-text">编写cpp文件</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

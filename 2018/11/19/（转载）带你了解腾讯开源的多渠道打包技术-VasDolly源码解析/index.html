@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,编译,java,gradle,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="（转载）概要、接入VasDolly、V1的渠道读取与写入、基于V2的快速签名方案、参考">
+<meta name="keywords" content="android,编译,java,gradle">
+<meta property="og:type" content="article">
+<meta property="og:title" content="带你了解腾讯开源的多渠道打包技术 VasDolly源码解析">
+<meta property="og:url" content="https://superxlcr.github.io/2018/11/19/（转载）带你了解腾讯开源的多渠道打包技术-VasDolly源码解析/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="（转载）概要、接入VasDolly、V1的渠道读取与写入、基于V2的快速签名方案、参考">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2018/11/19/（转载）带你了解腾讯开源的多渠道打包技术-VasDolly源码解析/1.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2018/11/19/（转载）带你了解腾讯开源的多渠道打包技术-VasDolly源码解析/2.png">
+<meta property="og:image" content="https://superxlcr.github.io/2018/11/19/（转载）带你了解腾讯开源的多渠道打包技术-VasDolly源码解析/3.png">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.910Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="带你了解腾讯开源的多渠道打包技术 VasDolly源码解析">
+<meta name="twitter:description" content="（转载）概要、接入VasDolly、V1的渠道读取与写入、基于V2的快速签名方案、参考">
+<meta name="twitter:image" content="https://superxlcr.github.io/2018/11/19/（转载）带你了解腾讯开源的多渠道打包技术-VasDolly源码解析/1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2018/11/19/（转载）带你了解腾讯开源的多渠道打包技术-VasDolly源码解析/">
+
+
+
+
+
+  <title>带你了解腾讯开源的多渠道打包技术 VasDolly源码解析 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2018/11/19/（转载）带你了解腾讯开源的多渠道打包技术-VasDolly源码解析/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">带你了解腾讯开源的多渠道打包技术 VasDolly源码解析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-19T20:49:35+08:00">
+                2018-11-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  5.5k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文转自：<a href="https://blog.csdn.net/lmj623565791/article/details/79998048" target="_blank" rel="noopener">https://blog.csdn.net/lmj623565791/article/details/79998048</a></p>
+<h1 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h1><p>大家应该都清楚，大家上线app，需要上线各种平台，比如：小米，华为，百度等等等等，我们多数称之为渠道，如果发的渠道多，可能有上百个渠道。<br>针对每个渠道，我们希望可以获取各个渠道的一些独立的统计信息，比如：下载量等。<br>那么，如何区分各个渠道呢？<br>我们需要一个特性的标识符与该渠道对应，这个标识符肯定是要包含在apk中的。那么，我们就要针对每个渠道包去设置一个特定的标识符，然后打一个特定的apk。<br>这个过程可以手动去完成，每次修改一个字符串，然后手动打包。大家都清楚打包是一个相当耗时的过程，要是打几百个渠道包，这种枯燥重复的任务，当然不是我们所能容忍的。<br>当然，我们会想到，这样的需求，官方肯定有解决方案。没错，Gradle Plugin为我们提供了一个自动化的方案，我们可以利用占位符，然后在build.gradle中去配置多个渠道信息，这样就可以将枯燥重复的任务自动化了。<br>这样的方式最大的问题，就是效率问题，每个渠道包，都要执行一遍构建流程。<br>自动化了，时间依然过长，还是不能忍。<br>接下来就是寻找高效率的方案了。<br>因为本文是源码解析，就不饶弯子了~~<br>目前针对 V1（Android N开始推出了V2），快速的方案，主要有：</p>
+<ol>
+<li><a href="https://tech.meituan.com/mt-apk-packaging.html" target="_blank" rel="noopener">美团Android自动化之旅—生成渠道包</a>主要利用修改apk的目录META-INF中添加空文件，由于不需要重新签名，操作非常快。</li>
+<li>利用zip文件中的comment的字段，例如<a href="https://github.com/Tencent/VasDolly/wiki/VasDolly" target="_blank" rel="noopener">VasDolly</a></li>
+</ol>
+<p>后面在解析源码时，会详细说明方式2。<br>自Android N之后，Google建议使用V2来做签名，因为这样更加安全（对整个apk文件进行hash校验，无法修改apk信息），安装速度也更加高效（无需解析校验单个文件，v1需要单个文件校验hash）。<br>美团对此动作非常快，立马推出了：</p>
+<ul>
+<li><a href="https://tech.meituan.com/android-apk-v2-signature-scheme.html" target="_blank" rel="noopener">新一代开源Android渠道包生成工具Walle</a></li>
+</ul>
+<p>其原理是利用v2的方式在做签名时，在apk中插入了一个签名块（安装时校验apk的hash不包含此块），该快中允许插入一些key-value对，于是将签名插在该区域。<br>当然，腾讯的<a href="https://github.com/Tencent/VasDolly/wiki/VasDolly" target="_blank" rel="noopener">VasDolly</a>采取的也是相同的方案。<br>本文，为<a href="https://github.com/Tencent/VasDolly/wiki/VasDolly" target="_blank" rel="noopener">VasDolly</a>的源码解析，即会详细分析：</p>
+<ol>
+<li>针对v1签名方式，利用zip的comment区域</li>
+<li>针对v2签名方式，利用apk中的签名块中插入key-value</li>
+</ol>
+<p>本文不涉及v1，v2具体的签名方式，以及安装时的校验流程，这些内容在：</p>
+<ul>
+<li><a href="https://github.com/Tencent/VasDolly/wiki/VasDolly%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86" target="_blank" rel="noopener">VasDolly实现原理</a></li>
+</ul>
+<p>一文中，说的非常详细。<br>本文重点是源码的解析。</p>
+<h1 id="接入VasDolly"><a href="#接入VasDolly" class="headerlink" title="接入VasDolly"></a>接入VasDolly</h1><p>其实，接入非常简单，而且readme写的非常详细。<br>但是为了文章的完整性，简单陈述一下。</p>
+<h2 id="根目录build-gradle"><a href="#根目录build-gradle" class="headerlink" title="根目录build.gradle"></a>根目录build.gradle</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">buildscript &#123;</span><br><span class="line">    dependencies &#123;</span><br><span class="line">        classpath <span class="string">'com.leon.channel:plugin:1.1.7'</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="app的build-gradle"><a href="#app的build-gradle" class="headerlink" title="app的build.gradle"></a>app的build.gradle</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">apply plugin: <span class="string">'channel'</span></span><br><span class="line"></span><br><span class="line">android &#123;</span><br><span class="line">    signingConfigs &#123;</span><br><span class="line">        release &#123;</span><br><span class="line">            <span class="function">storeFile <span class="title">file</span><span class="params">(RELEASE_STORE_FILE)</span></span></span><br><span class="line"><span class="function">            storePassword RELEASE_STORE_PASSWORD</span></span><br><span class="line"><span class="function">            keyAlias RELEASE_KEY_ALIAS</span></span><br><span class="line"><span class="function">            keyPassword RELEASE_KEY_PASSWORD</span></span><br><span class="line"><span class="function">            v1SigningEnabled <span class="keyword">true</span></span></span><br><span class="line"><span class="function">            v2SigningEnabled <span class="keyword">false</span></span></span><br><span class="line"><span class="function">        &#125;</span></span><br><span class="line"><span class="function">    &#125;</span></span><br><span class="line"><span class="function">    buildTypes </span>&#123;</span><br><span class="line">        release &#123;</span><br><span class="line">            signingConfig signingConfigs.release</span><br><span class="line">            minifyEnabled <span class="keyword">false</span></span><br><span class="line">            <span class="function">proguardFiles <span class="title">getDefaultProguardFile</span><span class="params">(<span class="string">'proguard-android.txt'</span>)</span>, 'proguard-rules.pro'</span></span><br><span class="line"><span class="function">        &#125;</span></span><br><span class="line"><span class="function">    &#125;</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">    channel</span>&#123;</span><br><span class="line">        <span class="comment">//指定渠道文件</span></span><br><span class="line">        channelFile = file(<span class="string">"/Users/zhanghongyang01/git-repo/learn/VasDollyTest/channel.txt"</span>)</span><br><span class="line">        <span class="comment">//多渠道包的输出目录，默认为new File(project.buildDir,"channel")</span></span><br><span class="line">        baseOutputDir = <span class="keyword">new</span> File(project.buildDir,<span class="string">"channel"</span>)</span><br><span class="line">        <span class="comment">//多渠道包的命名规则，默认为：$&#123;appName&#125;-$&#123;versionName&#125;-$&#123;versionCode&#125;-$&#123;flavorName&#125;-$&#123;buildType&#125;</span></span><br><span class="line">        apkNameFormat =<span class="string">'$&#123;appName&#125;-$&#123;versionName&#125;-$&#123;versionCode&#125;-$&#123;flavorName&#125;-$&#123;buildType&#125;'</span></span><br><span class="line">        <span class="comment">//快速模式：生成渠道包时不进行校验（速度可以提升10倍以上）</span></span><br><span class="line">        isFastMode = <span class="keyword">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    api <span class="string">'com.leon.channel:helper:1.1.7'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>首先要apply plugin，然后在android的闭包下写入channel相关信息。<br>channel中需要制定一个channel.txt文件，其中每行代码一个渠道：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">c1</span><br><span class="line">c2</span><br><span class="line">c3</span><br></pre></td></tr></table></figure>
+
+<p>dependencies中的依赖主要是为了获取渠道号的辅助类，毕竟你写入渠道信息的地方这么奇怪，肯定要提供API进行读取渠道号。<br>注意：我们在signingConfigs的release中配置的是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">v1SigningEnabled=true</span><br></pre></td></tr></table></figure>
+
+<p>和</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">v2SigningEnabled=false</span><br></pre></td></tr></table></figure>
+
+<p>，先看V1方式的快速渠道包。<br>在Terminal面板执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./gradlew channelRelease</span><br></pre></td></tr></table></figure>
+
+<p>执行完成后，即可在</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">app/build/channel/release</span><br></pre></td></tr></table></figure>
+
+<p>下看到：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">release</span><br><span class="line">    ├── app-1.0-1-c1-release.apk</span><br><span class="line">    ├── app-1.0-1-c2-release.apk</span><br><span class="line">    └── app-1.0-1-c3-release.apk</span><br></pre></td></tr></table></figure>
+
+<p>注意：本文主要用于讲解源码，如果只需接入，尽可能查看github文档。</p>
+<h1 id="V1的渠道读取与写入"><a href="#V1的渠道读取与写入" class="headerlink" title="V1的渠道读取与写入"></a>V1的渠道读取与写入</h1><p>首先我们需要知道对于V1的签名，渠道信息写在哪？<br>这里直接白话说明一下，我们的apk实际上就是普通的zip，在一个zip文件的最后允许写入N个字符的注释，我们关注的zip末尾两个部分：<br>2字节的的注释长度+N个字节的注释。<br>那么，我们只要把签名内容作为注释写入，再修改2字节的注释长度即可。<br>现在需要考虑的是我们怎么知道一个apk有没有写入这个渠道信息呢，需要有一个判断的标准：<br>这时候，魔数这个概念产生了，我们可以在文件文件末尾写入一个特殊的字符串，当我们读取文件末尾为这个特殊的字符串，即可认为该apk写入了渠道信息。</p>
+<p>很多文件类型起始部分都包含特性的魔数用于区分文件类型。</p>
+<p>最终的渠道信息为：<br><strong>渠道字符串+渠道字符串长度+魔数</strong></p>
+<h2 id="读取"><a href="#读取" class="headerlink" title="读取"></a>读取</h2><p>有了上面的分析，读取就简单了：</p>
+<ol>
+<li>拿到本地的apk文件</li>
+<li>读取固定字节与预定义魔数做比对</li>
+<li>然后再往前读取两个字节为渠道信息长度</li>
+<li>再根据这个长度往前读取对应字节，即可取出渠道信息。</li>
+</ol>
+<p>在看源码之前，我们也可以使用二进制编辑器打开打包好的Apk，看末尾的几个字节，如图：<br><img src="/2018/11/19/（转载）带你了解腾讯开源的多渠道打包技术-VasDolly源码解析/1.jpg" alt="这里写图片描述_pic1"><br>咱们逆着看：</p>
+<ol>
+<li>首先读取8个字节，对应一个特殊字符串“ltlovezh”</li>
+<li>往前两个字节为02 00，对应渠道信息长度，实际值为2.</li>
+<li>再往前读取2个字节为63 31，对照ASCII表，即可知为c1</li>
+</ol>
+<p>这样我们就读取除了渠道信息为：c1。<br>这么看代码也不复杂，最后看一眼代码吧：<br>代码中通过ChannelReaderUtil.getChannel获取渠道信息：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getChannel</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (mChannelCache == <span class="keyword">null</span>) &#123;</span><br><span class="line">        String channel = getChannelByV2(context);</span><br><span class="line">        <span class="keyword">if</span> (channel == <span class="keyword">null</span>) &#123;</span><br><span class="line">            channel = getChannelByV1(context);</span><br><span class="line">        &#125;</span><br><span class="line">        mChannelCache = channel;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> mChannelCache;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们只看v1，根据调用流程，最终会到：<br>V1SchemeUtil.readChannel方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">readChannel</span><span class="params">(File file)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    RandomAccessFile raf = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        raf = <span class="keyword">new</span> RandomAccessFile(file, <span class="string">"r"</span>);</span><br><span class="line">        <span class="keyword">long</span> index = raf.length();</span><br><span class="line">        <span class="keyword">byte</span>[] buffer = <span class="keyword">new</span> <span class="keyword">byte</span>[ChannelConstants.V1_MAGIC.length];</span><br><span class="line">        index -= ChannelConstants.V1_MAGIC.length;</span><br><span class="line">        raf.seek(index);</span><br><span class="line">        raf.readFully(buffer);</span><br><span class="line">        <span class="comment">// whether magic bytes matched</span></span><br><span class="line">        <span class="keyword">if</span> (isV1MagicMatch(buffer)) &#123;</span><br><span class="line">            index -= ChannelConstants.SHORT_LENGTH;</span><br><span class="line">            raf.seek(index);</span><br><span class="line">            <span class="comment">// read channel length field</span></span><br><span class="line">            <span class="keyword">int</span> length = readShort(raf);</span><br><span class="line">            <span class="keyword">if</span> (length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                index -= length;</span><br><span class="line">                raf.seek(index);</span><br><span class="line">                <span class="comment">// read channel bytes</span></span><br><span class="line">                <span class="keyword">byte</span>[] bytesComment = <span class="keyword">new</span> <span class="keyword">byte</span>[length];</span><br><span class="line">                raf.readFully(bytesComment);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> String(bytesComment, ChannelConstants.CONTENT_CHARSET);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">"zip channel info not found"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">"zip v1 magic not found"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (raf != <span class="keyword">null</span>) &#123;</span><br><span class="line">            raf.close();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用了RandomAccessFile，可以很方便的使用seek指定到具体的字节处。注意第一次seek的目标是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">length - magic.length</span><br></pre></td></tr></table></figure>
+
+<p>，即对应我们的读取魔数，读取到比对是否相同。<br>如果相同，再往前读取</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SHORT_LENGTH = 2</span><br></pre></td></tr></table></figure>
+
+<p>个字节，读取为short类型，即为渠道信息所占据的字节数。<br>再往前对去对应的长度，转化为String，即为渠道信息，与我们前面的分析一模一样。<br>ok，读取始终是简单的。<br>后面还要看如何写入以及如何自动化。</p>
+<h2 id="写入v1渠道信息"><a href="#写入v1渠道信息" class="headerlink" title="写入v1渠道信息"></a>写入v1渠道信息</h2><p>写入渠道信息，先思考下，有个apk，需要写入渠道信息，需要几步：</p>
+<ol>
+<li>找到合适的写入位置</li>
+<li>写入渠道信息、写入长度、写入魔数</li>
+</ol>
+<p>好像唯一的难点就是找到合适的位置。<br>但是找到这个合适的位置，又涉及到zip文件的格式内容了。<br>大致讲解下：<br>zip的末尾有一个数据库，这个数据块我们叫做EOCD块，分为4个部分：</p>
+<ol>
+<li>4字节，固定值0x06054b50 </li>
+<li>16个字节，不在乎其细节</li>
+<li>2个字节，注释长度</li>
+<li>N个字节，注释内容</li>
+</ol>
+<p>知道这个规律后，我们就可以通过匹配1中固定值来确定对应区域，然后seek到注释处。<br>可能99.99%的apk默认是不包含注释内容的，所以直接往前seek 22个字节，读取4个字节做下匹配即可。<br>但是如果已经包含了注释内容，就比较难办了。很多时候，我们会正向从头开始按协议读取zip文件格式，直至到达目标区域。<br>不过VasDolly的做法是，从文件末尾seek 22 ~ 文件size - 22，逐一匹配。<br>我们简单看下代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">writeChannel</span><span class="params">(File file, String channel)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">byte</span>[] comment = channel.getBytes(ChannelConstants.CONTENT_CHARSET);</span><br><span class="line">    Pair&lt;ByteBuffer, Long&gt; eocdAndOffsetInFile = getEocd(file);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (eocdAndOffsetInFile.getFirst().remaining() == ZipUtils.ZIP_EOCD_REC_MIN_SIZE) &#123;</span><br><span class="line">        System.out.println(<span class="string">"file : "</span> + file.getAbsolutePath() + <span class="string">" , has no comment"</span>);</span><br><span class="line"></span><br><span class="line">        RandomAccessFile raf = <span class="keyword">new</span> RandomAccessFile(file, <span class="string">"rw"</span>);</span><br><span class="line">        <span class="comment">//1.locate comment length field</span></span><br><span class="line">        raf.seek(file.length() - ChannelConstants.SHORT_LENGTH);</span><br><span class="line">        <span class="comment">//2.write zip comment length (content field length + length field length + magic field length)</span></span><br><span class="line">        writeShort(comment.length + ChannelConstants.SHORT_LENGTH + ChannelConstants.V1_MAGIC.length, raf);</span><br><span class="line">        <span class="comment">//3.write content</span></span><br><span class="line">        raf.write(comment);</span><br><span class="line">        <span class="comment">//4.write content length</span></span><br><span class="line">        writeShort(comment.length, raf);</span><br><span class="line">        <span class="comment">//5. write magic bytes</span></span><br><span class="line">        raf.write(ChannelConstants.V1_MAGIC);</span><br><span class="line">        raf.close();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">"file : "</span> + file.getAbsolutePath() + <span class="string">" , has comment"</span>);</span><br><span class="line">        <span class="keyword">if</span> (containV1Magic(file)) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                String existChannel = readChannel(file);</span><br><span class="line">                <span class="keyword">if</span> (existChannel != <span class="keyword">null</span>)&#123;</span><br><span class="line">                    file.delete();</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> ChannelExistException(<span class="string">"file : "</span> + file.getAbsolutePath() + <span class="string">" has a channel : "</span> + existChannel + <span class="string">", only ignore"</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> existCommentLength = ZipUtils.getUnsignedInt16(eocdAndOffsetInFile.getFirst(), ZipUtils.ZIP_EOCD_REC_MIN_SIZE - ChannelConstants.SHORT_LENGTH);</span><br><span class="line">        <span class="keyword">int</span> newCommentLength = existCommentLength + comment.length + ChannelConstants.SHORT_LENGTH + ChannelConstants.V1_MAGIC.length;</span><br><span class="line">        RandomAccessFile raf = <span class="keyword">new</span> RandomAccessFile(file, <span class="string">"rw"</span>);</span><br><span class="line">        <span class="comment">//1.locate comment length field</span></span><br><span class="line">        raf.seek(eocdAndOffsetInFile.getSecond() + ZipUtils.ZIP_EOCD_REC_MIN_SIZE - ChannelConstants.SHORT_LENGTH);</span><br><span class="line">        <span class="comment">//2.write zip comment length (existCommentLength + content field length + length field length + magic field length)</span></span><br><span class="line">        writeShort(newCommentLength, raf);</span><br><span class="line">        <span class="comment">//3.locate where channel should begin</span></span><br><span class="line">        raf.seek(eocdAndOffsetInFile.getSecond() + ZipUtils.ZIP_EOCD_REC_MIN_SIZE + existCommentLength);</span><br><span class="line">        <span class="comment">//4.write content</span></span><br><span class="line">        raf.write(comment);</span><br><span class="line">        <span class="comment">//5.write content length</span></span><br><span class="line">        writeShort(comment.length, raf);</span><br><span class="line">        <span class="comment">//6.write magic bytes</span></span><br><span class="line">        raf.write(ChannelConstants.V1_MAGIC);</span><br><span class="line">        raf.close();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>getEocd(file)的的返回值是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Pair&lt;ByteBuffer, Long&gt;</span><br></pre></td></tr></table></figure>
+
+<p>，多数情况下first为EOCD块起始位置到结束后的内容；second为EOCD块起始位置。<br>if为apk本身无comment的情况，这种方式属于大多数情况，从文件末尾，移动2字节，该2字节为注释长度，然后组装注释内容，重新计算注释长度，重新写入注释长度，再写入注释内容，最后写入MAGIC魔数。<br>else即为本身存在comment的情况，首先读取原有注释长度，然后根据渠道等信息计算出先的注释长度，写入。</p>
+<h2 id="gradle自动化"><a href="#gradle自动化" class="headerlink" title="gradle自动化"></a>gradle自动化</h2><p>最后我们看下，是如何做到输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./gradle channelRelease</span><br></pre></td></tr></table></figure>
+
+<p>就实现所有渠道包的生成呢。<br>这里主要就是解析gradle plugin了，如果你还没有自定义过plugin，非常值得参考。<br>代码主要在VasDolly/plugin这个module.<br>入口代码为ApkChannelPackagePlugin的apply方法。<br>主要代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">project.afterEvaluate &#123;</span><br><span class="line">    project.android.applicationVariants.all &#123; variant -&gt;</span><br><span class="line">        def variantOutput = variant.outputs.first();</span><br><span class="line">        def dirName = variant.dirName;</span><br><span class="line">        def variantName = variant.name.capitalize();</span><br><span class="line">        Task channelTask = project.task(<span class="string">"channel$&#123;variantName&#125;"</span>, type: ApkChannelPackageTask) &#123;</span><br><span class="line">            mVariant = variant;</span><br><span class="line">            mChannelExtension = mChannelConfigurationExtension;</span><br><span class="line">            mOutputDir = <span class="keyword">new</span> File(mChannelConfigurationExtension.baseOutputDir, dirName)</span><br><span class="line">            mChannelList = mChanneInfolList</span><br><span class="line">            dependsOn variant.assemble</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>为每个variantName添加了一个task，并且依赖于</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">variant.assemble</span><br></pre></td></tr></table></figure>
+
+<p>。<br>也就是说，当我们执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./gradlew channelRelease</span><br></pre></td></tr></table></figure>
+
+<p>时，会先执行assemble，然后对产物apk做后续操作。<br>重点看这个Task，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ApkChannelPackageTask</span><br></pre></td></tr></table></figure>
+
+<p>。<br>执行代码为：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@TaskAction</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channel</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">//1.check all params</span></span><br><span class="line">    checkParameter();</span><br><span class="line">    <span class="comment">//2.check signingConfig , determine channel package mode</span></span><br><span class="line">    checkSigningConfig()</span><br><span class="line">    <span class="comment">//3.generate channel apk</span></span><br><span class="line">    generateChannelApk();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注释也比较清晰，首先channelFile、baseOutputDir等相关参数。接下来校验signingConfig中v2SigningEnabled与v1SigningEnabled，确定使用V1还是V2 mode，我们上文中将v2SigningEnabled设置为了false，所以这里为V1_MODE。<br>最后就是生成渠道apk了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">generateV1ChannelApk</span><span class="params">()</span> </span>&#123;</span><br><span class="line">     <span class="comment">// 省略了一些代码</span></span><br><span class="line">    mChannelList.each &#123; channel -&gt;</span><br><span class="line">        String apkChannelName = getChannelApkName(channel)</span><br><span class="line">        println <span class="string">"generateV1ChannelApk , channel = $&#123;channel&#125; , apkChannelName = $&#123;apkChannelName&#125;"</span></span><br><span class="line">        File destFile = <span class="keyword">new</span> File(mOutputDir, apkChannelName)</span><br><span class="line">        copyTo(mBaseApk, destFile)</span><br><span class="line">        V1SchemeUtil.writeChannel(destFile, channel)</span><br><span class="line">        <span class="keyword">if</span> (!mChannelExtension.isFastMode)&#123;</span><br><span class="line">            <span class="comment">//1. verify channel info</span></span><br><span class="line">            <span class="keyword">if</span> (V1SchemeUtil.verifyChannel(destFile, channel)) &#123;</span><br><span class="line">                println(<span class="string">"generateV1ChannelApk , $&#123;destFile&#125; add channel success"</span>)</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> GradleException(<span class="string">"generateV1ChannelApk , $&#123;destFile&#125; add channel failure"</span>)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//2. verify v1 signature</span></span><br><span class="line">            <span class="keyword">if</span> (VerifyApk.verifyV1Signature(destFile)) &#123;</span><br><span class="line">                println <span class="string">"generateV1ChannelApk , after add channel , apk $&#123;destFile&#125; v1 verify success"</span></span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> GradleException(<span class="string">"generateV1ChannelApk , after add channel , apk $&#123;destFile&#125; v1 verify failure"</span>)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    println(<span class="string">"------ $&#123;project.name&#125;:$&#123;name&#125; generate v1 channel apk , end ------"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>很简单，遍历channelList，然后调用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">V1SchemeUtil.writeChannel</span><br></pre></td></tr></table></figure>
+
+<p>，该方法即我们上文解析过的方法。<br>如果fastMode设置为false，还会读取出渠道再做一次强校验；以及会通过apksig做对签名进行校验。<br>ok，到这里我们就完全剖析了基于V1的快速签名的全过程。<br>接下来我们看基于v2的快速签名方案。</p>
+<h1 id="基于V2的快速签名方案"><a href="#基于V2的快速签名方案" class="headerlink" title="基于V2的快速签名方案"></a>基于V2的快速签名方案</h1><p>关于V2签名的产生原因，原理以及安装时的校验过程可以参考 <a href="https://github.com/Tencent/VasDolly/wiki/VasDolly%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86" target="_blank" rel="noopener">VasDolly实现原理</a>。<br>我这里就抛开细节，尽可能让大家能明白整个过程，v2签名的原理可以简单理解为：</p>
+<ol>
+<li>我们的apk其实是个zip，我们可以理解为3块：块1+块2+块3</li>
+<li>签名让我们的apk变成了4部分：块1+签名块+块2+块3</li>
+</ol>
+<p>在这个签名块的某个区域，允许我们写一些key-value对，我们就将渠道信息写在这个地方。<br>这里有一个问题，v2不是说是对整个apk进行校验吗？为什么还能够让我们在apk中插入这样的信息呢？<br>因为在校验过程中，对于签名块是不校验的（细节上由于我们插入了签名块，某些偏移量会变化，但是在校验前，Android系统会先重置偏移量），而我们的渠道信息刚好写在这个签名块中。<br>好了，细节一会看代码。</p>
+<h2 id="读取渠道信息"><a href="#读取渠道信息" class="headerlink" title="读取渠道信息"></a>读取渠道信息</h2><p>写入渠道信息，根据我们上述的分析，流程应该大致如下：</p>
+<ol>
+<li>找到签名块</li>
+<li>找到签名块中的key-value的地方</li>
+<li>读取出所有的key-value，找到我们特定的key对应的渠道信息</li>
+</ol>
+<p>这里我们不按照整个代码流程走了，太长了，一会看几段关键代码。</p>
+<h3 id="如何找到签名块"><a href="#如何找到签名块" class="headerlink" title="如何找到签名块"></a>如何找到签名块</h3><p>我们的apk现在格式是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">块1+签名块+块2+块3</span><br></pre></td></tr></table></figure>
+
+<p>其中块3称之为EOCD，现在必须要展示下其内部的数据结构了：<br><img src="/2018/11/19/（转载）带你了解腾讯开源的多渠道打包技术-VasDolly源码解析/2.png" alt="这里写图片描述_pic2"></p>
+<p>图片来自：<a href="https://github.com/Tencent/VasDolly/wiki/VasDolly%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86" target="_blank" rel="noopener">参考</a></p>
+<p>在V1的相关代码中，我们已经可以定位到EOCD的位置了，然后往下16个字节即可拿到</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Offset of start of central directory</span><br></pre></td></tr></table></figure>
+
+<p>即为块2开始的位置，也为签名块末尾的位置。<br>块2 再往前，就可以获取到我们的 签名块了。<br>我们先看一段代码，定位到 块2 的开始位置。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"># V2SchemeUtil</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ByteBuffer <span class="title">getApkSigningBlock</span><span class="params">(File channelFile)</span> <span class="keyword">throws</span> ApkSignatureSchemeV2Verifier.SignatureNotFoundException, IOException </span>&#123;</span><br><span class="line"></span><br><span class="line">    RandomAccessFile apk = <span class="keyword">new</span> RandomAccessFile(channelFile, <span class="string">"r"</span>);</span><br><span class="line">    <span class="comment">//1.find the EOCD</span></span><br><span class="line">    Pair&lt;ByteBuffer, Long&gt; eocdAndOffsetInFile = ApkSignatureSchemeV2Verifier.getEocd(apk);</span><br><span class="line">    ByteBuffer eocd = eocdAndOffsetInFile.getFirst();</span><br><span class="line">    <span class="keyword">long</span> eocdOffset = eocdAndOffsetInFile.getSecond();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (ZipUtils.isZip64EndOfCentralDirectoryLocatorPresent(apk, eocdOffset)) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ApkSignatureSchemeV2Verifier.SignatureNotFoundException(<span class="string">"ZIP64 APK not supported"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//2.find the APK Signing Block. The block immediately precedes the Central Directory.</span></span><br><span class="line">    <span class="keyword">long</span> centralDirOffset = ApkSignatureSchemeV2Verifier.getCentralDirOffset(eocd, eocdOffset);<span class="comment">//通过eocd找到中央目录的偏移量</span></span><br><span class="line">    <span class="comment">//3. find the apk V2 signature block</span></span><br><span class="line">    Pair&lt;ByteBuffer, Long&gt; apkSignatureBlock =</span><br><span class="line">            ApkSignatureSchemeV2Verifier.findApkSigningBlock(apk, centralDirOffset);<span class="comment">//找到V2签名块的内容和偏移量</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> apkSignatureBlock.getFirst();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>首先发现EOCD块，这个前面我们已经分析了。<br>然后寻找到签名块的位置，上面我们已经分析了只要往下移动16字节即可到达签名块末尾 ，那么看下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ApkSignatureSchemeV2Verifier.getCentralDirOffset</span><br></pre></td></tr></table></figure>
+
+<p>代码，最终调用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">long</span> <span class="title">getZipEocdCentralDirectoryOffset</span><span class="params">(ByteBuffer zipEndOfCentralDirectory)</span> </span>&#123;</span><br><span class="line">    assertByteOrderLittleEndian(zipEndOfCentralDirectory);</span><br><span class="line">    <span class="keyword">return</span> getUnsignedInt32(</span><br><span class="line">            zipEndOfCentralDirectory,</span><br><span class="line">            zipEndOfCentralDirectory.position() + <span class="number">16</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>到这里我们已经可以到达签名块末尾了。<br>我们继续看findApkSigningBlock找到V2签名块的内容和偏移量：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Pair&lt;ByteBuffer, Long&gt; <span class="title">findApkSigningBlock</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        RandomAccessFile apk, <span class="keyword">long</span> centralDirOffset)</span></span></span><br><span class="line"><span class="function">        <span class="keyword">throws</span> IOException, SignatureNotFoundException </span>&#123;</span><br><span class="line"></span><br><span class="line">    ByteBuffer footer = ByteBuffer.allocate(<span class="number">24</span>);</span><br><span class="line">    footer.order(ByteOrder.LITTLE_ENDIAN);</span><br><span class="line">    apk.seek(centralDirOffset - footer.capacity());</span><br><span class="line">    apk.readFully(footer.array(), footer.arrayOffset(), footer.capacity());</span><br><span class="line">    <span class="keyword">if</span> ((footer.getLong(<span class="number">8</span>) != APK_SIG_BLOCK_MAGIC_LO)</span><br><span class="line">            || (footer.getLong(<span class="number">16</span>) != APK_SIG_BLOCK_MAGIC_HI)) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> SignatureNotFoundException(</span><br><span class="line">                <span class="string">"No APK Signing Block before ZIP Central Directory"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Read and compare size fields</span></span><br><span class="line">    <span class="keyword">long</span> apkSigBlockSizeInFooter = footer.getLong(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> totalSize = (<span class="keyword">int</span>) (apkSigBlockSizeInFooter + <span class="number">8</span>);</span><br><span class="line">    <span class="keyword">long</span> apkSigBlockOffset = centralDirOffset - totalSize;</span><br><span class="line"></span><br><span class="line">    ByteBuffer apkSigBlock = ByteBuffer.allocate(totalSize);</span><br><span class="line">    apkSigBlock.order(ByteOrder.LITTLE_ENDIAN);</span><br><span class="line">    apk.seek(apkSigBlockOffset);</span><br><span class="line">    apk.readFully(apkSigBlock.array(), apkSigBlock.arrayOffset(), apkSigBlock.capacity());</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> Pair.create(apkSigBlock, apkSigBlockOffset);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里我们需要介绍下签名块相关信息了：<br><img src="/2018/11/19/（转载）带你了解腾讯开源的多渠道打包技术-VasDolly源码解析/3.png" alt="这里写图片描述_pic3"></p>
+<p>图片来自：<a href="https://github.com/Tencent/VasDolly/wiki/VasDolly%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86" target="_blank" rel="noopener">参考</a><br>中间的不包含此8字节，值得是该ID-VALUE的size值不包含此8字节。</p>
+<p>首先往前读取24个字节，即读取了签名块大小64bits+魔数128bits；然后会魔数信息与实际的魔数对比。<br>接下来读取8个字节为apkSigBlockSizeInFooter，即签名块大小。<br>然后+8加上上图顶部的8个字节。<br>最后将整个签名块读取到ByteBuffer中返回。<br>此时我们已经有了签名块的所有数据了。<br>接下来我们要读取这个签名块中所有的key-value对！</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"># V2SchemeUtil</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Map&lt;Integer, ByteBuffer&gt; <span class="title">getAllIdValue</span><span class="params">(ByteBuffer apkSchemeBlock)</span> </span>&#123;</span><br><span class="line">    ApkSignatureSchemeV2Verifier.checkByteOrderLittleEndian(apkSchemeBlock);</span><br><span class="line"></span><br><span class="line">    ByteBuffer pairs = ApkSignatureSchemeV2Verifier.sliceFromTo(apkSchemeBlock, <span class="number">8</span>, apkSchemeBlock.capacity() - <span class="number">24</span>);</span><br><span class="line">    Map&lt;Integer, ByteBuffer&gt; idValues = <span class="keyword">new</span> LinkedHashMap&lt;Integer, ByteBuffer&gt;(); <span class="comment">// keep order</span></span><br><span class="line">    <span class="keyword">int</span> entryCount = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (pairs.hasRemaining()) &#123;</span><br><span class="line">        entryCount++;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">long</span> lenLong = pairs.getLong();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> len = (<span class="keyword">int</span>) lenLong;</span><br><span class="line">        <span class="keyword">int</span> nextEntryPos = pairs.position() + len;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> id = pairs.getInt();</span><br><span class="line">        idValues.put(id, ApkSignatureSchemeV2Verifier.getByteBuffer(pairs, len - <span class="number">4</span>));<span class="comment">//4 is length of id</span></span><br><span class="line">        <span class="keyword">if</span> (id == ApkSignatureSchemeV2Verifier.APK_SIGNATURE_SCHEME_V2_BLOCK_ID) &#123;</span><br><span class="line">            System.out.println(<span class="string">"find V2 signature block Id : "</span> + ApkSignatureSchemeV2Verifier.APK_SIGNATURE_SCHEME_V2_BLOCK_ID);</span><br><span class="line">        &#125;</span><br><span class="line">        pairs.position(nextEntryPos);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> idValues;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>首先读取8到capacity() - 24中的内容，即所有的id-value集合。<br>然后进入while循环，读取一个个key-value存入idValues，我们看下循环体内：</p>
+<ol>
+<li>pairs.getLong，读取8个字节，即此id-value块的size</li>
+<li>然后pairs.getInt，读取4个字节，即可得到id</li>
+<li>size - 4 中包含的内容即为value</li>
+</ol>
+<p>如此循环，得到所有的idValues。<br>有了所有的idValues，然后根据特定的id，即可获取我们的渠道信息了。<br>即：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># ChannelReader</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getChannel</span><span class="params">(File channelFile)</span> </span>&#123;</span><br><span class="line">    System.out.println(<span class="string">"try to read channel info from apk : "</span> + channelFile.getAbsolutePath());</span><br><span class="line">    <span class="keyword">return</span> IdValueReader.getStringValueById(channelFile, ChannelConstants.CHANNEL_BLOCK_ID);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样我们就走通了读取的逻辑。<br>我替大家总结下：</p>
+<ol>
+<li>根据zip的格式，先定位到EOCD的开始位置</li>
+<li>然后根据EOCD中的内容定位到签名块末尾</li>
+<li>然后根据签名块中的数据格式，逐一读取出id-values</li>
+<li>我们的渠道信息与一个特点的id映射，读取出即可</li>
+</ol>
+<h2 id="写入渠道信息"><a href="#写入渠道信息" class="headerlink" title="写入渠道信息"></a>写入渠道信息</h2><p>先思考下，现在要正视的是，目前到我们这里已经是v2签名打出的包了。那么我们应该找到签名块中的id-values部分，把我们的渠道信息插入进去。<br>大致的方式可以为：</p>
+<ol>
+<li>读取出块1，签名块，块2，EOCD</li>
+<li>在签名块中插入渠道信息</li>
+<li>回写块1，签名块，块2，EOCD</li>
+</ol>
+<h3 id="读取出相关信息"><a href="#读取出相关信息" class="headerlink" title="读取出相关信息"></a>读取出相关信息</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"># V2SchemeUtil</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ApkSectionInfo <span class="title">getApkSectionInfo</span><span class="params">(File baseApk)</span> </span>&#123;</span><br><span class="line">    RandomAccessFile apk = <span class="keyword">new</span> RandomAccessFile(baseApk, <span class="string">"r"</span>);</span><br><span class="line">    <span class="comment">//1.find the EOCD and offset</span></span><br><span class="line">    Pair&lt;ByteBuffer, Long&gt; eocdAndOffsetInFile = ApkSignatureSchemeV2Verifier.getEocd(apk);</span><br><span class="line">    ByteBuffer eocd = eocdAndOffsetInFile.getFirst();</span><br><span class="line">    <span class="keyword">long</span> eocdOffset = eocdAndOffsetInFile.getSecond();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//2.find the APK Signing Block. The block immediately precedes the Central Directory.</span></span><br><span class="line">    <span class="keyword">long</span> centralDirOffset = ApkSignatureSchemeV2Verifier.getCentralDirOffset(eocd, eocdOffset);<span class="comment">//通过eocd找到中央目录的偏移量</span></span><br><span class="line">    Pair&lt;ByteBuffer, Long&gt; apkSchemeV2Block =</span><br><span class="line">            ApkSignatureSchemeV2Verifier.findApkSigningBlock(apk, centralDirOffset);<span class="comment">//找到V2签名块的内容和偏移量</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//3.find the centralDir</span></span><br><span class="line">    Pair&lt;ByteBuffer, Long&gt; centralDir = findCentralDir(apk, centralDirOffset, (<span class="keyword">int</span>) (eocdOffset - centralDirOffset));</span><br><span class="line">    <span class="comment">//4.find the contentEntry</span></span><br><span class="line">    Pair&lt;ByteBuffer, Long&gt; contentEntry = findContentEntry(apk, (<span class="keyword">int</span>) apkSchemeV2Block.getSecond().longValue());</span><br><span class="line"></span><br><span class="line">    ApkSectionInfo apkSectionInfo = <span class="keyword">new</span> ApkSectionInfo();</span><br><span class="line">    apkSectionInfo.mContentEntry = contentEntry;</span><br><span class="line">    apkSectionInfo.mSchemeV2Block = apkSchemeV2Block;</span><br><span class="line">    apkSectionInfo.mCentralDir = centralDir;</span><br><span class="line">    apkSectionInfo.mEocd = eocdAndOffsetInFile;</span><br><span class="line"></span><br><span class="line">    System.out.println(<span class="string">"baseApk : "</span> + baseApk.getAbsolutePath() + <span class="string">" , ApkSectionInfo = "</span> + apkSectionInfo);</span><br><span class="line">    <span class="keyword">return</span> apkSectionInfo;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>首先读取出EOCD，这个代码见过多次了。</li>
+<li>然后根据EOCD读取到中间目录的偏移量（块2）。</li>
+<li>将中间目录完整的内容读取出来，</li>
+<li>读取出块1</li>
+</ol>
+<p>全部都存储到apkSectionInfo中。<br>目前我们将整个apk按区域读取出来了。</p>
+<h3 id="签名块中插入渠道信息"><a href="#签名块中插入渠道信息" class="headerlink" title="签名块中插入渠道信息"></a>签名块中插入渠道信息</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># ChannelWriter</span><br><span class="line">public static void addChannel(ApkSectionInfo apkSectionInfo, File destApk, String channel)  &#123;</span><br><span class="line">    byte[] buffer = channel.getBytes(ChannelConstants.CONTENT_CHARSET);</span><br><span class="line">    ByteBuffer channelByteBuffer = ByteBuffer.wrap(buffer);</span><br><span class="line">    //apk中所有字节都是小端模式</span><br><span class="line">    channelByteBuffer.order(ByteOrder.LITTLE_ENDIAN);</span><br><span class="line"></span><br><span class="line">    IdValueWriter.addIdValue(apkSectionInfo, destApk, ChannelConstants.CHANNEL_BLOCK_ID, channelByteBuffer);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>将渠道字符串与特定的渠道id准备好，调用addIdValue</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># IdValueWriter</span><br><span class="line">public static void addIdValue(ApkSectionInfo apkSectionInfo, File destApk, int id, ByteBuffer valueBuffer)  &#123;</span><br><span class="line">    Map&lt;Integer, ByteBuffer&gt; idValueMap = new LinkedHashMap&lt;&gt;();</span><br><span class="line">    idValueMap.put(id, valueBuffer);</span><br><span class="line">    addIdValueByteBufferMap(apkSectionInfo, destApk, idValueMap);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>继续：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">addIdValueByteBufferMap</span><span class="params">(ApkSectionInfo apkSectionInfo, File destApk, Map&lt;Integer, ByteBuffer&gt; idValueMap)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    Map&lt;Integer, ByteBuffer&gt; existentIdValueMap = V2SchemeUtil.getAllIdValue(apkSectionInfo.mSchemeV2Block.getFirst());</span><br><span class="line"></span><br><span class="line">    existentIdValueMap.putAll(idValueMap);</span><br><span class="line"></span><br><span class="line">    ByteBuffer newApkSigningBlock = V2SchemeUtil.generateApkSigningBlock(existentIdValueMap);</span><br><span class="line"></span><br><span class="line">    ByteBuffer contentEntry = apkSectionInfo.mContentEntry.getFirst();</span><br><span class="line">    ByteBuffer centralDir = apkSectionInfo.mCentralDir.getFirst();</span><br><span class="line">    ByteBuffer eocd = apkSectionInfo.mEocd.getFirst();</span><br><span class="line">    <span class="keyword">long</span> centralDirOffset = apkSectionInfo.mCentralDir.getSecond();</span><br><span class="line">    <span class="comment">//update the offset of centralDir</span></span><br><span class="line">    centralDirOffset += (newApkSigningBlock.remaining() - apkSectionInfo.mSchemeV2Block.getFirst().remaining());</span><br><span class="line">    ZipUtils.setZipEocdCentralDirectoryOffset(eocd, centralDirOffset);<span class="comment">//修改了apkSectionInfo中eocd的原始数据</span></span><br><span class="line"></span><br><span class="line">    RandomAccessFile fIn = <span class="keyword">new</span> RandomAccessFile(destApk, <span class="string">"rw"</span>);</span><br><span class="line">    <span class="keyword">long</span> apkLength = contentEntry.remaining() + newApkSigningBlock.remaining() + centralDir.remaining() + eocd.remaining();</span><br><span class="line">    fIn.seek(<span class="number">0l</span>);</span><br><span class="line">    <span class="comment">//1. write real content Entry block</span></span><br><span class="line">    fIn.write(contentEntry.array(), contentEntry.arrayOffset() + contentEntry.position(), contentEntry.remaining());</span><br><span class="line">    <span class="comment">//2. write new apk v2 scheme block</span></span><br><span class="line">    fIn.write(newApkSigningBlock.array(), newApkSigningBlock.arrayOffset() + newApkSigningBlock.position(), newApkSigningBlock.remaining());</span><br><span class="line">    <span class="comment">//3. write central dir block</span></span><br><span class="line">    fIn.write(centralDir.array(), centralDir.arrayOffset() + centralDir.position(), centralDir.remaining());</span><br><span class="line">    <span class="comment">//4. write eocd block</span></span><br><span class="line">    fIn.write(eocd.array(), eocd.arrayOffset() + eocd.position(), eocd.remaining());</span><br><span class="line">    fIn.setLength(apkLength);</span><br><span class="line">    System.out.println(<span class="string">"addIdValueByteBufferMap , after add channel , new apk is "</span> + destApk.getAbsolutePath() + <span class="string">" , length = "</span> + apkLength);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>首先读取出原本的id-values，代码我们前面已经分析过，与我们要添加的id-value放到一个map中。<br>然后调用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">V2SchemeUtil.generateApkSigningBlock</span><br></pre></td></tr></table></figure>
+
+<p>重新生成一个新的签名块，这里不看了，其实就是根据上图的字节描述，很容易生成。<br>再根据新的签名块，和之前的中间目录偏移量，计算出新的偏移量，调整EOCD中的相关值。<br>最后，通过RandomAccessFile重新写入：</p>
+<ol>
+<li>块1</li>
+<li>新的签名块</li>
+<li>中间目录块</li>
+<li>EOCD块</li>
+</ol>
+<p>完工！<br>关于V2的gradle部分与V1部分基本一致，不再赘述。</p>
+<p>最后，对于文中的块1+签名块+块2+块3，主要是为了方便理解，大家可以再去了解下zip文件格式，对应到专业的术语上去。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://github.com/Tencent/VasDolly" target="_blank" rel="noopener">https://github.com/Tencent/VasDolly</a></li>
+<li><a href="https://source.android.com/security/apksigning/v2" target="_blank" rel="noopener">https://source.android.com/security/apksigning/v2</a></li>
+<li><a href="https://github.com/Tencent/VasDolly/wiki/VasDolly%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%860" target="_blank" rel="noopener">VasDolly实现原理</a></li>
+<li>安卓再爆重大安全漏洞 黑客可以任意篡改App </li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/编译/" rel="tag"># 编译</a>
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/gradle/" rel="tag"># gradle</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/29/关于Java泛型的一些思考/" rel="next" title="关于Java泛型的一些思考">
+                <i class="fa fa-chevron-left"></i> 关于Java泛型的一些思考
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/11/View为什么会至少进行2次onMeasure、onLayout/" rel="prev" title="View为什么会至少进行2次onMeasure、onLayout">
+                View为什么会至少进行2次onMeasure、onLayout <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概要"><span class="nav-number">1.</span> <span class="nav-text">概要</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#接入VasDolly"><span class="nav-number">2.</span> <span class="nav-text">接入VasDolly</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#根目录build-gradle"><span class="nav-number">2.1.</span> <span class="nav-text">根目录build.gradle</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#app的build-gradle"><span class="nav-number">2.2.</span> <span class="nav-text">app的build.gradle</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#V1的渠道读取与写入"><span class="nav-number">3.</span> <span class="nav-text">V1的渠道读取与写入</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#读取"><span class="nav-number">3.1.</span> <span class="nav-text">读取</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#写入v1渠道信息"><span class="nav-number">3.2.</span> <span class="nav-text">写入v1渠道信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gradle自动化"><span class="nav-number">3.3.</span> <span class="nav-text">gradle自动化</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基于V2的快速签名方案"><span class="nav-number">4.</span> <span class="nav-text">基于V2的快速签名方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#读取渠道信息"><span class="nav-number">4.1.</span> <span class="nav-text">读取渠道信息</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#如何找到签名块"><span class="nav-number">4.1.1.</span> <span class="nav-text">如何找到签名块</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#写入渠道信息"><span class="nav-number">4.2.</span> <span class="nav-text">写入渠道信息</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#读取出相关信息"><span class="nav-number">4.2.1.</span> <span class="nav-text">读取出相关信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#签名块中插入渠道信息"><span class="nav-number">4.2.2.</span> <span class="nav-text">签名块中插入渠道信息</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

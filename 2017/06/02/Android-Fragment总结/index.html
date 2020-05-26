@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Fragment中getActivity()空指针、FragmentTransaction的四种提交方法">
+<meta name="keywords" content="android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android Fragment总结">
+<meta property="og:url" content="https://superxlcr.github.io/2017/06/02/Android-Fragment总结/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="Fragment中getActivity()空指针、FragmentTransaction的四种提交方法">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.502Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android Fragment总结">
+<meta name="twitter:description" content="Fragment中getActivity()空指针、FragmentTransaction的四种提交方法">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2017/06/02/Android-Fragment总结/">
+
+
+
+
+
+  <title>Android Fragment总结 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2017/06/02/Android-Fragment总结/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android Fragment总结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-02T16:27:26+08:00">
+                2017-06-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.2k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近整理了一些关于Android中Fragment相关的知识，在此进行一下总结。</p>
+<h1 id="Fragment中getActivity-空指针"><a href="#Fragment中getActivity-空指针" class="headerlink" title="Fragment中getActivity()空指针"></a>Fragment中getActivity()空指针</h1><p>某些时候，如果我们试图在Fragment中执行异步操作，那我们很大可能会遇到getActivity()返回null的问题<br>出现了这个奇怪的问题，我们先来了解下原因，为啥getActivity会返回null呢？来一起看下源码<br>Fragment#getActivity()：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">public</span> FragmentActivity <span class="title">getActivity</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> mHost == <span class="keyword">null</span> ? <span class="keyword">null</span> : (FragmentActivity) mHost.getActivity();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从上我们可以推断出，是mHost成员变量被置为了null，getActivity方法才返回null的<br>全局查找下对mHost的修改，修改为null的地方有两处：</p>
+<ol>
+<li>Fragment#initState() （一看就是初始化状态的方法，忽略）</li>
+<li>Fragment#moveToState() （根据名称，判断为Fragment状态转移方法，看一下它的源码）</li>
+</ol>
+<p>FragmentManager#moveToState()：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="keyword">if</span> (newState &lt; Fragment.CREATED) &#123;</span><br><span class="line">	<span class="keyword">if</span> (mDestroyed) &#123;</span><br><span class="line">		<span class="keyword">if</span> (f.mAnimatingAway != <span class="keyword">null</span>) &#123;</span><br><span class="line">			<span class="comment">// The fragment's containing activity is</span></span><br><span class="line">			<span class="comment">// being destroyed, but this fragment is</span></span><br><span class="line">			<span class="comment">// currently animating away.  Stop the</span></span><br><span class="line">			<span class="comment">// animation right now -- it is not needed,</span></span><br><span class="line">			<span class="comment">// and we can't wait any more on destroying</span></span><br><span class="line">			<span class="comment">// the fragment.</span></span><br><span class="line">			View v = f.mAnimatingAway;</span><br><span class="line">			f.mAnimatingAway = <span class="keyword">null</span>;</span><br><span class="line">			v.clearAnimation();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (f.mAnimatingAway != <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="comment">// We are waiting for the fragment's view to finish</span></span><br><span class="line">		<span class="comment">// animating away.  Just make a note of the state</span></span><br><span class="line">		<span class="comment">// the fragment now should move to once the animation</span></span><br><span class="line">		<span class="comment">// is done.</span></span><br><span class="line">		f.mStateAfterAnimating = newState;</span><br><span class="line">		newState = Fragment.CREATED;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> (DEBUG) Log.v(TAG, <span class="string">"movefrom CREATED: "</span> + f);</span><br><span class="line">		<span class="keyword">if</span> (!f.mRetaining) &#123;</span><br><span class="line">			f.performDestroy();</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			f.mState = Fragment.INITIALIZING;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		f.performDetach();</span><br><span class="line">		<span class="keyword">if</span> (!keepActive) &#123;</span><br><span class="line">			<span class="keyword">if</span> (!f.mRetaining) &#123;</span><br><span class="line">				makeInactive(f);</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				f.mHost = <span class="keyword">null</span>;</span><br><span class="line">				f.mParentFragment = <span class="keyword">null</span>;</span><br><span class="line">				f.mFragmentManager = <span class="keyword">null</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>省略了部分无关代码，我们看到第36行mHost变量被置空了<br>那么置空的时机是什么时候呢？我们往回一点，看到第31行的performDetach()：<br>Fragment#performDetach()：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">performDetach</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	mCalled = <span class="keyword">false</span>;</span><br><span class="line">	onDetach();</span><br><span class="line">	<span class="keyword">if</span> (!mCalled) &#123;</span><br><span class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> SuperNotCalledException(<span class="string">"Fragment "</span> + <span class="keyword">this</span></span><br><span class="line">				+ <span class="string">" did not call through to super.onDetach()"</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Destroy the child FragmentManager if we still have it here.</span></span><br><span class="line">	<span class="comment">// We won't unless we're retaining our instance and if we do,</span></span><br><span class="line">	<span class="comment">// our child FragmentManager instance state will have already been saved.</span></span><br><span class="line">	<span class="keyword">if</span> (mChildFragmentManager != <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="keyword">if</span> (!mRetaining) &#123;</span><br><span class="line">			<span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Child FragmentManager of "</span> + <span class="keyword">this</span> + <span class="string">" was not "</span></span><br><span class="line">					+ <span class="string">" destroyed and this fragment is not retaining instance"</span>);</span><br><span class="line">		&#125;</span><br><span class="line">		mChildFragmentManager.dispatchDestroy();</span><br><span class="line">		mChildFragmentManager = <span class="keyword">null</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>第3行可以看到熟悉的onDetach生命周期，因此我们可以得知，当Fragment执行了onDetach之后，就意味着它已经与宿主Activity脱离了，而此时调用getActivity也将返回null</p>
+<p>解决办法：</p>
+<p>通过Fragment#isAdded()判断Fragment是否已经detach，如果是，则终止与Context相关的操作</p>
+<p>网上有很多的办法是通过新建一个新的变量，强制保留对fragment宿主Activity的引用，博主个人认为这种方法是不可取的：</p>
+<ul>
+<li>首先，强制保留对Activity的引用会导致Fragment与Activity脱离后，系统无法对Activity进行回收，该引用处理不好容易引起内存泄露</li>
+<li>其次，官方允许getActivity结果为null，这种情况是在提醒开发者，Fragment已经与其宿主Activity脱离，应该中止一切与Context相关的操作（如UI操作、界面跳转等），强行地使用之前保留的Activity引用，是一种不符合官方设计意图的行为</li>
+</ul>
+<h1 id="FragmentTransaction的四种提交方法"><a href="#FragmentTransaction的四种提交方法" class="headerlink" title="FragmentTransaction的四种提交方法"></a>FragmentTransaction的四种提交方法</h1><p>使用Fragment时，可以通过用户交互来执行一些动作，比如增加、移除、替换等</p>
+<p>所有这些改变构成一个集合，这个集合被叫做一个transaction</p>
+<p>我们可以调用FragmentTransaction中的方法来处理这个transaction，并且可以将transaction存进由activity管理的back stack中，这样用户就可以通过点击回退键，进行fragment 变化的回退操作</p>
+<p>FragmentTransaction的提交方法有四个，分别为：</p>
+<ul>
+<li>commit：该方法不会使transaction立即生效，而是形成一个计划任务等待主线程有空时再执行。该方法必须在Activity保存自身状态前调用（即onSaveInstanceState之前，因为savedInstance会保存Fragment 的状态），否则会抛出异常。如果调用了addToBackStack方法返回backStack实例的id，否则返回一个负数</li>
+<li>commitAllowingStateLoss：与commit 方法类似，不同之处在于允许在Activity保存自身状态后调用，那么当Activity恢复自身状态时，该Transaction可能会由于没有被记录进savedInstance而被丢失</li>
+<li>commitNow：API 24添加的新方法。commit 方法不能保证提交的transaction马上生效，如果需要使这些transaction生效，通常会调用FragmentManager 的executePendingTransactions方法使之前提交的transaction依次生效。commitNow方法保证当前提交的transaction马上生效，且与之前commit 提交的transaction没有关系，但由于因此会打乱transaction的提交顺序，使用该方法提交的transaction不允许调用addToBackStack方法加入backStack，否则会抛出异常，也因此该方法没有返回值。其余与commit 方法基本类似。</li>
+<li>commitAllowingStateLoss：API 24添加的新方法。与commitNow类似，不同之处在于允许在Activity保存自身状态后调用，那么当Activity恢复自身状态时，该Transaction可能会由于没有被记录进savedInstance而被丢失</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/06/01/Android-Activity-savedInstanceState/" rel="next" title="Android Activity savedInstanceState">
+                <i class="fa fa-chevron-left"></i> Android Activity savedInstanceState
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/09/Android-String-d-n-d/" rel="prev" title="Android String 中的 %d %n$d">
+                Android String 中的 %d %n$d <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Fragment中getActivity-空指针"><span class="nav-number">1.</span> <span class="nav-text">Fragment中getActivity()空指针</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#FragmentTransaction的四种提交方法"><span class="nav-number">2.</span> <span class="nav-text">FragmentTransaction的四种提交方法</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

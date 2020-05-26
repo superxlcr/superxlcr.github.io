@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="基础知识,java,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="HashMap和ConcurrentHashMap的区别、TreeMap、HashMap、LinkedHashMap的区别、Collection包结构，与Collections的区别、try catch finally，try里有return，finally还执行么？、Excption与Error包结构，OOM遇到的情况">
+<meta name="keywords" content="基础知识,java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于一些基础的Java问题的解答（三）">
+<meta property="og:url" content="https://superxlcr.github.io/2016/03/17/关于一些基础的Java问题的解答（三）/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="HashMap和ConcurrentHashMap的区别、TreeMap、HashMap、LinkedHashMap的区别、Collection包结构，与Collections的区别、try catch finally，try里有return，finally还执行么？、Excption与Error包结构，OOM遇到的情况">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2016/03/17/关于一些基础的Java问题的解答（三）/1.png">
+<meta property="og:image" content="https://superxlcr.github.io/2016/03/17/关于一些基础的Java问题的解答（三）/2.jpg">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.829Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="关于一些基础的Java问题的解答（三）">
+<meta name="twitter:description" content="HashMap和ConcurrentHashMap的区别、TreeMap、HashMap、LinkedHashMap的区别、Collection包结构，与Collections的区别、try catch finally，try里有return，finally还执行么？、Excption与Error包结构，OOM遇到的情况">
+<meta name="twitter:image" content="https://superxlcr.github.io/2016/03/17/关于一些基础的Java问题的解答（三）/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2016/03/17/关于一些基础的Java问题的解答（三）/">
+
+
+
+
+
+  <title>关于一些基础的Java问题的解答（三） | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2016/03/17/关于一些基础的Java问题的解答（三）/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">关于一些基础的Java问题的解答（三）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-17T10:38:44+08:00">
+                2016-03-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.2k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上一篇文章的传送门：<a href="/2016/03/16/关于一些基础的Java问题的解答（二）/">关于一些基础的Java问题的解答（二）</a></p>
+<h1 id="HashMap和ConcurrentHashMap的区别"><a href="#HashMap和ConcurrentHashMap的区别" class="headerlink" title="HashMap和ConcurrentHashMap的区别"></a>HashMap和ConcurrentHashMap的区别</h1><p>从JDK1.2起，就有了HashMap，正如上一个问题所提到的，HashMap与HashTable不同，不是线程安全的，因此多线程操作时需要格外小心。<br>在JDK1.5中，伟大的Doug Lea给我们带来了concurrent包，从此我们有线程安全的ConcurrentHashMap用了。<br>那么ConcurrentHashMap是怎么实现线程安全的呢？肯定不可能是每个方法都加上synchronized关键字，否则就和HashTable一样了，我们来看看ConcurrentHashMap的put方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;  </span><br><span class="line">       <span class="keyword">return</span> putVal(key, value, <span class="keyword">false</span>);  </span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>调用了putVal方法，我们继续看看putVal方法的源码。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> V <span class="title">putVal</span><span class="params">(K key, V value, <span class="keyword">boolean</span> onlyIfAbsent)</span> </span>&#123;  </span><br><span class="line">       <span class="keyword">if</span> (key == <span class="keyword">null</span> || value == <span class="keyword">null</span>) <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();  </span><br><span class="line">       <span class="keyword">int</span> hash = spread(key.hashCode());  </span><br><span class="line">       <span class="keyword">int</span> binCount = <span class="number">0</span>;  </span><br><span class="line">       <span class="keyword">for</span> (Node&lt;K,V&gt;[] tab = table;;) &#123;  </span><br><span class="line">           Node&lt;K,V&gt; f; <span class="keyword">int</span> n, i, fh;  </span><br><span class="line">           <span class="keyword">if</span> (tab == <span class="keyword">null</span> || (n = tab.length) == <span class="number">0</span>)  </span><br><span class="line">               tab = initTable();  </span><br><span class="line">           <span class="keyword">else</span> <span class="keyword">if</span> ((f = tabAt(tab, i = (n - <span class="number">1</span>) &amp; hash)) == <span class="keyword">null</span>) &#123;  </span><br><span class="line">               <span class="keyword">if</span> (casTabAt(tab, i, <span class="keyword">null</span>,  </span><br><span class="line">                            <span class="keyword">new</span> Node&lt;K,V&gt;(hash, key, value, <span class="keyword">null</span>)))  </span><br><span class="line">                   <span class="keyword">break</span>;                   <span class="comment">// no lock when adding to empty bin  </span></span><br><span class="line">           &#125;  </span><br><span class="line">           <span class="keyword">else</span> <span class="keyword">if</span> ((fh = f.hash) == MOVED)  </span><br><span class="line">               tab = helpTransfer(tab, f);  </span><br><span class="line">           <span class="keyword">else</span> &#123;  </span><br><span class="line">               V oldVal = <span class="keyword">null</span>;  </span><br><span class="line">               <span class="keyword">synchronized</span> (f) &#123;  </span><br><span class="line">                   <span class="keyword">if</span> (tabAt(tab, i) == f) &#123;  </span><br><span class="line">                       <span class="keyword">if</span> (fh &gt;= <span class="number">0</span>) &#123;  </span><br><span class="line">                           binCount = <span class="number">1</span>;  </span><br><span class="line">                           <span class="keyword">for</span> (Node&lt;K,V&gt; e = f;; ++binCount) &#123;  </span><br><span class="line">                               K ek;  </span><br><span class="line">                               <span class="keyword">if</span> (e.hash == hash &amp;&amp;  </span><br><span class="line">                                   ((ek = e.key) == key ||  </span><br><span class="line">                                    (ek != <span class="keyword">null</span> &amp;&amp; key.equals(ek)))) &#123;  </span><br><span class="line">                                   oldVal = e.val;  </span><br><span class="line">                                   <span class="keyword">if</span> (!onlyIfAbsent)  </span><br><span class="line">                                       e.val = value;  </span><br><span class="line">                                   <span class="keyword">break</span>;  </span><br><span class="line">                               &#125;  </span><br><span class="line">                               Node&lt;K,V&gt; pred = e;  </span><br><span class="line">                               <span class="keyword">if</span> ((e = e.next) == <span class="keyword">null</span>) &#123;  </span><br><span class="line">                                   pred.next = <span class="keyword">new</span> Node&lt;K,V&gt;(hash, key,  </span><br><span class="line">                                                             value, <span class="keyword">null</span>);  </span><br><span class="line">                                   <span class="keyword">break</span>;  </span><br><span class="line">                               &#125;  </span><br><span class="line">                           &#125;  </span><br><span class="line">                       &#125;  </span><br><span class="line">                       <span class="keyword">else</span> <span class="keyword">if</span> (f <span class="keyword">instanceof</span> TreeBin) &#123;  </span><br><span class="line">                           Node&lt;K,V&gt; p;  </span><br><span class="line">                           binCount = <span class="number">2</span>;  </span><br><span class="line">                           <span class="keyword">if</span> ((p = ((TreeBin&lt;K,V&gt;)f).putTreeVal(hash, key,  </span><br><span class="line">                                                          value)) != <span class="keyword">null</span>) &#123;  </span><br><span class="line">                               oldVal = p.val;  </span><br><span class="line">                               <span class="keyword">if</span> (!onlyIfAbsent)  </span><br><span class="line">                                   p.val = value;  </span><br><span class="line">                           &#125;  </span><br><span class="line">                       &#125;  </span><br><span class="line">                   &#125;  </span><br><span class="line">               &#125;  </span><br><span class="line">               <span class="keyword">if</span> (binCount != <span class="number">0</span>) &#123;  </span><br><span class="line">                   <span class="keyword">if</span> (binCount &gt;= TREEIFY_THRESHOLD)  </span><br><span class="line">                       treeifyBin(tab, i);  </span><br><span class="line">                   <span class="keyword">if</span> (oldVal != <span class="keyword">null</span>)  </span><br><span class="line">                       <span class="keyword">return</span> oldVal;  </span><br><span class="line">                   <span class="keyword">break</span>;  </span><br><span class="line">               &#125;  </span><br><span class="line">           &#125;  </span><br><span class="line">       &#125;  </span><br><span class="line">       addCount(<span class="number">1L</span>, binCount);  </span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">null</span>;  </span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>来看一些关键的代码：在第2行，方法检测了key和value是否为空，如果为空则抛出NullPointerException（看来线程安全的key和value都必须非空，和HashTable一样）。然后在第9行构造了一个Node对象，这个对象代表的是键值对节点（内部有next指针指向下一个节点）的实体。在ConcurrentHashMap内部维护了一个Node对象的数组，它大小是2的指数，且是volatile的具有原子可见性，数组索引是key经过哈希函数得出的哈希值：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** </span></span><br><span class="line"><span class="comment">    * The array of bins. Lazily initialized upon first insertion. </span></span><br><span class="line"><span class="comment">    * Size is always a power of two. Accessed directly by iterators. </span></span><br><span class="line"><span class="comment">    */</span>  </span><br><span class="line">   <span class="keyword">transient</span> <span class="keyword">volatile</span> Node&lt;K,V&gt;[] table;</span><br></pre></td></tr></table></figure>
+
+<p>看回putVal方法，从第12行的注释我们可以看出，如果是往一个空的索引位置放入一个新的Node节点，则不需要加锁。再看到方法第18行，我们发现这里有个临界区，此时处理的是往一个已有节点的索引位置加入新的节点情况，那么在链表完成之前很明显我们不应该让其他新节点干扰我们的工作，因此此处为索引头的Node对象加了锁，但此时别的索引位置是不加锁的。<br>看完了put方法，我们再来看看get方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(Object key)</span> </span>&#123;  </span><br><span class="line">       Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; e, p; <span class="keyword">int</span> n, eh; K ek;  </span><br><span class="line">       <span class="keyword">int</span> h = spread(key.hashCode());  </span><br><span class="line">       <span class="keyword">if</span> ((tab = table) != <span class="keyword">null</span> &amp;&amp; (n = tab.length) &gt; <span class="number">0</span> &amp;&amp;  </span><br><span class="line">           (e = tabAt(tab, (n - <span class="number">1</span>) &amp; h)) != <span class="keyword">null</span>) &#123;  </span><br><span class="line">           <span class="keyword">if</span> ((eh = e.hash) == h) &#123;  </span><br><span class="line">               <span class="keyword">if</span> ((ek = e.key) == key || (ek != <span class="keyword">null</span> &amp;&amp; key.equals(ek)))  </span><br><span class="line">                   <span class="keyword">return</span> e.val;  </span><br><span class="line">           &#125;  </span><br><span class="line">           <span class="keyword">else</span> <span class="keyword">if</span> (eh &lt; <span class="number">0</span>)  </span><br><span class="line">               <span class="keyword">return</span> (p = e.find(h, key)) != <span class="keyword">null</span> ? p.val : <span class="keyword">null</span>;  </span><br><span class="line">           <span class="keyword">while</span> ((e = e.next) != <span class="keyword">null</span>) &#123;  </span><br><span class="line">               <span class="keyword">if</span> (e.hash == h &amp;&amp;  </span><br><span class="line">                   ((ek = e.key) == key || (ek != <span class="keyword">null</span> &amp;&amp; key.equals(ek))))  </span><br><span class="line">                   <span class="keyword">return</span> e.val;  </span><br><span class="line">           &#125;  </span><br><span class="line">       &#125;  </span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">null</span>;  </span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到由于volatile关键字保证了原子可见性，get方法是完全没有加锁的。<br>对于remove方法和put方法类似，都是为要操作的索引头Node对象加锁构造临界区，此处不再贴出代码赘述。</p>
+<p>综上所述，HashMap和ConcurrentHashMap区别如下：</p>
+<ol>
+<li>HashMap允许key和value为空值，ConcurrentHashMap不允许</li>
+<li>HashMap的put和remove不加锁，不是线程安全的，而ConcurrentHashMap加锁，是线程安全的</li>
+<li>两者的get方法都没有加锁，但HashMap的Node数组不具有volatile关键字</li>
+</ol>
+<p>补充：本人的JDK版本为1.7，网上找的大部分资料都介绍ConcurrentHashMap使用了分段锁，但从源码来看这种方法在1.7貌似已经弃用了（put方法不一样了）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** </span></span><br><span class="line"><span class="comment">    * Stripped-down version of helper class used in previous version, </span></span><br><span class="line"><span class="comment">    * declared for the sake of serialization compatibility </span></span><br><span class="line"><span class="comment">    */</span>  </span><br><span class="line">   <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Segment</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">ReentrantLock</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;  </span><br><span class="line">       <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">2249069246763182397L</span>;  </span><br><span class="line">       <span class="keyword">final</span> <span class="keyword">float</span> loadFactor;  </span><br><span class="line">       Segment(<span class="keyword">float</span> lf) &#123; <span class="keyword">this</span>.loadFactor = lf; &#125;  </span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="TreeMap、HashMap、LinkedHashMap的区别"><a href="#TreeMap、HashMap、LinkedHashMap的区别" class="headerlink" title="TreeMap、HashMap、LinkedHashMap的区别"></a>TreeMap、HashMap、LinkedHashMap的区别</h1><p>HashMap就不说了，一个最常用的Map，前面几个问题都提及了。</p>
+<h2 id="LinkedHashMap"><a href="#LinkedHashMap" class="headerlink" title="LinkedHashMap"></a>LinkedHashMap</h2><p>LinkedHashMap是HashMap的子类，其类的声明如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LinkedHashMap</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt;  </span></span><br><span class="line"><span class="class">   <span class="keyword">extends</span> <span class="title">HashMap</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt;  </span></span><br><span class="line"><span class="class">   <span class="keyword">implements</span> <span class="title">Map</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>其与HashMap最大的不同在于内部维护了一个用于遍历的双向链表，遍历的时候能够保持元素插入的顺序：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** </span></span><br><span class="line"><span class="comment">    * The head (eldest) of the doubly linked list. </span></span><br><span class="line"><span class="comment">    */</span>  </span><br><span class="line">   <span class="keyword">transient</span> LinkedHashMap.Entry&lt;K,V&gt; head;  </span><br><span class="line"> </span><br><span class="line">   <span class="comment">/** </span></span><br><span class="line"><span class="comment">    * The tail (youngest) of the doubly linked list. </span></span><br><span class="line"><span class="comment">    */</span>  </span><br><span class="line">   <span class="keyword">transient</span> LinkedHashMap.Entry&lt;K,V&gt; tail;</span><br></pre></td></tr></table></figure>
+
+<h2 id="TreeMap"><a href="#TreeMap" class="headerlink" title="TreeMap"></a>TreeMap</h2><p>TreeMap内部使用红黑树实现，因此插入TreeMap内部的元素遍历时是有序的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** </span></span><br><span class="line"><span class="comment">    * The comparator used to maintain order in this tree map, or </span></span><br><span class="line"><span class="comment">    * null if it uses the natural ordering of its keys. </span></span><br><span class="line"><span class="comment">    * </span></span><br><span class="line"><span class="comment">    * <span class="doctag">@serial</span> </span></span><br><span class="line"><span class="comment">    */</span>  </span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">final</span> Comparator&lt;? <span class="keyword">super</span> K&gt; comparator;  </span><br><span class="line"> </span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">transient</span> Entry&lt;K,V&gt; root;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Collection包结构，与Collections的区别"><a href="#Collection包结构，与Collections的区别" class="headerlink" title="Collection包结构，与Collections的区别"></a>Collection包结构，与Collections的区别</h1><p>Collection即Java中的容器类，其包结构如下所示：<br><img src="/2016/03/17/关于一些基础的Java问题的解答（三）/1.png" alt="Java容器包结构图"></p>
+<h2 id="Collection"><a href="#Collection" class="headerlink" title="Collection"></a>Collection</h2><p>可以看到Java容器中有Collection和Map两种类型，Collection表示元素的集合，Map表示键值对映射的集合，Map中也包含了Collection（key的集合，value的集合以及键值对的集合），而Collection又可以返回Iterator（迭代器）用于容器的遍历和访问。Collection下又细分为多种特点不同的容器，主要有：</p>
+<ol>
+<li>按元素插入顺序存储的List</li>
+<li>不允许元素重复的Set</li>
+<li>先进先出的Queue</li>
+<li>后进先出的Stack</li>
+</ol>
+<p>每种容器又有对应的更细节的实现。一般我们创造新容器时不需要继承Collection类，继承Collection子类下的容器抽象类即可。</p>
+<h2 id="Collections"><a href="#Collections" class="headerlink" title="Collections"></a>Collections</h2><p>除了Collection类以外，可以看到图的右下角还有两个工具类，分别是Collections和Arrays。两个类的构造方法均为private，即不允许新建该类的实例，同时两个类包含了大量的静态方法用于处理我们的存储结构（排序，二分查找，填充等操作）。其中，Collections用于处理Collection容器类的存储结构，而Arrays则用于处理基本类型组成的数组。</p>
+<h1 id="try-catch-finally，try里有return，finally还执行么？"><a href="#try-catch-finally，try里有return，finally还执行么？" class="headerlink" title="try catch finally，try里有return，finally还执行么？"></a>try catch finally，try里有return，finally还执行么？</h1><p>执行，无论发生啥情况，try后面的finally中的代码块必定会执行，示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">	<span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;  </span><br><span class="line">      </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">try</span> &#123;  </span><br><span class="line">            System.out.println(<span class="string">"try"</span>);  </span><br><span class="line">            <span class="keyword">return</span>;  </span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;  </span><br><span class="line">              </span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;  </span><br><span class="line">            System.out.println(<span class="string">"finally"</span>);  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">      </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结果输出为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">try</span><br><span class="line">finally</span><br></pre></td></tr></table></figure>
+
+<h1 id="Excption与Error包结构，OOM遇到的情况"><a href="#Excption与Error包结构，OOM遇到的情况" class="headerlink" title="Excption与Error包结构，OOM遇到的情况"></a>Excption与Error包结构，OOM遇到的情况</h1><p>Java中有关于异常类的结构图如下：<br><img src="/2016/03/17/关于一些基础的Java问题的解答（三）/2.jpg" alt="Java异常类结构图"></p>
+<p>在Java中，异常的根类是java.lang.Throwable类，而根类又分为两大类：Error和Exception：</p>
+<ul>
+<li>Error是无法处理的异常，比如OutOfMemoryError，一般发生这种异常，JVM会选择终止程序。因此我们编写程序时不需要关心这类异常。</li>
+<li>Exception，也就是我们经常见到的一些异常情况，比如NullPointerException、IndexOutOfBoundsException，这些异常是我们可以处理的异常。</li>
+</ul>
+<p>其中，Exception类又细分为checked exception和unchecked exception（也称RuntimeException运行时异常）<br>对于unchecked exception（非检查异常），也称运行时异常（RuntimeException），比如常见的NullPointerException、IndexOutOfBoundsException，java编译器不要求必须进行异常捕获处理或者抛出声明，由程序员自行决定。（可以处理，也可以不处理）<br>对于checked exception（检查异常），也称非运行时异常（运行时异常以外的异常就是非运行时异常），java编译器强制程序员必须进行捕获处理，比如常见的IOExeption和SQLException。对于非运行时异常如果不进行捕获或者抛出声明处理，编译都不会通过。</p>
+<h2 id="关于OOM"><a href="#关于OOM" class="headerlink" title="关于OOM"></a>关于OOM</h2><p>OOM即out of memory，内存溢出，与JVM的运行时内存有关，当JVM内存不够时就会发生OOM，主要分一下几种情况：</p>
+<ol>
+<li>堆溢出：堆是JVM存放对象实例的地方，如果我们产生的对象过多，JVM又没有及时的GC，就会突破最大堆容量限制从而发生OOM</li>
+<li>操作栈或本地方法栈溢出：如果线程在拓展栈时无法申请到足够的内存，也会发生OOM，一般而言是递归出现了死循环</li>
+<li>方法区溢出：方法区存储了JVM中的常量，静态变量和类信息等信息，一个类如果要被垃圾收集器回收，判定条件是很苛刻的，因此在经常动态生成加载大量Class也可能发生OOM</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/基础知识/" rel="tag"># 基础知识</a>
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/03/16/关于一些基础的Java问题的解答（二）/" rel="next" title="关于一些基础的Java问题的解答（二）">
+                <i class="fa fa-chevron-left"></i> 关于一些基础的Java问题的解答（二）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/03/18/关于一些基础的Java问题的解答（四）/" rel="prev" title="关于一些基础的Java问题的解答（四）">
+                关于一些基础的Java问题的解答（四） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#HashMap和ConcurrentHashMap的区别"><span class="nav-number">1.</span> <span class="nav-text">HashMap和ConcurrentHashMap的区别</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TreeMap、HashMap、LinkedHashMap的区别"><span class="nav-number">2.</span> <span class="nav-text">TreeMap、HashMap、LinkedHashMap的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#LinkedHashMap"><span class="nav-number">2.1.</span> <span class="nav-text">LinkedHashMap</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TreeMap"><span class="nav-number">2.2.</span> <span class="nav-text">TreeMap</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Collection包结构，与Collections的区别"><span class="nav-number">3.</span> <span class="nav-text">Collection包结构，与Collections的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Collection"><span class="nav-number">3.1.</span> <span class="nav-text">Collection</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Collections"><span class="nav-number">3.2.</span> <span class="nav-text">Collections</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#try-catch-finally，try里有return，finally还执行么？"><span class="nav-number">4.</span> <span class="nav-text">try catch finally，try里有return，finally还执行么？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Excption与Error包结构，OOM遇到的情况"><span class="nav-number">5.</span> <span class="nav-text">Excption与Error包结构，OOM遇到的情况</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#关于OOM"><span class="nav-number">5.1.</span> <span class="nav-text">关于OOM</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="计算机网络,Http,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="HTTP报文、缓存规则解析、强制缓存、对比缓存、总结">
+<meta name="keywords" content="计算机网络,Http">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTTP缓存原理">
+<meta property="og:url" content="https://superxlcr.github.io/2019/05/16/HTTP缓存原理/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="HTTP报文、缓存规则解析、强制缓存、对比缓存、总结">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2019/05/16/HTTP缓存原理/1.png">
+<meta property="og:image" content="https://superxlcr.github.io/2019/05/16/HTTP缓存原理/2.png">
+<meta property="og:image" content="https://superxlcr.github.io/2019/05/16/HTTP缓存原理/3.png">
+<meta property="og:image" content="https://superxlcr.github.io/2019/05/16/HTTP缓存原理/4.png">
+<meta property="og:image" content="https://superxlcr.github.io/2019/05/16/HTTP缓存原理/5.png">
+<meta property="og:image" content="https://superxlcr.github.io/2019/05/16/HTTP缓存原理/6.png">
+<meta property="og:image" content="https://superxlcr.github.io/2019/05/16/HTTP缓存原理/7.png">
+<meta property="og:image" content="https://superxlcr.github.io/2019/05/16/HTTP缓存原理/8.png">
+<meta property="og:image" content="https://superxlcr.github.io/2019/05/16/HTTP缓存原理/9.png">
+<meta property="og:image" content="https://superxlcr.github.io/2019/05/16/HTTP缓存原理/10.png">
+<meta property="og:image" content="https://superxlcr.github.io/2019/05/16/HTTP缓存原理/11.png">
+<meta property="og:image" content="https://superxlcr.github.io/2019/05/16/HTTP缓存原理/12.png">
+<meta property="og:image" content="https://superxlcr.github.io/2019/05/16/HTTP缓存原理/13.png">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.684Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTTP缓存原理">
+<meta name="twitter:description" content="HTTP报文、缓存规则解析、强制缓存、对比缓存、总结">
+<meta name="twitter:image" content="https://superxlcr.github.io/2019/05/16/HTTP缓存原理/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2019/05/16/HTTP缓存原理/">
+
+
+
+
+
+  <title>HTTP缓存原理 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2019/05/16/HTTP缓存原理/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HTTP缓存原理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-16T19:19:47+08:00">
+                2019-05-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/计算机网络/" itemprop="url" rel="index">
+                    <span itemprop="name">计算机网络</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.8k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="HTTP报文"><a href="#HTTP报文" class="headerlink" title="HTTP报文"></a>HTTP报文</h1><p>在介绍HTTP缓存之前，作为知识铺垫，先简单介绍一下HTTP报文<br>HTTP报文就是浏览器和服务器间通信时发送及响应的数据块。<br>浏览器向服务器请求数据，发送请求(request)报文；服务器向浏览器返回数据，返回响应(response)报文。<br>报文信息主要分为两部分</p>
+<ol>
+<li>包含属性的首部(header)：附加信息（cookie，缓存信息等）<strong>与缓存相关的规则信息，均包含在header中</strong></li>
+<li>包含数据的主体部分(body)：HTTP请求真正想要传输的部分</li>
+</ol>
+<h1 id="缓存规则解析"><a href="#缓存规则解析" class="headerlink" title="缓存规则解析"></a>缓存规则解析</h1><p>为方便大家理解，我们认为浏览器存在一个缓存数据库，用于存储缓存信息。<br>在客户端第一次请求数据时，此时缓存数据库中没有对应的缓存数据，需要请求服务器，服务器返回后，将数据存储至缓存数据库中。</p>
+<p><img src="/2019/05/16/HTTP缓存原理/1.png" alt="第一次请求数据"></p>
+<p>HTTP缓存有多种规则，根据是否需要重新向服务器发起请求来分类，我将其分为两大类<strong>(强制缓存，对比缓存)</strong><br>在详细介绍这两种规则之前，先通过时序图的方式，让大家对这两种规则有个简单了解。</p>
+<p>已存在缓存数据时，仅基于<strong>强制缓存</strong>，请求数据的流程如下</p>
+<p><img src="/2019/05/16/HTTP缓存原理/2.png" alt="强制缓存"></p>
+<p>已存在缓存数据时，仅基于<strong>对比缓存</strong>，请求数据的流程如下</p>
+<p><img src="/2019/05/16/HTTP缓存原理/3.png" alt="对比缓存"></p>
+<p>我们可以看到两类缓存规则的不同，强制缓存如果生效，不需要再和服务器发生交互，而对比缓存不管是否生效，都需要与服务端发生交互。<br><strong>当两类缓存规则同时存在时，强制缓存优先级高于对比缓存</strong>，也就是说，当执行强制缓存的规则时，如果缓存生效，直接使用缓存，不再执行对比缓存规则。</p>
+<h1 id="强制缓存"><a href="#强制缓存" class="headerlink" title="强制缓存"></a>强制缓存</h1><p>从上文我们得知，强制缓存，在缓存数据未失效的情况下，可以直接使用缓存数据，那么浏览器是如何判断缓存数据是否失效呢？<br>我们知道，在没有缓存数据的时候，浏览器向服务器请求数据时，服务器会将数据和缓存规则一并返回，缓存规则信息包含在响应header中。</p>
+<p>对于强制缓存来说，响应header中会有两个字段来标明失效规则（Expires/Cache-Control）<br>使用chrome的开发者工具，可以很明显的看到对于强制缓存生效时，网络请求的情况</p>
+<p><img src="/2019/05/16/HTTP缓存原理/4.png" alt="强制缓存生效"></p>
+<h2 id="Expires（绝对时间）"><a href="#Expires（绝对时间）" class="headerlink" title="Expires（绝对时间）"></a>Expires（绝对时间）</h2><p>Expires的值为服务端返回的到期时间，即下一次请求时，请求时间小于服务端返回的到期时间，直接使用缓存数据。<br>不过Expires 是HTTP 1.0的东西，现在默认浏览器均默认使用HTTP 1.1，所以它的作用基本忽略。<br>它主要的问题是，到期时间是由服务端生成的，但是客户端时间可能跟服务端时间有误差，而且客户端的本地时间有可能会被修改，这就会导致缓存命中的误差。<br>所以HTTP 1.1 的版本，使用Cache-Control替代。</p>
+<h2 id="Cache-Control（相对时间）"><a href="#Cache-Control（相对时间）" class="headerlink" title="Cache-Control（相对时间）"></a>Cache-Control（相对时间）</h2><p>Cache-Control 是最重要的规则。常见的取值有private、public、no-cache、max-age，no-store，默认为private。</p>
+<ul>
+<li>private:             客户端可以缓存</li>
+<li>public:              客户端和代理服务器都可缓存（前端的同学，可以认为public和private是一样的）</li>
+<li>max-age=xxx:   缓存的内容将在 xxx 秒后失效</li>
+<li>no-cache:          需要使用对比缓存来验证缓存数据</li>
+<li>no-store:           所有内容都不会缓存，强制缓存，对比缓存都不会触发（对于前端开发来说，缓存越多越好，so…基本上和它说886）</li>
+</ul>
+<p>例子：</p>
+<p><img src="/2019/05/16/HTTP缓存原理/5.png" alt="Cache-Control例子"></p>
+<p>图中Cache-Control仅指定了max-age，所以默认为private，缓存时间为31536000秒（365天）<br>也就是说，在365天内再次请求这条数据，都会直接获取缓存数据库中的数据，直接使用。</p>
+<h1 id="对比缓存"><a href="#对比缓存" class="headerlink" title="对比缓存"></a>对比缓存</h1><p>对比缓存，顾名思义，需要进行比较判断是否可以使用缓存。<br>浏览器第一次请求数据时，服务器会将缓存标识与数据一起返回给客户端，客户端将二者备份至缓存数据库中。<br>再次请求数据时，客户端将备份的缓存标识发送给服务器，服务器根据缓存标识进行判断，判断成功后，返回304状态码，通知客户端比较成功，可以使用缓存数据。</p>
+<p>第一次访问：</p>
+<p><img src="/2019/05/16/HTTP缓存原理/6.png" alt="对比缓存1"></p>
+<p>再次访问：</p>
+<p><img src="/2019/05/16/HTTP缓存原理/7.png" alt="对比缓存2"></p>
+<p>通过两图的对比，我们可以很清楚的发现，在对比缓存生效时，状态码为304，并且报文大小和请求时间大大减少。<br>原因是，服务端在进行标识比较后，只返回header部分，通过状态码通知客户端使用缓存，不再需要将报文主体部分返回给客户端。</p>
+<p>对于对比缓存来说，缓存标识的传递是我们着重需要理解的，它在请求header和响应header间进行传递，<br>一共分为两种标识传递，接下来，我们分开介绍。</p>
+<h2 id="Last-Modified-If-Modified-Since"><a href="#Last-Modified-If-Modified-Since" class="headerlink" title="Last-Modified/If-Modified-Since"></a>Last-Modified/If-Modified-Since</h2><p><strong>Last-Modified：</strong><br>服务器在响应请求时，告诉浏览器资源的最后修改时间。</p>
+<p><img src="/2019/05/16/HTTP缓存原理/8.png" alt="Last-Modified"></p>
+<p><strong>If-Modified-Since：</strong><br>再次请求服务器时，通过此字段通知服务器上次请求时，服务器返回的资源最后修改时间。<br>服务器收到请求后发现有头If-Modified-Since 则与被请求资源的最后修改时间进行比对。<br>若资源的最后修改时间大于If-Modified-Since，说明资源又被改动过，则响应整片资源内容，返回状态码200；<br>若资源的最后修改时间小于或等于If-Modified-Since，说明资源无新修改，则响应HTTP 304，告知浏览器继续使用所保存的cache。</p>
+<p><img src="/2019/05/16/HTTP缓存原理/9.png" alt="If-Modified-Since"></p>
+<h2 id="Etag-If-None-Match"><a href="#Etag-If-None-Match" class="headerlink" title="Etag/If-None-Match"></a>Etag/If-None-Match</h2><p>同时启用的情况下，Etag/If-None-Match优先级高于Last-Modified/If-Modified-Since</p>
+<p><strong>Etag：</strong><br>服务器响应请求时，告诉浏览器当前资源在服务器的唯一标识（生成规则由服务器决定）。</p>
+<p><img src="/2019/05/16/HTTP缓存原理/10.png" alt="Etag"></p>
+<p><strong>If-None-Match：</strong><br>再次请求服务器时，通过此字段通知服务器客户段缓存数据的唯一标识。<br>服务器收到请求后发现有头If-None-Match 则与被请求资源的唯一标识进行比对，<br>不同，说明资源又被改动过，则响应整片资源内容，返回状态码200；<br>相同，说明资源无新修改，则响应HTTP 304，告知浏览器继续使用所保存的cache。</p>
+<p><img src="/2019/05/16/HTTP缓存原理/11.png" alt="If-None-Match"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>对于强制缓存，服务器通知浏览器一个缓存时间，在缓存时间内，下次请求，直接用缓存，不在时间内，执行比较缓存策略。<br>对于比较缓存，将缓存信息中的Etag和Last-Modified通过请求发送给服务器，由服务器校验，返回304状态码时，浏览器直接使用缓存。</p>
+<p>浏览器第一次请求：<br><img src="/2019/05/16/HTTP缓存原理/12.png" alt="第一次请求"></p>
+<p>浏览器再次请求时：<br><img src="/2019/05/16/HTTP缓存原理/13.png" alt="再次请求"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/计算机网络/" rel="tag"># 计算机网络</a>
+          
+            <a href="/tags/Http/" rel="tag"># Http</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/06/Android常见问题总结（八）/" rel="next" title="Android常见问题总结（八）">
+                <i class="fa fa-chevron-left"></i> Android常见问题总结（八）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/18/Android音视频学习笔记（一）/" rel="prev" title="Android音视频学习笔记（一）">
+                Android音视频学习笔记（一） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP报文"><span class="nav-number">1.</span> <span class="nav-text">HTTP报文</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#缓存规则解析"><span class="nav-number">2.</span> <span class="nav-text">缓存规则解析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#强制缓存"><span class="nav-number">3.</span> <span class="nav-text">强制缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Expires（绝对时间）"><span class="nav-number">3.1.</span> <span class="nav-text">Expires（绝对时间）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Cache-Control（相对时间）"><span class="nav-number">3.2.</span> <span class="nav-text">Cache-Control（相对时间）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#对比缓存"><span class="nav-number">4.</span> <span class="nav-text">对比缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Last-Modified-If-Modified-Since"><span class="nav-number">4.1.</span> <span class="nav-text">Last-Modified/If-Modified-Since</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Etag-If-None-Match"><span class="nav-number">4.2.</span> <span class="nav-text">Etag/If-None-Match</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

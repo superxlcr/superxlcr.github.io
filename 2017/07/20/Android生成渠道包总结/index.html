@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,应用,编译,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="什么是渠道包、Gradle构筑渠道包的方法、使用apktool反编译apk加入渠道信息、META-INF添加渠道信息">
+<meta name="keywords" content="android,应用,编译">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android生成渠道包总结">
+<meta property="og:url" content="https://superxlcr.github.io/2017/07/20/Android生成渠道包总结/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="什么是渠道包、Gradle构筑渠道包的方法、使用apktool反编译apk加入渠道信息、META-INF添加渠道信息">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2017/07/20/Android生成渠道包总结/1.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/07/20/Android生成渠道包总结/2.png">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.604Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android生成渠道包总结">
+<meta name="twitter:description" content="什么是渠道包、Gradle构筑渠道包的方法、使用apktool反编译apk加入渠道信息、META-INF添加渠道信息">
+<meta name="twitter:image" content="https://superxlcr.github.io/2017/07/20/Android生成渠道包总结/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2017/07/20/Android生成渠道包总结/">
+
+
+
+
+
+  <title>Android生成渠道包总结 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2017/07/20/Android生成渠道包总结/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android生成渠道包总结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-20T20:46:54+08:00">
+                2017-07-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.1k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近在工作上了解了一些与渠道包相关的信息，在此进行一下总结。</p>
+<h1 id="什么是渠道包"><a href="#什么是渠道包" class="headerlink" title="什么是渠道包"></a>什么是渠道包</h1><p>每当发新版本时，我们编写的Android客户端应用会被分发到各个应用市场，比如豌豆荚，360手机助手等。为了统计应用这些市场的效果（活跃数，下单数等），我们需要有一种唯一标识来区分它们。渠道号就是我们用来区分不同市场的唯一标识，比方说，发布到豌豆荚市场的应用的渠道号是“wandoujia”，而发布到360手机助手的应用的渠道号则为“qihu360”。带有渠道号的包即是渠道包，当我们的应用进行打点汇报等操作时，往往会把渠道包中的渠道信息一同上传，以便后台接下来计算不同渠道的效果。</p>
+<h1 id="Gradle构筑渠道包的方法"><a href="#Gradle构筑渠道包的方法" class="headerlink" title="Gradle构筑渠道包的方法"></a>Gradle构筑渠道包的方法</h1><p>在Android的Gradle中，它为我们提供了Flavor属性用于构建不同渠道的渠道包，使用方法如下：File -&gt; Project Structure -&gt; Flavors 选项卡<br><img src="/2017/07/20/Android生成渠道包总结/1.png" alt="gradle_build_channel_pic1"><br>设置Flavors过后，我们的build.gradle文件将会添加上对应的代码（当然我们也可以手动直接编写代码）：<br><img src="/2017/07/20/Android生成渠道包总结/2.png" alt="productFlavors_pic2"></p>
+<p>Gradle提供的Flavors允许我们设置多种多样的属性，而我们可以通过Gradle生成的BuildConfig类来读取当前渠道包的相关信息：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BuildConfig.FLAVOR</span><br></pre></td></tr></table></figure>
+
+<p>这种打渠道包的方法的优点在于可以对渠道包进行多种属性的定制，然而缺点在于每打一个渠道包都要重新执行一次编译过程，当渠道的数量较多或者工程编译过程较长时，会耗费相当多的时间，而且当渠道包多到一定程度的时候，配置渠道包的冗长的脚本也会让人抓狂。</p>
+<h1 id="使用apktool反编译apk加入渠道信息"><a href="#使用apktool反编译apk加入渠道信息" class="headerlink" title="使用apktool反编译apk加入渠道信息"></a>使用apktool反编译apk加入渠道信息</h1><p>apktool是用于编译以及反编译apk的工具，我们可以通过使用apktool来反编译我们打出的普通apk文件，为其中添加渠道信息后再重新编译。具体操作流程如下：<br>首先我们在AndroidManifest中添加元数据的渠道信息：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">meta-data</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:name</span>=<span class="string">"channel"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:value</span>=<span class="string">"BASE_CHANNEL"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>接着执行我们的gradle任务，在此，我们把任务分为几个步骤一一列出（下列代码写在Module的build.gradle文件中）首先，通过apktool反编译apk：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">task <span class="title">decompileApk</span><span class="params">(type: Exec, dependsOn: <span class="string">'assembleRelease'</span>)</span> </span>&#123;</span><br><span class="line">    workingDir <span class="string">'build/outputs/apk'</span></span><br><span class="line">    commandLine <span class="string">'java'</span>, <span class="string">'-jar'</span>, <span class="string">'apktool_2.2.3.jar'</span>, <span class="string">'d'</span>, <span class="string">'-f'</span>, <span class="string">'app-release.apk'</span>, <span class="string">'-o'</span>, <span class="string">'base-apk'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>反编译后我们把文件保存在base-apk目录下，其中可以看到我们要加入渠道信息的AndroidManifest.xml文件：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version="1.0" encoding="utf-8" standalone="no"?&gt;</span><br><span class="line"><span class="tag">&lt;<span class="name">manifest</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span> <span class="attr">package</span>=<span class="string">"com.example.superxlcr.buildchanneltest"</span> <span class="attr">platformBuildVersionCode</span>=<span class="string">"26"</span> <span class="attr">platformBuildVersionName</span>=<span class="string">"8.0.0"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta-data</span> <span class="attr">android:name</span>=<span class="string">"android.support.VERSION"</span> <span class="attr">android:value</span>=<span class="string">"26.0.0-alpha1"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">application</span> <span class="attr">android:allowBackup</span>=<span class="string">"true"</span> <span class="attr">android:icon</span>=<span class="string">"@mipmap/ic_launcher"</span> <span class="attr">android:label</span>=<span class="string">"@string/app_name"</span> <span class="attr">android:supportsRtl</span>=<span class="string">"true"</span> <span class="attr">android:theme</span>=<span class="string">"@style/AppTheme"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">activity</span> <span class="attr">android:name</span>=<span class="string">"com.example.superxlcr.buildchanneltest.MainActivity"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MAIN"</span>/&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.LAUNCHER"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">meta-data</span> <span class="attr">android:name</span>=<span class="string">"channel"</span> <span class="attr">android:value</span>=<span class="string">"BASE_CHANNEL"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">application</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">manifest</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>接下来我们读取channel.txt文件的渠道信息，并返回一个列表：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">def ArrayList&lt;String&gt; <span class="title">getChannelList</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ArrayList&lt;String&gt; list = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line">    file(<span class="string">'build/outputs/apk/channel.txt'</span>).eachLine &#123; channel -&gt;</span><br><span class="line">        list.add(channel);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> list;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后我们继续执行任务，替换xml中的‘BASE_CHANNEL’字符串为我们的渠道信息：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">task <span class="title">addChannelInfo</span><span class="params">(dependsOn: decompileApk)</span> &lt;&lt; </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> String BASE_CHANNEL_NAME = <span class="string">'BASE_CHANNEL'</span>;</span><br><span class="line">    ArrayList&lt;String&gt; channelList = getChannelList();</span><br><span class="line">    <span class="keyword">for</span> (String channel : channelList) &#123;</span><br><span class="line">        String channelDir = <span class="string">"build/outputs/apk/$&#123;channel&#125;"</span>;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from <span class="string">'build/outputs/apk/base-apk'</span></span><br><span class="line">            into channelDir</span><br><span class="line">        &#125;</span><br><span class="line">        file(<span class="string">"$&#123;channelDir&#125;/AndroidManifest_new.xml"</span>).createNewFile();</span><br><span class="line">        file(<span class="string">"$&#123;channelDir&#125;/AndroidManifest_new.xml"</span>).withWriter(<span class="string">'UTF-8'</span>) &#123; writer -&gt;</span><br><span class="line">            file(<span class="string">"$&#123;channelDir&#125;/AndroidManifest.xml"</span>).withReader(<span class="string">'UTF-8'</span>) &#123; reader -&gt;</span><br><span class="line">                reader.eachLine &#123; line -&gt;</span><br><span class="line">                    writer.append(line.replaceAll(BASE_CHANNEL_NAME, channel));</span><br><span class="line">                    writer.append(<span class="string">'\r\n'</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        file(<span class="string">"$&#123;channelDir&#125;/AndroidManifest.xml"</span>).delete();</span><br><span class="line">        file(<span class="string">"$&#123;channelDir&#125;/AndroidManifest_new.xml"</span>).renameTo(file(<span class="string">"$&#123;channelDir&#125;/AndroidManifest.xml"</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后我们再通过apktool回编译出我们的apk文件，此时apk文件由于进行了修改，因此需要进行重新签名验证：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">task <span class="title">buildChannelApk</span><span class="params">(dependsOn: addChannelInfo)</span> &lt;&lt; </span>&#123;</span><br><span class="line">    getChannelList().each &#123; channel -&gt;</span><br><span class="line">        exec &#123;</span><br><span class="line">            workingDir <span class="string">'build/outputs/apk'</span></span><br><span class="line">            commandLine <span class="string">'java'</span>, <span class="string">'-jar'</span>, <span class="string">'apktool_2.2.3.jar'</span>, <span class="string">'b'</span>, channel, <span class="string">'-o'</span>, <span class="string">"$&#123;channel&#125;-unsigned.apk"</span></span><br><span class="line">        &#125;</span><br><span class="line">        exec &#123;</span><br><span class="line">            workingDir <span class="string">'build/outputs/apk'</span></span><br><span class="line">            commandLine <span class="string">'jarsigner'</span>, <span class="string">'-sigalg'</span>, <span class="string">'MD5withRSA'</span>,</span><br><span class="line">                    <span class="string">'-digestalg'</span>, <span class="string">'SHA1'</span>,</span><br><span class="line">                    <span class="string">'-keystore'</span>, <span class="string">'your_keystore_path'</span>,</span><br><span class="line">                    <span class="string">'-storepass'</span>, <span class="string">'your_keystore_password'</span>,</span><br><span class="line">                    <span class="string">'-signedjar'</span>, <span class="string">"$&#123;channel&#125;.apk"</span>, <span class="string">"$&#123;channel&#125;-unsigned.apk"</span>, <span class="string">'your_alias'</span></span><br><span class="line">        &#125;</span><br><span class="line">        file(<span class="string">"build/outputs/apk/$&#123;channel&#125;-unsigned.apk"</span>).delete();</span><br><span class="line">        file(<span class="string">"build/outputs/apk/$&#123;channel&#125;"</span>).deleteDir();</span><br><span class="line">        file(<span class="string">'build/outputs/apk/base-apk'</span>).deleteDir();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后我们可以得到的以渠道名命名的apk包</p>
+<p>当我们需要获取渠道信息时，调用以下函数即可：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> String <span class="title">getChannel</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        PackageManager pm = context.getPackageManager();</span><br><span class="line">        ApplicationInfo appInfo = pm.getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);</span><br><span class="line">        <span class="keyword">return</span> appInfo.metaData.getString(<span class="string">"channel"</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (PackageManager.NameNotFoundException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">""</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这种使用apktool工具来添加渠道信息的方法虽然没有Gradle自带的编写渠道包方法定制功能强，但会相对比较快，因为编译过程较短，主要需要重新签名，而且配置渠道文件也较为简单，仅为txt文本。</p>
+<h1 id="META-INF添加渠道信息"><a href="#META-INF添加渠道信息" class="headerlink" title="META-INF添加渠道信息"></a>META-INF添加渠道信息</h1><p>使用apktool工具虽然比Gradle提供的打渠道包快，但因为修改了文件还是要执行签名工作，有没有什么方法呢能直接修改apk的渠道号，而不需要再重新签名呢？答案是有的，当我们解压apk文件时，我们会发现一个META-INF目录</p>
+<p>该目录主要存放于检验apk文件相关的签名文件与校验文件等。对于apk的签名方法，往META-INF中添加空白文件并不会影响apk的校验值，因此我们可以以我们的渠道名新建一个空白文件添加进去即可。gradle代码如下，自动构建apk目录下channel.txt文件中的渠道包：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">task <span class="title">addChannelInfoByAnt</span><span class="params">(dependsOn: <span class="string">'assembleRelease'</span>)</span> &lt;&lt; </span>&#123;</span><br><span class="line">    def dir = <span class="string">'build/outputs/apk'</span></span><br><span class="line">    getChannelList().each &#123; channel -&gt;</span><br><span class="line">        copy &#123;</span><br><span class="line">            from <span class="string">"$&#123;dir&#125;/app-release.apk"</span></span><br><span class="line">            into dir</span><br><span class="line">            rename &#123;</span><br><span class="line">                <span class="string">"$&#123;channel&#125;.apk"</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        file(<span class="string">"$&#123;dir&#125;/$&#123;channel&#125;"</span>).mkdir();</span><br><span class="line">        file(<span class="string">"$&#123;dir&#125;/$&#123;channel&#125;/META-INF"</span>).mkdir();</span><br><span class="line">        file(<span class="string">"$&#123;dir&#125;/$&#123;channel&#125;/META-INF/channel_$&#123;channel&#125;"</span>).createNewFile();</span><br><span class="line">        ant.zip(basedir: <span class="string">"$&#123;dir&#125;/$&#123;channel&#125;"</span>, includes: <span class="string">"META-INF/channel_$&#123;channel&#125;"</span>, keepcompression: <span class="keyword">true</span>, update: <span class="keyword">true</span>, destfile: <span class="string">"$&#123;dir&#125;/$&#123;channel&#125;.apk"</span>);</span><br><span class="line">        file(<span class="string">"$&#123;dir&#125;/$&#123;channel&#125;"</span>).deleteDir();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里解释一下ant.zip这句代码：这句代码使用ant工具创建了一个zip类型的task执行压缩任务，其中includes参数表示要包含的文件，默认值为xx，即basedir下所有文件<br>keepcompression参数表示对已压缩的文件保持压缩状态而非重新压缩<br>update参数表示如果destfile目标文件已经出现，进行更新而非重写覆盖更详细的资料可以参考官方的文档<br><a href="http://ant.apache.org/manual/Tasks/zip.html" target="_blank" rel="noopener">http://ant.apache.org/manual/Tasks/zip.html</a></p>
+<p>python代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">import zipfile</span><br><span class="line">zipped = zipfile.ZipFile(your_apk, &apos;a&apos;, zipfile.ZIP_DEFLATED) </span><br><span class="line">empty_channel_file = &quot;META-INF/channel_&#123;channel&#125;&quot;.format(channel=your_channel)</span><br><span class="line">zipped.write(your_empty_file, empty_channel_file)</span><br></pre></td></tr></table></figure>
+
+<p>上面代码渠道信息我们添加了channel_的前缀。虽说apk可以通过zip的方法打开，但是貌似不能随便使用zip来进行解压与并重新压缩，本人试过多次Java的ZipEntry等方式来解压压缩apk，均以失败告终。目前发现可以更新apk压缩包的方法仅以上两种。（看到ant官方zip类型task相关的资料描述，猜测与zip压缩时间戳相关，重新解压压缩会影响zip文件的时间戳相关参数）<br>当我们需要在Java中取得渠道信息时，调用以下代码即可：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getChannel</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        ApplicationInfo appinfo = context.getApplicationInfo();</span><br><span class="line">        String sourceDir = appinfo.sourceDir;</span><br><span class="line">        String ret = <span class="string">""</span>;</span><br><span class="line">        ZipFile zipfile = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            zipfile = <span class="keyword">new</span> ZipFile(sourceDir);</span><br><span class="line">            Enumeration&lt;?&gt; entries = zipfile.entries();</span><br><span class="line">            <span class="keyword">while</span> (entries.hasMoreElements()) &#123;</span><br><span class="line">                ZipEntry entry = ((ZipEntry) entries.nextElement());</span><br><span class="line">                String entryName = entry.getName();</span><br><span class="line">                <span class="keyword">if</span> (entryName.startsWith(<span class="string">"channel"</span>)) &#123;</span><br><span class="line">                    ret = entryName;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (zipfile != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    zipfile.close();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        String[] split = ret.split(<span class="string">"_"</span>);</span><br><span class="line">        <span class="keyword">if</span> (split != <span class="keyword">null</span> &amp;&amp; split.length &gt;= <span class="number">2</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> ret.substring(split[<span class="number">0</span>].length() + <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">""</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>相较于其他两种添加渠道信息的方法，往META-INF中添加空白文件由于不用签名，属于最快、最方便的一种方法了。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/应用/" rel="tag"># 应用</a>
+          
+            <a href="/tags/编译/" rel="tag"># 编译</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/15/Android严苛模式StrictMode使用详解/" rel="next" title="Android严苛模式StrictMode使用详解">
+                <i class="fa fa-chevron-left"></i> Android严苛模式StrictMode使用详解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/24/Android-黑科技小结/" rel="prev" title="Android 黑科技小结">
+                Android 黑科技小结 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#什么是渠道包"><span class="nav-number">1.</span> <span class="nav-text">什么是渠道包</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Gradle构筑渠道包的方法"><span class="nav-number">2.</span> <span class="nav-text">Gradle构筑渠道包的方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用apktool反编译apk加入渠道信息"><span class="nav-number">3.</span> <span class="nav-text">使用apktool反编译apk加入渠道信息</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#META-INF添加渠道信息"><span class="nav-number">4.</span> <span class="nav-text">META-INF添加渠道信息</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

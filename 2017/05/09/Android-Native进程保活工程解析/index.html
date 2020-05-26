@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,cpp,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Android Native进程保活工程解析">
+<meta name="keywords" content="android,cpp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android Native进程保活工程解析">
+<meta property="og:url" content="https://superxlcr.github.io/2017/05/09/Android-Native进程保活工程解析/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="Android Native进程保活工程解析">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/09/Android-Native进程保活工程解析/1.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/09/Android-Native进程保活工程解析/2.png">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.507Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android Native进程保活工程解析">
+<meta name="twitter:description" content="Android Native进程保活工程解析">
+<meta name="twitter:image" content="https://superxlcr.github.io/2017/05/09/Android-Native进程保活工程解析/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2017/05/09/Android-Native进程保活工程解析/">
+
+
+
+
+
+  <title>Android Native进程保活工程解析 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2017/05/09/Android-Native进程保活工程解析/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android Native进程保活工程解析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-09T12:29:44+08:00">
+                2017-05-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.3k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近学习了一个关于Android Native进程保活的工程，在此进行一下总结。</p>
+<p>工程github如下：<a href="https://github.com/Coolerfall/Android-AppDaemon" target="_blank" rel="noopener">https://github.com/Coolerfall/Android-AppDaemon</a></p>
+<p>其总体的保活工作流程如图所示：<br><img src="/2017/05/09/Android-Native进程保活工程解析/1.png" alt="Native进程保活流程_pic1"></p>
+<p>其工作流程如下：<br>首先，用户调用Daemon的静态方法run，传入上下文、Service组件类名、以及检查等待的时间间隔：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Run daemon process.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> context            context</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> daemonServiceClazz the name of daemon service class</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> interval           the interval to check</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">(<span class="keyword">final</span> Context context, <span class="keyword">final</span> Class&lt;?&gt; daemonServiceClazz,</span></span></span><br><span class="line"><span class="function"><span class="params">                       <span class="keyword">final</span> <span class="keyword">int</span> interval)</span></span></span><br></pre></td></tr></table></figure>
+
+<p>工程通过android.os.Build.CPU_ABI获取设备的CPU架构，选择对应的二进制文件，通过AssetManager访问文件后，复制到指定位置，使用chmod指令改变文件权限为0755：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Runtime.getRuntime().exec(<span class="string">"chmod "</span> + mode + <span class="string">" "</span> + abspath).waitFor();</span><br></pre></td></tr></table></figure>
+
+<p>asset文件目录如下：</p>
+<p><img src="/2017/05/09/Android-Native进程保活工程解析/2.png" alt="asset_dir_pic2"></p>
+<p>通过shell执行二进制文件，传入包名、类名与时间间隔：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">String cmd = context.getDir(BIN_DIR_NAME, Context.MODE_PRIVATE)</span><br><span class="line">	.getAbsolutePath() + File.separator + DAEMON_BIN_NAME;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* create the command string */</span></span><br><span class="line">StringBuilder cmdBuilder = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">cmdBuilder.append(cmd);</span><br><span class="line">cmdBuilder.append(<span class="string">" -p "</span>);</span><br><span class="line">cmdBuilder.append(context.getPackageName());</span><br><span class="line">cmdBuilder.append(<span class="string">" -s "</span>);</span><br><span class="line">cmdBuilder.append(daemonClazzName.getName());</span><br><span class="line">cmdBuilder.append(<span class="string">" -t "</span>);</span><br><span class="line">cmdBuilder.append(interval);</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">	Runtime.getRuntime().exec(cmdBuilder.toString()).waitFor();</span><br><span class="line">&#125; <span class="keyword">catch</span> (IOException | InterruptedException e) &#123;</span><br><span class="line">	Log.e(TAG, <span class="string">"start daemon error: "</span> + e.getMessage());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在二进制文件中，首先检查了传入的参数是否正确：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (argc &lt; <span class="number">7</span>)</span><br><span class="line">&#123;</span><br><span class="line">	LOGE(LOG_TAG, <span class="string">"usage: %s -p package-name -s "</span></span><br><span class="line">	 <span class="string">"daemon-service-name -t interval-time"</span>, argv[<span class="number">0</span>]);</span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; argc; i ++)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span> (!<span class="built_in">strcmp</span>(<span class="string">"-p"</span>, argv[i]))</span><br><span class="line">	&#123;</span><br><span class="line">		package_name = argv[i + <span class="number">1</span>];</span><br><span class="line">		LOGD(LOG_TAG, <span class="string">"package name: %s"</span>, package_name);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (!<span class="built_in">strcmp</span>(<span class="string">"-s"</span>, argv[i]))</span><br><span class="line">	&#123;</span><br><span class="line">		service_name = argv[i + <span class="number">1</span>];</span><br><span class="line">		LOGD(LOG_TAG, <span class="string">"service name: %s"</span>, service_name);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (!<span class="built_in">strcmp</span>(<span class="string">"-t"</span>, argv[i]))</span><br><span class="line">	&#123;</span><br><span class="line">		interval = atoi(argv[i + <span class="number">1</span>]);</span><br><span class="line">		LOGD(LOG_TAG, <span class="string">"interval: %d"</span>, interval);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* package name and service name should not be null */</span></span><br><span class="line"><span class="keyword">if</span> (package_name == <span class="literal">NULL</span> || service_name == <span class="literal">NULL</span>)</span><br><span class="line">&#123;</span><br><span class="line">	LOGE(LOG_TAG, <span class="string">"package name or service name is null"</span>);</span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>保证传入参数个数正确，包名类名不为空后，开始创建守护进程：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ((pid = fork()) &lt; <span class="number">0</span>)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="built_in">exit</span>(EXIT_SUCCESS);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (pid == <span class="number">0</span>)</span><br><span class="line">&#123;</span><br><span class="line">	...</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* become session leader */</span></span><br><span class="line">	setsid();</span><br><span class="line">	<span class="comment">/* change work directory */</span></span><br><span class="line">	chdir(<span class="string">"/"</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; MAXFILE; i ++)</span><br><span class="line">	&#123;</span><br><span class="line">		close(i);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	...</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="comment">/* parent process */</span></span><br><span class="line">	<span class="built_in">exit</span>(EXIT_SUCCESS);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>创建守护进程的流程如下：（此处的方法感觉有点欠缺，具体的可以去查看博客：<a href="http://blog.chinaunix.net/uid-25365622-id-3055635.html）" target="_blank" rel="noopener">http://blog.chinaunix.net/uid-25365622-id-3055635.html）</a></p>
+<ol>
+<li>调用fork函数，创建子进程</li>
+<li>使进程在后台运行，关闭父进程</li>
+<li>调用setsid函数，脱离控制终端，登录会话和进程组（创建新会话）</li>
+<li>调用chdir函数，改变当前工作目录至根目录</li>
+<li>调用close函数，关闭从父进程继承的文件描述符，一般而言由于没有了输入终端，因此可以关闭标准输入、输出、错误文件（即0、1和2三个文件）</li>
+</ol>
+<p>当工程成功创建守护进程后，开始调用signal函数处理信号：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 标识select等待循环是否运行的flag</span></span><br><span class="line"><span class="keyword">volatile</span> <span class="keyword">int</span> sig_running = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 传入signal的函数，参数为int类型</span></span><br><span class="line"><span class="comment">/* signal term handler */</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sigterm_handler</span><span class="params">(<span class="keyword">int</span> signo)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	LOGD(LOG_TAG, <span class="string">"handle signal: %d "</span>, signo);</span><br><span class="line">	sig_running = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line">		</span><br><span class="line"><span class="comment">// 处理SIGTERM信号，当进程被杀死时会收到该信号</span></span><br><span class="line">signal(SIGTERM, sigterm_handler);</span><br></pre></td></tr></table></figure>
+
+<p>接着，守护进程处理以前开启的守护进程：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> pid_list[<span class="number">100</span>];</span><br><span class="line"><span class="comment">// find_pid_by_name为工程定义的，通过进程的cmdline文件查找进程的函数</span></span><br><span class="line"><span class="keyword">int</span> total_num = find_pid_by_name(argv[<span class="number">0</span>], pid_list);</span><br><span class="line">LOGD(LOG_TAG, <span class="string">"total num %d"</span>, total_num);</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; total_num; i ++)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">int</span> retval = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">int</span> daemon_pid = pid_list[i];</span><br><span class="line">	<span class="keyword">if</span> (daemon_pid &gt; <span class="number">1</span> &amp;&amp; daemon_pid != getpid())</span><br><span class="line">	&#123;</span><br><span class="line">		retval = kill(daemon_pid, SIGTERM);</span><br><span class="line">		<span class="keyword">if</span> (!retval)</span><br><span class="line">		&#123;</span><br><span class="line">			LOGD(LOG_TAG, <span class="string">"kill daemon process success: %d"</span>, daemon_pid);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">		&#123;</span><br><span class="line">			LOGD(LOG_TAG, <span class="string">"kill daemon process %d fail: %s"</span>, daemon_pid, strerror(errno));</span><br><span class="line">			<span class="built_in">exit</span>(EXIT_SUCCESS);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后，利用循环轮询的方式来唤醒服务组件：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">		<span class="keyword">while</span>(sig_running)</span><br><span class="line">		&#123;</span><br><span class="line">			interval = interval &lt; SLEEP_INTERVAL ? SLEEP_INTERVAL : interval;</span><br><span class="line">			select_sleep(interval, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">			LOGD(LOG_TAG, <span class="string">"check the service once, interval: %d"</span>, interval);</span><br><span class="line"></span><br><span class="line">			<span class="comment">/* start service */</span></span><br><span class="line">			start_service(package_name, service_name);</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Use `select` to sleep with specidied second and microsecond.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">select_sleep</span><span class="params">(<span class="keyword">long</span> sec, <span class="keyword">long</span> msec)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">timeval</span> <span class="title">timeout</span>;</span></span><br><span class="line"></span><br><span class="line">	timeout.tv_sec = sec;</span><br><span class="line">	timeout.tv_usec = msec * <span class="number">1000</span>;</span><br><span class="line"></span><br><span class="line">	select(<span class="number">0</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>, &amp;timeout);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>唤醒组件的代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* start daemon service */</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">start_service</span><span class="params">(<span class="keyword">char</span> *package_name, <span class="keyword">char</span> *service_name)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">/* get the sdk version */</span></span><br><span class="line">	<span class="keyword">int</span> version = get_version();</span><br><span class="line"></span><br><span class="line">	<span class="keyword">pid_t</span> pid;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> ((pid = fork()) &lt; <span class="number">0</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">exit</span>(EXIT_SUCCESS);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span> (pid == <span class="number">0</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span> (package_name == <span class="literal">NULL</span> || service_name == <span class="literal">NULL</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			LOGE(LOG_TAG, <span class="string">"package name or service name is null"</span>);</span><br><span class="line">			<span class="keyword">return</span>;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">char</span> *p_name = str_stitching(package_name, <span class="string">"/"</span>);</span><br><span class="line">		<span class="keyword">char</span> *s_name = str_stitching(p_name, service_name);</span><br><span class="line">		LOGD(LOG_TAG, <span class="string">"service: %s"</span>, s_name);</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (version &gt;= <span class="number">17</span> || version == <span class="number">0</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">int</span> ret = execlp(<span class="string">"am"</span>, <span class="string">"am"</span>, <span class="string">"startservice"</span>,</span><br><span class="line">						<span class="string">"--user"</span>, <span class="string">"0"</span>, <span class="string">"-n"</span>, s_name, (<span class="keyword">char</span> *) <span class="literal">NULL</span>);</span><br><span class="line">			LOGD(LOG_TAG, <span class="string">"result %d"</span>, ret);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">		&#123;</span><br><span class="line">			execlp(<span class="string">"am"</span>, <span class="string">"am"</span>, <span class="string">"startservice"</span>, <span class="string">"-n"</span>, s_name, (<span class="keyword">char</span> *) <span class="literal">NULL</span>);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		LOGD(LOG_TAG , <span class="string">"exit start-service child process"</span>);</span><br><span class="line">		<span class="built_in">exit</span>(EXIT_SUCCESS);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		waitpid(pid, <span class="literal">NULL</span>, <span class="number">0</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在上述代码中，守护进程fork了一个子进程，然后在子进程中通过am的startservice命令，加上我们传入的包名与类名来启动对应的服务组件，启动完成后退出子进程。</p>
+<p>因此，为了让服务可被外部调用，该工程要求我们设置Service组件的exported属性：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">service</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:name</span>=<span class="string">"com.coolerfall.service.DaemonService"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:process</span>=<span class="string">":daemon"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:exported</span>=<span class="string">"true"</span> &gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">service</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>总的来说，个人认为该工程还有以下待改进的地方：</p>
+<ol>
+<li>该工程使用的是轮询的方法来定期给Service发送intent，资源消耗较大</li>
+<li>Android 5.0以上的系统在清理进程时，会把c进程一同清理掉</li>
+<li>其守护方式是单向的，如果c进程挂掉了，将无法守护Service组件</li>
+<li>根据源码，其每次开启守护进程时都会清除旧的守护进程，无法同时守护两个Service组件</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/cpp/" rel="tag"># cpp</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/05/Android-NDK初次学习/" rel="next" title="Android NDK初次学习">
+                <i class="fa fa-chevron-left"></i> Android NDK初次学习
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/13/exec函数族小结/" rel="prev" title="exec函数族小结">
+                exec函数族小结 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

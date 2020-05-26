@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="基础知识,杂项,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="（转载）小数在计算机中的表示、浮点数的大小比较为什么不能用等号、参考资料">
+<meta name="keywords" content="基础知识,杂项">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浮点数的大小比较为什么不能用等号？">
+<meta property="og:url" content="https://superxlcr.github.io/2018/09/04/浮点数的大小比较为什么不能用等号？/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="（转载）小数在计算机中的表示、浮点数的大小比较为什么不能用等号、参考资料">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2018/09/04/浮点数的大小比较为什么不能用等号？/1.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2018/09/04/浮点数的大小比较为什么不能用等号？/2.png">
+<meta property="og:image" content="https://superxlcr.github.io/2018/09/04/浮点数的大小比较为什么不能用等号？/3.png">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.858Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="浮点数的大小比较为什么不能用等号？">
+<meta name="twitter:description" content="（转载）小数在计算机中的表示、浮点数的大小比较为什么不能用等号、参考资料">
+<meta name="twitter:image" content="https://superxlcr.github.io/2018/09/04/浮点数的大小比较为什么不能用等号？/1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2018/09/04/浮点数的大小比较为什么不能用等号？/">
+
+
+
+
+
+  <title>浮点数的大小比较为什么不能用等号？ | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2018/09/04/浮点数的大小比较为什么不能用等号？/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">浮点数的大小比较为什么不能用等号？</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-04T20:23:07+08:00">
+                2018-09-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/杂项/" itemprop="url" rel="index">
+                    <span itemprop="name">杂项</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.3k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文转载自：<a href="https://www.cnblogs.com/xiehongfeng100/p/4851201.html" target="_blank" rel="noopener">https://www.cnblogs.com/xiehongfeng100/p/4851201.html</a></p>
+<h1 id="小数在计算机中的表示"><a href="#小数在计算机中的表示" class="headerlink" title="小数在计算机中的表示"></a>小数在计算机中的表示</h1><p>计算机中是如何存储和表达数字的？对于整数，情况比较简单，直接按照数学中的进制转换方法处理即可，即连续除以2取余。这并不是难点，真正的难点在于小数是如何转换为二进制码（即浮点数）的（<strong>注意区别小数和浮点数</strong>）<br>当然，从数学的角度来讲，十进制的小数可以转换为二进制小数（整数部分连续除2，小数部分连续乘2），例如125.125D=1111101.001B，但问题在于<strong>计算机根本就不认识小数点“.”</strong>，更不可能认识1111101.001B。那么计算机是如何处理小数的呢？</p>
+<p>PS：上文例子中，0.125D转换为小数如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">0.125 * 2 = 0.25 --------- 取0</span><br><span class="line">0.25 * 2 = 0.5   --------- 取0</span><br><span class="line">0.5 * 2 = 1      --------- 取1</span><br><span class="line"></span><br><span class="line">因此0.125D = 0.001B</span><br></pre></td></tr></table></figure>
+
+<p>历史上计算机科学家们曾提出过多种解决方案，<strong>最终获得广泛应用的是IEEE 754标准中的方案，目前最新版的标准是IEEE std 754-2008</strong>。该标准提出数字系统中的浮点数是对数学中的实数（小数）的近似，同时该标准规定表达浮点数的0、1序列被分为三部分（三个域）：<br><img src="/2018/09/04/浮点数的大小比较为什么不能用等号？/1.jpg" alt="二进制小数组成"></p>
+<p>以32位单精度浮点数为例，其具体的转换规则是：</p>
+<ol>
+<li>首先把二进制小数（补码）用二进制科学计数法表示，比如上面给出的例子1111101.001=1.111101001*2^6</li>
+<li>符号位sign表示数的正负（0为正，1为负），故此处填0</li>
+<li>exponent表示科学计数法的指数部分，请务必注意的是，<strong>这里所填的指数并不是前面算出来的实际指数，而是等于实际指数加上一个数（指数偏移），偏移量为2^(e-1)-1，其中e是exponent的宽度（位数）</strong>。对于32位单精度浮点数，exponent宽度为8，因此偏移量为127，所以exponent的值为127 + 6 = 133，即10000101</li>
+<li>之后的fraction表示尾数，即科学计数法中的小数部分11110100100000000000000（共23位）</li>
+</ol>
+<p>因此32位浮点数125.125D在计算机中就被表示为01000010111110100100000000000000。</p>
+<p>对于32位单精度浮点数，sign是1位，<strong>exponent是8位（指数偏移量是127）</strong>，fraction是23位。对于64位双精度浮点数，sign是1为，<strong>exponent是11位（指数偏移量是1023）</strong>，fraction是52位。</p>
+<p>用程序可以看出小数在计算机中是如何表示的（即浮点数）：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;bitset&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">float</span> input;</span><br><span class="line">    <span class="built_in">cin</span> &gt;&gt; input;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> nMem = *(<span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> *)&amp;input;</span><br><span class="line">    <span class="built_in">bitset</span>&lt;32&gt; myBit(nMem);</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; myBit &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果如下：<br><img src="/2018/09/04/浮点数的大小比较为什么不能用等号？/2.png" alt="程序运行结果"></p>
+<h1 id="浮点数的大小比较为什么不能用等号"><a href="#浮点数的大小比较为什么不能用等号" class="headerlink" title="浮点数的大小比较为什么不能用等号"></a>浮点数的大小比较为什么不能用等号</h1><p>下文将从几个方面来探索这个问题：</p>
+<h2 id="浮点数精度不同"><a href="#浮点数精度不同" class="headerlink" title="浮点数精度不同"></a>浮点数精度不同</h2><p>请见程序：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cmath&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">float</span> a = (<span class="keyword">float</span>)<span class="number">0.1</span>;</span><br><span class="line">    <span class="keyword">float</span> b = (<span class="keyword">float</span>)<span class="number">0.1</span>;</span><br><span class="line">    <span class="keyword">if</span>(a == b)</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"a == b"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"a != b"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">float</span> c = (<span class="keyword">float</span>)<span class="number">0.1</span>;</span><br><span class="line">    <span class="keyword">double</span> d = (<span class="keyword">double</span>)<span class="number">0.1</span>;</span><br><span class="line">    <span class="keyword">if</span>(c == d)</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"c == d"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"c != d"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">float</span> e = (<span class="keyword">float</span>)<span class="number">0.1</span>;</span><br><span class="line">    <span class="keyword">float</span> f = (<span class="keyword">double</span>)<span class="number">0.1</span>;</span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">abs</span>(e - f) &lt; <span class="number">0.0001</span>)</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"e == f"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"e != f"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>程序运行结果如下：<br><img src="/2018/09/04/浮点数的大小比较为什么不能用等号？/3.png" alt="程序运行结果"></p>
+<p>从该例子可以看出，对于同一个小数，当用不同精度表示时，结果是不一样的，不能直接用等号比较大小。</p>
+<h2 id="寄存器与内存表示浮点数精度不同"><a href="#寄存器与内存表示浮点数精度不同" class="headerlink" title="寄存器与内存表示浮点数精度不同"></a>寄存器与内存表示浮点数精度不同</h2><p>按照博文<a href="https://my.oschina.net/zuizhuaimaomi/blog/145356" target="_blank" rel="noopener">计算机中基本类型float值表示和大小比较问题</a>的说法： </p>
+<p>即使在精度相同的情况下，比较也可能会出问题。因为在运算过程中会将内存（或高速缓存）中的值加载到CPU浮点寄存器（80 bit扩展精度）中，然后再进入CPU浮点计算单元进行计算，计算结果写回浮点寄存器，然后写回内存（或高速缓存）。从内存到浮点寄存器，浮点数的精度会扩展，从浮点寄存器到内存，浮点数的精度会降低(精度扩展通常没问题，但如果精度降低了，很可能值会发生变化，出现截断)，而浮点运算的结果由于下面还要使用所以暂时保存在浮点寄存器中留待下次使用（没有及时写回内存，这是一种优化策略），从而<strong>导致数据并不是内存中和内存中的数据比较而是浮点寄存器中的值和内存中的值进行比较</strong>，而无论内存中是float类型还是double类型，其精度和浮点寄存器精度都不相同，从而导致比较结果是不相等。  </p>
+<p>详细的可参考维基百科条目<a href="https://en.wikipedia.org/wiki/Extended_precision" target="_blank" rel="noopener">Extended precision</a>。</p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p><a href="http://zhan.renren.com/programming4idiots?gid=3602888498026486936&checked=true" target="_blank" rel="noopener">浅谈计算机中浮点数的表达方法（IEEE 754）</a><br><a href="https://my.oschina.net/zuizhuaimaomi/blog/145356" target="_blank" rel="noopener">计算机中基本类型float值表示和大小比较问题</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/基础知识/" rel="tag"># 基础知识</a>
+          
+            <a href="/tags/杂项/" rel="tag"># 杂项</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/09/03/源码详细解析Handler-Post和View-Post的UI效果差异原因/" rel="next" title="源码详细解析Handler#Post和View#Post的UI效果差异原因">
+                <i class="fa fa-chevron-left"></i> 源码详细解析Handler#Post和View#Post的UI效果差异原因
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/09/06/gradle插件编写/" rel="prev" title="gradle插件编写">
+                gradle插件编写 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#小数在计算机中的表示"><span class="nav-number">1.</span> <span class="nav-text">小数在计算机中的表示</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#浮点数的大小比较为什么不能用等号"><span class="nav-number">2.</span> <span class="nav-text">浮点数的大小比较为什么不能用等号</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#浮点数精度不同"><span class="nav-number">2.1.</span> <span class="nav-text">浮点数精度不同</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#寄存器与内存表示浮点数精度不同"><span class="nav-number">2.2.</span> <span class="nav-text">寄存器与内存表示浮点数精度不同</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

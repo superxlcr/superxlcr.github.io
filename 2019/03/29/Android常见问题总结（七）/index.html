@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,基础知识,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="如何判断当前网络类型、关于Android resources资源的问题、adb shell dumpsys 指令使用、ListView中getView反复调用问题、ViewTreeObserver造成内存泄漏问题">
+<meta name="keywords" content="android,基础知识">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android常见问题总结（七）">
+<meta property="og:url" content="https://superxlcr.github.io/2019/03/29/Android常见问题总结（七）/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="如何判断当前网络类型、关于Android resources资源的问题、adb shell dumpsys 指令使用、ListView中getView反复调用问题、ViewTreeObserver造成内存泄漏问题">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.577Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android常见问题总结（七）">
+<meta name="twitter:description" content="如何判断当前网络类型、关于Android resources资源的问题、adb shell dumpsys 指令使用、ListView中getView反复调用问题、ViewTreeObserver造成内存泄漏问题">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2019/03/29/Android常见问题总结（七）/">
+
+
+
+
+
+  <title>Android常见问题总结（七） | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2019/03/29/Android常见问题总结（七）/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android常见问题总结（七）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-29T21:24:18+08:00">
+                2019-03-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.5k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上一篇博客传送门：<a href="/2017/08/08/Android常见问题总结（六）/">Android常见问题总结（六）</a></p>
+<h1 id="如何判断当前网络类型"><a href="#如何判断当前网络类型" class="headerlink" title="如何判断当前网络类型"></a>如何判断当前网络类型</h1><p>想要判断Android设备当前的网络类型，我们可以使用ConnectivityManager类</p>
+<p>通过ConnectivityManager#getActiveNetworkInfo我们可以获取NetworkInfo类，它包含了当前网络相关的信息<br>我们可以通过NetworkInfo#isAvailable来判断是否连上了网络<br>通过NetworkInfo#getType来判断当前网络是否wifi类型</p>
+<p>至于移动网络的类型，我们可以通过NetworkInfo#getSubtype获取网络的类型，然后通过TelephonyManager#getNetworkClass来判断当前的网络究竟是那种具体类型（不过这个方法是hide，估计是官方觉得不准确就不公开了，我们可以打开源码把该方法拷贝出来使用）<br>具体判断网络类型的代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line">   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String NETWORK_WIFI = <span class="string">"Wifi"</span>;</span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String NETWORK_2G = <span class="string">"2G"</span>;</span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String NETWORK_3G = <span class="string">"3G"</span>;</span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String NETWORK_4G = <span class="string">"4G"</span>;</span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String NETWORK_OTHER = <span class="string">"Other"</span>;</span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String NETWORK_NONE = <span class="string">"None"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 获取当前网络类型</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> context 上下文</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@return</span> 网络类型</span></span><br><span class="line"><span class="comment">    *</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@see</span> #NETWORK_NONE</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@see</span> #NETWORK_WIFI</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@see</span> #NETWORK_2G</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@see</span> #NETWORK_3G</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@see</span> #NETWORK_4G</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@see</span> #NETWORK_OTHER</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getNetworkDetailType</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">if</span> (context == <span class="keyword">null</span>) &#123;</span><br><span class="line">           <span class="keyword">return</span> NETWORK_NONE;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">try</span> &#123;</span><br><span class="line">           ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);</span><br><span class="line">           NetworkInfo info = manager.getActiveNetworkInfo();</span><br><span class="line">           <span class="comment">// 判断是否无网络</span></span><br><span class="line">           <span class="keyword">if</span> (info == <span class="keyword">null</span> || !info.isAvailable()) &#123;</span><br><span class="line">               <span class="keyword">return</span> NETWORK_NONE;</span><br><span class="line">           &#125;</span><br><span class="line">           <span class="comment">// 是否wifi</span></span><br><span class="line">           <span class="keyword">if</span> (info.getType() == ConnectivityManager.TYPE_WIFI) &#123;</span><br><span class="line">               <span class="keyword">return</span> NETWORK_WIFI;</span><br><span class="line">           &#125;</span><br><span class="line">           <span class="comment">/**</span></span><br><span class="line"><span class="comment">            * 判断移动网络类型，可见</span></span><br><span class="line"><span class="comment">            * <span class="doctag">@see</span> TelephonyManager#getNetworkClass</span></span><br><span class="line"><span class="comment">            */</span></span><br><span class="line">           <span class="keyword">switch</span> (info.getSubtype()) &#123;</span><br><span class="line">               <span class="keyword">case</span> TelephonyManager.NETWORK_TYPE_GPRS:</span><br><span class="line">               <span class="keyword">case</span> TelephonyManager.NETWORK_TYPE_EDGE:</span><br><span class="line">               <span class="keyword">case</span> TelephonyManager.NETWORK_TYPE_CDMA:</span><br><span class="line">               <span class="keyword">case</span> TelephonyManager.NETWORK_TYPE_1xRTT:</span><br><span class="line">               <span class="keyword">case</span> TelephonyManager.NETWORK_TYPE_IDEN:</span><br><span class="line">                   <span class="keyword">return</span> NETWORK_2G;</span><br><span class="line">               <span class="keyword">case</span> TelephonyManager.NETWORK_TYPE_UMTS:</span><br><span class="line">               <span class="keyword">case</span> TelephonyManager.NETWORK_TYPE_EVDO_0:</span><br><span class="line">               <span class="keyword">case</span> TelephonyManager.NETWORK_TYPE_EVDO_A:</span><br><span class="line">               <span class="keyword">case</span> TelephonyManager.NETWORK_TYPE_HSDPA:</span><br><span class="line">               <span class="keyword">case</span> TelephonyManager.NETWORK_TYPE_HSUPA:</span><br><span class="line">               <span class="keyword">case</span> TelephonyManager.NETWORK_TYPE_HSPA:</span><br><span class="line">               <span class="keyword">case</span> TelephonyManager.NETWORK_TYPE_EVDO_B:</span><br><span class="line">               <span class="keyword">case</span> TelephonyManager.NETWORK_TYPE_EHRPD:</span><br><span class="line">               <span class="keyword">case</span> TelephonyManager.NETWORK_TYPE_HSPAP:</span><br><span class="line">                   <span class="keyword">return</span> NETWORK_3G;</span><br><span class="line">               <span class="keyword">case</span> TelephonyManager.NETWORK_TYPE_LTE:</span><br><span class="line">                   <span class="keyword">return</span> NETWORK_4G;</span><br><span class="line">               <span class="keyword">default</span>:</span><br><span class="line">                   <span class="keyword">return</span> NETWORK_OTHER;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">           L.exception(e);</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">return</span> NETWORK_NONE;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="关于Android-resources资源的问题"><a href="#关于Android-resources资源的问题" class="headerlink" title="关于Android resources资源的问题"></a>关于Android resources资源的问题</h1><p>可以参考官方文档解决问题：<a href="https://developer.android.com/guide/topics/resources/overview.html" target="_blank" rel="noopener">https://developer.android.com/guide/topics/resources/overview.html</a></p>
+<h1 id="adb-shell-dumpsys-指令使用"><a href="#adb-shell-dumpsys-指令使用" class="headerlink" title="adb shell dumpsys 指令使用"></a>adb shell dumpsys 指令使用</h1><p>该命令用于打印出当前系统信息，默认打印出设备中所有service的信息，可以在命令后面加指定的service name.</p>
+<p>有两种方法可以查看service list:</p>
+<ul>
+<li>adb shell dumpsys：输出信息的开始部分就是所有运行的service</li>
+<li>adb shell service list</li>
+</ul>
+<p>只要我们在指令后添加对应service name，就能查看指定service的信息：</p>
+<p>adb shell dumpsys activity （查看activity堆栈相关信息）<br>adb shell dumpsys display （查看显示相关信息，可以查看分辨率）</p>
+<p>其中，有些service还可以带上额外的参数，我们可以使用 -h 来查看帮助信息：<br>adb shell dumpsys activity -h （可以查到top等参数的用法）</p>
+<h1 id="ListView中getView反复调用问题"><a href="#ListView中getView反复调用问题" class="headerlink" title="ListView中getView反复调用问题"></a>ListView中getView反复调用问题</h1><p>最近在项目中需要在ListView中实现计时器<br>用TextView配合CountDownTimer实现完成后发现界面卡顿严重，通过debug发现ListView的Adapter在疯狂的调用getView方法<br>猜测是由于CountDownTimer定时使用TextView#setText刷新文案，而TextView大小为wrap_content导致界面需要重新测量布局，导致ListView会反复调用Adapter#getView<br>最终通过把TextView大小设为定值解决问题</p>
+<p>此次顺便发现了刚进入页面时，Adapter#getView对于相同的position会调用多次的问题<br>猜测也是ListView需要测量反复调用Adapter#getView所致，通过把ListView在xml中的高度由wrap_content改为match_parent或定值解决问题<br>最终刚进入页面时，相同的position只会调用一次Adapter#getView</p>
+<h1 id="ViewTreeObserver造成内存泄漏问题"><a href="#ViewTreeObserver造成内存泄漏问题" class="headerlink" title="ViewTreeObserver造成内存泄漏问题"></a>ViewTreeObserver造成内存泄漏问题</h1><p>ViewTreeObserver的一般用法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 添加监听器</span></span><br><span class="line">view.getViewTreeObserver().addXXXListener(...);</span><br><span class="line"><span class="comment">// 移除监听器</span></span><br><span class="line">view.getViewTreeObserver().removeXXXListener(...);</span><br></pre></td></tr></table></figure>
+
+<p>如果我们添加了监听器，而没有在View detach之前执行相应的移除方法，则会造成内存泄漏<br>下面我们一起来看下具体的源码了解原因：<br>View#getViewTreeObserver</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> ViewTreeObserver <span class="title">getViewTreeObserver</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (mAttachInfo != <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span> mAttachInfo.mTreeObserver;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (mFloatingTreeObserver == <span class="keyword">null</span>) &#123;</span><br><span class="line">		mFloatingTreeObserver = <span class="keyword">new</span> ViewTreeObserver(mContext);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> mFloatingTreeObserver;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当view还没有attach到window的时候，其mAttachInfo为空，此时我们添加的监听器会被保存在mFloatingTreeObserver中</p>
+<p>View#dispatchAttachedToWindow</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dispatchAttachedToWindow</span><span class="params">(AttachInfo info, <span class="keyword">int</span> visibility)</span> </span>&#123;</span><br><span class="line">	mAttachInfo = info;</span><br><span class="line">	...</span><br><span class="line">	<span class="keyword">if</span> (mFloatingTreeObserver != <span class="keyword">null</span>) &#123;</span><br><span class="line">		info.mTreeObserver.merge(mFloatingTreeObserver);</span><br><span class="line">		mFloatingTreeObserver = <span class="keyword">null</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>第5行可以看到attach到window的时候，会执行merge方法，把监听器合并到mAttachInfo中</p>
+<p>ViewTreeObserver#merge</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">merge</span><span class="params">(ViewTreeObserver observer)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (observer.mOnWindowAttachListeners != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (mOnWindowAttachListeners != <span class="keyword">null</span>) &#123;</span><br><span class="line">            mOnWindowAttachListeners.addAll(observer.mOnWindowAttachListeners);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            mOnWindowAttachListeners = observer.mOnWindowAttachListeners;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (observer.mOnWindowFocusListeners != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (mOnWindowFocusListeners != <span class="keyword">null</span>) &#123;</span><br><span class="line">            mOnWindowFocusListeners.addAll(observer.mOnWindowFocusListeners);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            mOnWindowFocusListeners = observer.mOnWindowFocusListeners;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (observer.mOnGlobalFocusListeners != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (mOnGlobalFocusListeners != <span class="keyword">null</span>) &#123;</span><br><span class="line">            mOnGlobalFocusListeners.addAll(observer.mOnGlobalFocusListeners);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            mOnGlobalFocusListeners = observer.mOnGlobalFocusListeners;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (observer.mOnGlobalLayoutListeners != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (mOnGlobalLayoutListeners != <span class="keyword">null</span>) &#123;</span><br><span class="line">            mOnGlobalLayoutListeners.addAll(observer.mOnGlobalLayoutListeners);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            mOnGlobalLayoutListeners = observer.mOnGlobalLayoutListeners;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (observer.mOnPreDrawListeners != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (mOnPreDrawListeners != <span class="keyword">null</span>) &#123;</span><br><span class="line">            mOnPreDrawListeners.addAll(observer.mOnPreDrawListeners);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            mOnPreDrawListeners = observer.mOnPreDrawListeners;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (observer.mOnDrawListeners != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (mOnDrawListeners != <span class="keyword">null</span>) &#123;</span><br><span class="line">            mOnDrawListeners.addAll(observer.mOnDrawListeners);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            mOnDrawListeners = observer.mOnDrawListeners;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (observer.mOnTouchModeChangeListeners != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (mOnTouchModeChangeListeners != <span class="keyword">null</span>) &#123;</span><br><span class="line">            mOnTouchModeChangeListeners.addAll(observer.mOnTouchModeChangeListeners);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            mOnTouchModeChangeListeners = observer.mOnTouchModeChangeListeners;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (observer.mOnComputeInternalInsetsListeners != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (mOnComputeInternalInsetsListeners != <span class="keyword">null</span>) &#123;</span><br><span class="line">            mOnComputeInternalInsetsListeners.addAll(observer.mOnComputeInternalInsetsListeners);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            mOnComputeInternalInsetsListeners = observer.mOnComputeInternalInsetsListeners;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (observer.mOnScrollChangedListeners != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (mOnScrollChangedListeners != <span class="keyword">null</span>) &#123;</span><br><span class="line">            mOnScrollChangedListeners.addAll(observer.mOnScrollChangedListeners);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            mOnScrollChangedListeners = observer.mOnScrollChangedListeners;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (observer.mOnWindowShownListeners != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (mOnWindowShownListeners != <span class="keyword">null</span>) &#123;</span><br><span class="line">            mOnWindowShownListeners.addAll(observer.mOnWindowShownListeners);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            mOnWindowShownListeners = observer.mOnWindowShownListeners;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    observer.kill();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>分析过Activity的显示流程我们可以知道，这个attachInfo实际上是由ViewRootImpl来管理的，因此最终所有的监听器会被merge合并到ViewRootImpl中<br>由于ViewRootImpl一般而言生命周期都是长于普通的View，而View从window执行detach的时候，我们可以看到其实是没有移除这些监听器的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dispatchDetachedFromWindow</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	AttachInfo info = mAttachInfo;</span><br><span class="line">	<span class="keyword">if</span> (info != <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="keyword">int</span> vis = info.mWindowVisibility;</span><br><span class="line">		<span class="keyword">if</span> (vis != GONE) &#123;</span><br><span class="line">			onWindowVisibilityChanged(GONE);</span><br><span class="line">			<span class="keyword">if</span> (isShown()) &#123;</span><br><span class="line">				<span class="comment">// Invoking onVisibilityAggregated directly here since the subtree</span></span><br><span class="line">				<span class="comment">// will also receive detached from window</span></span><br><span class="line">				onVisibilityAggregated(<span class="keyword">false</span>);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	onDetachedFromWindow();</span><br><span class="line">	onDetachedFromWindowInternal();</span><br><span class="line"></span><br><span class="line">	InputMethodManager imm = InputMethodManager.peekInstance();</span><br><span class="line">	<span class="keyword">if</span> (imm != <span class="keyword">null</span>) &#123;</span><br><span class="line">		imm.onViewDetachedFromWindow(<span class="keyword">this</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	ListenerInfo li = mListenerInfo;</span><br><span class="line">	<span class="keyword">final</span> CopyOnWriteArrayList&lt;OnAttachStateChangeListener&gt; listeners =</span><br><span class="line">			li != <span class="keyword">null</span> ? li.mOnAttachStateChangeListeners : <span class="keyword">null</span>;</span><br><span class="line">	<span class="keyword">if</span> (listeners != <span class="keyword">null</span> &amp;&amp; listeners.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">		<span class="comment">// <span class="doctag">NOTE:</span> because of the use of CopyOnWriteArrayList, we *must* use an iterator to</span></span><br><span class="line">		<span class="comment">// perform the dispatching. The iterator is a safe guard against listeners that</span></span><br><span class="line">		<span class="comment">// could mutate the list by calling the various add/remove methods. This prevents</span></span><br><span class="line">		<span class="comment">// the array from being modified while we iterate it.</span></span><br><span class="line">		<span class="keyword">for</span> (OnAttachStateChangeListener listener : listeners) &#123;</span><br><span class="line">			listener.onViewDetachedFromWindow(<span class="keyword">this</span>);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> ((mPrivateFlags &amp; PFLAG_SCROLL_CONTAINER_ADDED) != <span class="number">0</span>) &#123;</span><br><span class="line">		mAttachInfo.mScrollContainers.remove(<span class="keyword">this</span>);</span><br><span class="line">		mPrivateFlags &amp;= ~PFLAG_SCROLL_CONTAINER_ADDED;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	mAttachInfo = <span class="keyword">null</span>;</span><br><span class="line">	<span class="keyword">if</span> (mOverlay != <span class="keyword">null</span>) &#123;</span><br><span class="line">		mOverlay.getOverlayView().dispatchDetachedFromWindow();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	notifyEnterOrExitForAutoFillIfNeeded(<span class="keyword">false</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因此，如果我们注册了相应的监听器，在detach之前没有进行清理的话，我们的监听器会被ViewRootImpl一直持有从而导致内存泄漏<br>修复方案一般是在View#onDetachedFromWindow中执行相应的清理方法即可</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/基础知识/" rel="tag"># 基础知识</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/18/okhttp源码分析——基本流程（超详细）/" rel="next" title="okhttp源码分析——基本流程（超详细）">
+                <i class="fa fa-chevron-left"></i> okhttp源码分析——基本流程（超详细）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/06/关于一些基础的Java问题的解答（十）/" rel="prev" title="关于一些基础的Java问题的解答（十）">
+                关于一些基础的Java问题的解答（十） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#如何判断当前网络类型"><span class="nav-number">1.</span> <span class="nav-text">如何判断当前网络类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#关于Android-resources资源的问题"><span class="nav-number">2.</span> <span class="nav-text">关于Android resources资源的问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#adb-shell-dumpsys-指令使用"><span class="nav-number">3.</span> <span class="nav-text">adb shell dumpsys 指令使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ListView中getView反复调用问题"><span class="nav-number">4.</span> <span class="nav-text">ListView中getView反复调用问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ViewTreeObserver造成内存泄漏问题"><span class="nav-number">5.</span> <span class="nav-text">ViewTreeObserver造成内存泄漏问题</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

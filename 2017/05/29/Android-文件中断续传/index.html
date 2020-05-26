@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,应用,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="功能原理、代码">
+<meta name="keywords" content="android,应用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android 文件中断续传">
+<meta property="og:url" content="https://superxlcr.github.io/2017/05/29/Android-文件中断续传/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="功能原理、代码">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/29/Android-文件中断续传/1.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/29/Android-文件中断续传/2.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/29/Android-文件中断续传/3.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/29/Android-文件中断续传/4.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/29/Android-文件中断续传/5.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/05/29/Android-文件中断续传/6.jpg">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.537Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android 文件中断续传">
+<meta name="twitter:description" content="功能原理、代码">
+<meta name="twitter:image" content="https://superxlcr.github.io/2017/05/29/Android-文件中断续传/1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2017/05/29/Android-文件中断续传/">
+
+
+
+
+
+  <title>Android 文件中断续传 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2017/05/29/Android-文件中断续传/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android 文件中断续传</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-29T11:44:40+08:00">
+                2017-05-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近尝试了Android 的文件中断续传功能，在此写下一篇博客进行记录。</p>
+<h1 id="功能原理"><a href="#功能原理" class="headerlink" title="功能原理"></a>功能原理</h1><p>实现文件中断续传功能主要依赖的原理有两个：</p>
+<ol>
+<li>通过RandomAccessFile文件定位功能在特定位置写入文件</li>
+<li>通过HTTP 1.1协议的Range头域来获取下载文件的特定部分</li>
+</ol>
+<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FileContinueDownload</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String SP_NAME = <span class="string">"FileContinueDownload"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> BUFFER_SIZE = <span class="number">512</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Context context;</span><br><span class="line">    <span class="keyword">private</span> String fileUrl;</span><br><span class="line">    <span class="keyword">private</span> String fileName;</span><br><span class="line">    <span class="keyword">private</span> String filePath;</span><br><span class="line">    <span class="keyword">private</span> FileContinueDownloadListener listener;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> SharedPreferences sharedPreferences;</span><br><span class="line">    <span class="keyword">private</span> RandomAccessFile randomAccessFile;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> startPosition;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">boolean</span> work;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> context 上下文</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> fileUrl url</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> fileName 文件名</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> filePath 文件存储路径</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> listener 监听器</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">FileContinueDownload</span><span class="params">(Context context, String fileUrl, String fileName, String filePath, FileContinueDownloadListener listener)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.context = context.getApplicationContext();</span><br><span class="line">        <span class="keyword">this</span>.fileUrl = fileUrl;</span><br><span class="line">        <span class="keyword">this</span>.fileName = fileName;</span><br><span class="line">        <span class="keyword">this</span>.filePath = filePath;</span><br><span class="line">        <span class="keyword">this</span>.listener = listener;</span><br><span class="line">        init();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 开始下载文件</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (work) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        work = <span class="keyword">true</span>;</span><br><span class="line">        <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    <span class="comment">// 开启网络连接</span></span><br><span class="line">                    URL url = <span class="keyword">new</span> URL(fileUrl);</span><br><span class="line">                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();</span><br><span class="line">                    httpURLConnection.setConnectTimeout(<span class="number">3000</span>);</span><br><span class="line">                    httpURLConnection.setRequestMethod(<span class="string">"GET"</span>);</span><br><span class="line">                    httpURLConnection.setRequestProperty(<span class="string">"Range"</span>, <span class="string">"bytes="</span> + startPosition + <span class="string">"-"</span>);</span><br><span class="line">                    <span class="keyword">int</span> responseCode = httpURLConnection.getResponseCode();</span><br><span class="line">                    <span class="keyword">if</span> (responseCode == <span class="number">200</span> || responseCode == <span class="number">206</span>) &#123;</span><br><span class="line">                        <span class="keyword">int</span> fileLength = httpURLConnection.getContentLength();</span><br><span class="line">                        InputStream inputStream = httpURLConnection.getInputStream();</span><br><span class="line">                        <span class="keyword">byte</span> buffer[] = <span class="keyword">new</span> <span class="keyword">byte</span>[BUFFER_SIZE];</span><br><span class="line">                        <span class="keyword">int</span> len;</span><br><span class="line">                        <span class="comment">// 下载文件</span></span><br><span class="line">                        <span class="keyword">while</span> ((len = inputStream.read(buffer)) != -<span class="number">1</span>) &#123;</span><br><span class="line">                            randomAccessFile.write(buffer, <span class="number">0</span>, len);</span><br><span class="line">                            <span class="comment">// 更新进度</span></span><br><span class="line">                            listener.onUpdate((<span class="keyword">int</span>) randomAccessFile.getFilePointer(), fileLength);</span><br><span class="line">                            <span class="comment">// 更新sharedPreferences</span></span><br><span class="line">                            SharedPreferences.Editor editor = sharedPreferences.edit();</span><br><span class="line">                            startPosition = randomAccessFile.getFilePointer();</span><br><span class="line">                            editor.putLong(fileName, startPosition);</span><br><span class="line">                            editor.apply();</span><br><span class="line">                            <span class="comment">// 判断是否暂停</span></span><br><span class="line">                            <span class="keyword">if</span> (!work) &#123;</span><br><span class="line">                                <span class="keyword">break</span>;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">if</span> (work) &#123; <span class="comment">// 工作状态退出，代表已下载完毕</span></span><br><span class="line">                            SharedPreferences.Editor editor = sharedPreferences.edit();</span><br><span class="line">                            editor.remove(fileName);</span><br><span class="line">                            editor.apply();</span><br><span class="line">                            listener.onFinish();</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                    listener.onError(e);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;).start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 暂停下载文件</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">pause</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        work = <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 获取sharedPreferences</span></span><br><span class="line">            sharedPreferences = context.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);</span><br><span class="line">            <span class="keyword">if</span> (!sharedPreferences.contains(fileName)) &#123;</span><br><span class="line">                <span class="comment">// 不存在进度，创建文件</span></span><br><span class="line">                File file = <span class="keyword">new</span> File(filePath, fileName);</span><br><span class="line">                <span class="keyword">if</span> (!file.exists()) &#123;</span><br><span class="line">                    file.createNewFile();</span><br><span class="line">                &#125;</span><br><span class="line">                randomAccessFile = <span class="keyword">new</span> RandomAccessFile(file, <span class="string">"rwd"</span>);</span><br><span class="line">                SharedPreferences.Editor editor = sharedPreferences.edit();</span><br><span class="line">                editor.putLong(fileName, <span class="number">0</span>);</span><br><span class="line">                editor.apply();</span><br><span class="line">                startPosition = <span class="number">0</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// 存在进度，获取进度</span></span><br><span class="line">                File file = <span class="keyword">new</span> File(filePath, fileName);</span><br><span class="line">                randomAccessFile = <span class="keyword">new</span> RandomAccessFile(file, <span class="string">"rwd"</span>);</span><br><span class="line">                startPosition = sharedPreferences.getLong(fileName, <span class="number">0</span>);</span><br><span class="line">                randomAccessFile.seek(startPosition);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            listener.onError(e);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">FileContinueDownloadListener</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">onUpdate</span><span class="params">(<span class="keyword">int</span> nowProgress, <span class="keyword">int</span> totalProgress)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">onError</span><span class="params">(Exception e)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">onFinish</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>FileContinueDownload为文件中断续传帮助类，通过Android的SharedPreferences来记录文件的下载进度，使用RandomAccessFile的seek方法来找到合适的位置进行文件写入，通过HTTP 1.1的Range头域来获取剩余的部分文件，最终结果或者错误通过监听器进行返回。</p>
+<p>测试的例子如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> MyHandler handler;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String URL = <span class="string">"https://timgsa.baidu.com/timg?image&amp;quality=80&amp;size=b9999_10000&amp;sec=1495972879917&amp;di=327cc1f368b192793d82a2320e8b7599&amp;imgtype=0&amp;src=http%3A%2F%2Fi2.hdslb.com%2Fbfs%2Farchive%2Fb622e10be9e9a63ca2922348541ec86b55c0fc53.jpg"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String FILE_NAME = <span class="string">"file_continue_download_test.jpg"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String FILE_PATH = Environment.getExternalStorageDirectory().getPath();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> HANDLER_START = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> HANDLER_FINISH = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> TextView nameTV;</span><br><span class="line">    <span class="keyword">private</span> ProgressBar progressBar;</span><br><span class="line">    <span class="keyword">private</span> Button startBtn;</span><br><span class="line">    <span class="keyword">private</span> Button pauseBtn;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.activity_main);</span><br><span class="line">        initView();</span><br><span class="line">        handler = <span class="keyword">new</span> MyHandler(<span class="keyword">this</span>);</span><br><span class="line"></span><br><span class="line">        FileContinueDownloadListener listener = <span class="keyword">new</span> FileContinueDownloadListener() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onUpdate</span><span class="params">(<span class="keyword">int</span> nowProgress, <span class="keyword">int</span> totalProgress)</span> </span>&#123;</span><br><span class="line">                Message message = handler.obtainMessage(HANDLER_START, nowProgress, totalProgress);</span><br><span class="line">                handler.sendMessage(message);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onError</span><span class="params">(Exception e)</span> </span>&#123;</span><br><span class="line">                Log.e(<span class="string">"MyLog"</span>, Log.getStackTraceString(e));</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onFinish</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                Message message = handler.obtainMessage(HANDLER_FINISH);</span><br><span class="line">                handler.sendMessage(message);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="keyword">final</span> FileContinueDownload download = <span class="keyword">new</span> FileContinueDownload(<span class="keyword">this</span>, URL, FILE_NAME, FILE_PATH, listener);</span><br><span class="line"></span><br><span class="line">        startBtn.setOnClickListener(<span class="keyword">new</span> View.OnClickListener() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span> </span>&#123;</span><br><span class="line">                download.start();</span><br><span class="line">                startBtn.setEnabled(<span class="keyword">false</span>);</span><br><span class="line">                pauseBtn.setEnabled(<span class="keyword">true</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        pauseBtn.setOnClickListener(<span class="keyword">new</span> View.OnClickListener() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span> </span>&#123;</span><br><span class="line">                download.pause();</span><br><span class="line">                startBtn.setEnabled(<span class="keyword">true</span>);</span><br><span class="line">                pauseBtn.setEnabled(<span class="keyword">false</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">initView</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        nameTV = (TextView) findViewById(R.id.textView);</span><br><span class="line">        nameTV.setText(FILE_NAME);</span><br><span class="line">        progressBar = (ProgressBar) findViewById(R.id.progressBar);</span><br><span class="line">        progressBar.setMax(<span class="number">1</span>);</span><br><span class="line">        progressBar.setProgress(<span class="number">0</span>);</span><br><span class="line">        startBtn = (Button) findViewById(R.id.start);</span><br><span class="line">        pauseBtn = (Button) findViewById(R.id.pause);</span><br><span class="line">        startBtn.setEnabled(<span class="keyword">true</span>);</span><br><span class="line">        pauseBtn.setEnabled(<span class="keyword">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">MyHandler</span> <span class="keyword">extends</span> <span class="title">Handler</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> SoftReference&lt;MainActivity&gt; reference;</span><br><span class="line"></span><br><span class="line">        MyHandler(MainActivity mainActivity) &#123;</span><br><span class="line">            reference = <span class="keyword">new</span> SoftReference&lt;MainActivity&gt;(mainActivity);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</span><br><span class="line">            MainActivity activity = reference.get();</span><br><span class="line">            <span class="keyword">if</span> (activity != <span class="keyword">null</span> &amp;&amp; msg.what == HANDLER_START) &#123;</span><br><span class="line">                <span class="keyword">int</span> nowProgress = msg.arg1;</span><br><span class="line">                <span class="keyword">int</span> totalProgress = msg.arg2;</span><br><span class="line">                activity.progressBar.setMax(totalProgress);</span><br><span class="line">                activity.progressBar.setProgress(nowProgress);</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (activity != <span class="keyword">null</span> &amp;&amp; msg.what == HANDLER_FINISH) &#123;</span><br><span class="line">                Toast.makeText(activity, <span class="string">"download finish!"</span>, Toast.LENGTH_SHORT).show();</span><br><span class="line">                activity.startBtn.setEnabled(<span class="keyword">false</span>);</span><br><span class="line">                activity.pauseBtn.setEnabled(<span class="keyword">false</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>xml文件就不贴出来了，里面是一个TextView、ProgressBar以及两个Button。</p>
+<p>效果如下所示：</p>
+<p>下图分别为初始界面、开始下载、暂停下载</p>
+<p><img src="/2017/05/29/Android-文件中断续传/1.jpg" alt="界面_pic1">)<img src="/2017/05/29/Android-文件中断续传/2.jpg" alt="开始下载_pic2">)<img src="/2017/05/29/Android-文件中断续传/3.jpg" alt="暂停_pic3"></p>
+<p>下载到一半的file_continue_download_test.jpg文件：<br><img src="/2017/05/29/Android-文件中断续传/4.jpg" alt="下载一半的文件_pic4"></p>
+<p>继续下载以及下载完成的文件：<br><img src="/2017/05/29/Android-文件中断续传/5.jpg" alt="继续下载_pic5">)<img src="/2017/05/29/Android-文件中断续传/6.jpg" alt="下载完成的文件_pic6"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/应用/" rel="tag"># 应用</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/26/Android-5-0-以下Native进程保活尝试/" rel="next" title="Android 5.0 以下Native进程保活尝试">
+                <i class="fa fa-chevron-left"></i> Android 5.0 以下Native进程保活尝试
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/30/Java-HashMap的扩容/" rel="prev" title="Java HashMap的扩容">
+                Java HashMap的扩容 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#功能原理"><span class="nav-number">1.</span> <span class="nav-text">功能原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#代码"><span class="nav-number">2.</span> <span class="nav-text">代码</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

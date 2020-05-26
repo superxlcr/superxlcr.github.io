@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,编译,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="（转载）前言、准备工作、技术原理、案例分析、未解决的问题、技术总结、总结">
+<meta name="keywords" content="android,编译">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android逆向之旅---静态分析技术来破解Apk">
+<meta property="og:url" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="（转载）前言、准备工作、技术原理、案例分析、未解决的问题、技术总结、总结">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/1.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/2.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/3.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/4.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/5.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/6.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/7.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/8.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/9.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/10.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/11.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/12.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/13.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/14.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/15.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/16.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/17.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/18.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/19.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/20.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/21.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/22.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/23.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/24.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/25.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/26.png">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.641Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android逆向之旅---静态分析技术来破解Apk">
+<meta name="twitter:description" content="（转载）前言、准备工作、技术原理、案例分析、未解决的问题、技术总结、总结">
+<meta name="twitter:image" content="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/">
+
+
+
+
+
+  <title>Android逆向之旅---静态分析技术来破解Apk | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android逆向之旅---静态分析技术来破解Apk</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-20T11:12:39+08:00">
+                2017-10-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  6k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文转载自：<a href="http://blog.csdn.net/jiangwei0910410003/article/details/50083649" target="_blank" rel="noopener">http://blog.csdn.net/jiangwei0910410003/article/details/50083649</a></p>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>从这篇文章开始我们开始我们的破解之路，之前的几篇文章中我们是如何讲解怎么加固我们的Apk，防止被别人破解，那么现在我们要开始破解我们的Apk,针对于之前的加密方式采用相对应的破解技术，Android中的破解其实大体上可以分为静态分析和动态分析，对于这两种方式又可以细分为Java层(smail和dex)和native层(so)。所以我们今天主要来讲解如何通过静态分析来破解我们的apk，这篇文章我们会通过破解Java层和native层的例子来讲解。</p>
+<h1 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h1><p>在开始今天的文章之前，我们需要准备点东西，</p>
+<h2 id="首先是基本知识"><a href="#首先是基本知识" class="headerlink" title="首先是基本知识"></a>首先是基本知识</h2><ol>
+<li>了解Android中的Apk文件的结构。</li>
+<li>了解Smail语法和dex文件格式</li>
+<li>apk的签名机制</li>
+</ol>
+<p>关于这三个知识点，这里就不做详细介绍了，不理解的同学可以自行网上学习，有很多资料讲解的。</p>
+<h2 id="再者就是几个重要的工具"><a href="#再者就是几个重要的工具" class="headerlink" title="再者就是几个重要的工具"></a>再者就是几个重要的工具</h2><ol>
+<li>apktool：反编译的利器</li>
+<li>dex2jar：将dex转化成jar</li>
+<li>jd-gui：很好的查看jar文件的工具</li>
+<li>IDA：收费的最全破解利器(分析dex和so都可以)</li>
+</ol>
+<p>下载地址：<a href="http://pan.baidu.com/s/1hqBC7Es" target="_blank" rel="noopener">http://pan.baidu.com/s/1hqBC7Es</a><br>额外：上面四个工具是最基本的，但是现在网上也有一些更好的工具：JEB,GDA等。但是这些工具就是丰富了上面四个工具，所以说我们只要上面的四个工具就足够了。IDA工具我专门给了一个下载地址，其他的工具在我们提供的案例中。</p>
+<h1 id="技术原理"><a href="#技术原理" class="headerlink" title="技术原理"></a>技术原理</h1><p>准备工作完了，下面就来看一下今天的破解方式介绍：<br>Android中的破解的静态分析说重要，也不重要，为什么这么说呢？<br>因为我们到后面会介绍动态分析，那时候我们在破解一个Apk的时候，发现静态分析的方式几乎毫无用途，因为现在的程序加固的越来越高级，静态分析几乎失效，所以动态分析是必须的，但是要是说静态分析没有用，那么也错了，因为我们在有些场景下，只有静态分析能够开始破解之门，没有静态分析之后的结果，动态分析是无法开展的。这个下面会举例说明。所以说在破解的过程中，静态分析和动态分析一定会结合在一起的，只有这样我们才会勇往直前。下面就来看看我们如何通过静态分析来破解apk.</p>
+<h2 id="静态分析的流程"><a href="#静态分析的流程" class="headerlink" title="静态分析的流程"></a>静态分析的流程</h2><ol>
+<li>使用apktool来反编译apk<br>在这个过程中，我们会发现有些apk很轻易的被反编译了，但是有些apk每次反编译都会报各种错误，这个也是正常的，因为加固了吗。现在网上有很多对apk加密的方式，直接让反编译就通不过，比如Androidmanifest文件，dex文件等，因为apktool他需要解析这些重要的资源，一旦这些文件加密了那么就会终止，所以这里我们暂且都认为apk都能反编译的，因为我们今天是主要介绍怎么通过静态分析来破解，关于这里的反编译失败的问题，我后面会在用一篇文章详细介绍，到时候会列举一些反编译错误的例子。</li>
+<li>得到程序的smail源码和AndroidManifest.xml文件<br>我们知道一个Android的程序入口信息都会在AndroidManifest.xml中，比如Application和入口Activity,所以我们肯定会先来分析这个文件，找到我们想要的信息，当然这里还有一个常用的命令需要记住：</li>
+</ol>
+<p><strong>adb shell dumpsys activity top</strong><br>能够获取到当前程序的Activity信息<br>然后我们会分析smail代码，进行代码逻辑的修改<br>3. 直接解压apk文件得到classes.dex文件，然后用dex2jar工具得到jar,用jd-gui工具查看<br>这里我们主要很容易的查看代码，因为我们在第二步中得到了smail源码，就可以分析程序了，但是我们知道虽然smail语法不是很复杂，至少比汇编简单，但是怎么看着都是不方便的，还是看java代码比较方便，所以我们借助jd-gui工具查看代码逻辑，然后在smail代码中进行修改即可，上面说到的JEB工具，就加强了jd-gui工具的功能，它可以直接将smail源码翻译成java代码，这样我们就不需要先用jd-gui工具查看，再去smail源码中修改了，借助JEB即可。<br>4. 如果程序中有涉及到native层的话，我们可以用IDA打开指定的so文件。我们还是需要先看java代码，找到指定的so文件，在用IDA来静态分析so文件。</p>
+<h2 id="用到的技术"><a href="#用到的技术" class="headerlink" title="用到的技术"></a>用到的技术</h2><p>上面介绍了静态分析的流程，下面来看一下静态分析的几个技术，我们在静态分析破解Apk的时候，首先需要找到突破点，找到关键的类和方法，当然这里就需要经验了，不是有方法可循的。但是我们会借助一些技术来加快破解。</p>
+<h3 id="全局查找关键字符串和日志信息"><a href="#全局查找关键字符串和日志信息" class="headerlink" title="全局查找关键字符串和日志信息"></a>全局查找关键字符串和日志信息</h3><p>这个技术完全靠眼，我们在运行程序之后，会看到程序中出现的字符串，比如文本框，按钮上的文本，toast显示的信息等，都可能是重要信息，然后我们可以在jd-gui工具中全局搜索这个字符串，这样就会很快的定位到我们想要找的逻辑地方：<br><img src="/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/1.jpg" alt="_pic1"></p>
+<p>当然我们还有一个重要点就是Android中的Log信息，因为在一个大的项目中，会有多人开发，所以每个模块每个人开发，每个人都会调试信息，所以就会添加一些log信息，但是不是所有的人都会记得在项目发布的时候关闭项目中的所有log信息，这个也是我们在项目开发的过程中不好的习惯。这时候我们就可以通过程序运行起来之后，会打印一些log信息，那么我们可以通过这些信息获取突破点，Android中的log可以根据一个应用来进行过滤的，或者我们可以通过log信息中的字符串在jd-gui中进行全局搜索也是可以的。</p>
+<h3 id="代码的注入技术"><a href="#代码的注入技术" class="headerlink" title="代码的注入技术"></a>代码的注入技术</h3><p>在第一种方式中我们通过全局搜索一些关键的字符串来找突破点，但是这招有时候不好使，所以这时候我们需要加一些代码了来观察信息了，这里有一个通用的方法就是加入我们自己的log代码，来追踪代码的执行逻辑，因为这里讲的是静态分析技术，所以就用代码注入技术来跟踪执行逻辑，后面介绍了动态分析技术之后，那就简单了，我们可以随意的打断点来进行调试。这里的添加代码，就是修改smail代码，添加我们的日志信息即可，在下面我们会用例子来进行讲解，这个也是我们最常用的一种技术。</p>
+<h3 id="使用系统的Hook技术，注入破解程序进程，获取关键方法的执行逻辑"><a href="#使用系统的Hook技术，注入破解程序进程，获取关键方法的执行逻辑" class="headerlink" title="使用系统的Hook技术，注入破解程序进程，获取关键方法的执行逻辑"></a>使用系统的Hook技术，注入破解程序进程，获取关键方法的执行逻辑</h3><p>关于Android中的进程注入和Hook技术，这里就不做详细介绍了，不了解这些技术的同学可以转战：<br>注入技术：<a href="http://blog.csdn.net/jiangwei0910410003/article/details/39292117" target="_blank" rel="noopener">http://blog.csdn.net/jiangwei0910410003/article/details/39292117</a></p>
+<p>Hook技术：<a href="http://blog.csdn.net/jiangwei0910410003/article/details/41941393" target="_blank" rel="noopener">http://blog.csdn.net/jiangwei0910410003/article/details/41941393</a><br>这两篇文章介绍了这两项技术，但是我们在实际操作过程中不用这两篇文章中用到的方式，因为这两篇文章只是介绍原理，技术还不是很成熟，关于这两个技术，网上有两个框架很成熟，也很实用，就是人们熟知的：Cydia和Xposed,关于这两个框架的话，网上的资料太多了，而且用起来也很容易，这里就不做太多的详细介绍了。<br>我们在实际的破解的过程中，这种方式用的有点少，因为这种方式效率有点低，所以只有在特定的场景下会使用。</p>
+<h3 id="使用IDA来静态分析so文件"><a href="#使用IDA来静态分析so文件" class="headerlink" title="使用IDA来静态分析so文件"></a>使用IDA来静态分析so文件</h3><p>这里终于用到了IDA工具了，本人是感觉这个工具太强大了，他可以查看so中的代码逻辑，我们看到的的可能是汇编指令，所以这里就有一个问题了，破解so的时候，我们还必须掌握一项技能，就是能看懂汇编指令，不然用IDA来破解程序，会很费经的，关于汇编指令，大学的时候，我们接触过了，但是我们当时感觉这东西又难，而且用的地方也很少，所以就没太在意，其实不然呀，真正懂汇编的人才是好的程序员：<br><img src="/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/2.png" alt="_pic2"></p>
+<p>看到些汇编指令，头立马就大了，不过这个用多了，破解多了，还是可以的。我们可以看到左边栏中有我们的函数，我们可以找到指定函数的定义的地方进行查看即可。其实IDA最强大的地方是在于他动态调试so文件，下一篇文章会介绍怎么动态调试so文件。当然IDA可也是可以直接查看apk文件的：<br><img src="/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/3.png" alt="_pic3"></p>
+<p>可以查看apk文件中的所有文件，我们可以选择classes.dex文件：<br><img src="/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/4.png" alt="_pic4"></p>
+<p>但是这里我们可能会遇到一个问题，就是如果应用程序太大的话，这个打开的过程中会很慢的，有可能IDA停止工作，所以要慢慢等啦：<br><img src="/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/5.png" alt="_pic5"></p>
+<p>打开之后，我们可以看到我们的类和方法名，这里还可以支持搜索类名和方法名Ctrl+F，也可以查看字符串内容(Shirt+F12):<br><img src="/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/6.png" alt="_pic6"></p>
+<p>我们发现IDA也是一个分析Java代码的好手，所以说这个工具太强大了啦啦~~</p>
+<h1 id="案例分析"><a href="#案例分析" class="headerlink" title="案例分析"></a>案例分析</h1><p>上面讲解了静态分析的破解技术，那么下面就开始使用一个例子来看看静态分析的技术。</p>
+<h2 id="静态分析Java-smail-代码"><a href="#静态分析Java-smail-代码" class="headerlink" title="静态分析Java(smail)代码"></a>静态分析Java(smail)代码</h2><p>首先我们拿到我们需要破解的Apk,使用apktool.jar工具来反编译：<br><strong>java -jar apktool.jar d xxx.apk</strong><br><img src="/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/7.png" alt="_pic7"></p>
+<p>这个apk很是容易就被反编译了，看来并没有进行任何的加固。那就好办了，我们这里来改一下他的AndroidManifest.xml中的信息，改成可调式模式，这个是我们后面进行动态调试的前提，一个正式的apk，在AndroidManifest.xml中这个值是false的。<br>我们看看他的AndroidManifest.xml文件：<br><img src="/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/8.png" alt="_pic8"></p>
+<p>我们把这个值改成true.在回编译，这时候我们就可以动态调试这个apk了，所以在这点上我们可以看到，静态分析是动态分析的前提，这个值不修改的话，我们是办法进行后续的动态调试的。<br>修改成功之后，我们进行回编译：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">cd C:\Users\jiangwei\Desktop\静态分析\apktool_2.0.0rc4</span><br><span class="line"></span><br><span class="line">del debug.sig.apk</span><br><span class="line"></span><br><span class="line">java -jar apktool.jar b -d 123 -o debug.apk</span><br><span class="line"></span><br><span class="line">java -jar .\sign\signapk.jar .\sign\testkey.x509.pem .\sign\testkey.pk8 debug.apk debug.sig.apk</span><br><span class="line"></span><br><span class="line">del debug.apk</span><br><span class="line"></span><br><span class="line">adb uninstall com.shuqi.controller</span><br><span class="line"></span><br><span class="line">adb install debug.sig.apk</span><br><span class="line"></span><br><span class="line">adb shell am start -n com.shuqi.controller/.Loading</span><br><span class="line"></span><br><span class="line">pause</span><br></pre></td></tr></table></figure>
+
+<p>这里是为了简单，写了一个批处理，首先进入到目录，然后使用命令进行回编译：<br><strong>java -jar apktool.jar b -d sq -o debug.apk</strong></p>
+<p>sq是之前反编译的目录，debug.apk是回编译之后的文件<br>这时候，debug.apk是不能安装运行的，因为没有签名，Android中是不允许安装一个没有签名的apk<br>下面还要继续签名，我们用系统自带的签名文件即可签名：<br><strong>java -jar .\sign\signapk.jar .\sign\testkey.x509.pem .\sign\testkey.pk8 debug.apk debug.sig.apk</strong></p>
+<p>注：其实我们在用IDE工具开发android项目的时候，工具就是用这个签名文件进行签名的，只是这个过程IDE帮我们做了。<br>后面就是直接安装这个apk,然后运行这个Apk。这个过程中我们只需要知道应用的包名和入口Activity名称即可，这个信息我们在AndroidManifest.xml中也是可以获取到的，当然我们用：<strong>adb shell dumpsys activity top</strong> 命令也可以得到：<br><img src="/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/9.png" alt="_pic9"></p>
+<p>回编译之后，我们运行程序，发现有问题，就是点击程序的icon，没反应，运行不起来，我们在查看log中的异常信息，发现也没有抛出任何异常，那么这时候，我们就判断，他内部肯定做了什么校验工作，这个一般回编译之后的程序运行不起来的话，那就是内部做校验了，一般做校验的话，有两种：</p>
+<ul>
+<li>对dex做校验，防止修改dex的</li>
+<li>对apk的签名做校验，防止重新打包</li>
+</ul>
+<p>那我们就需要从新看看他的代码，来看看是不是做了校验：<br>我们在分析代码的时候，肯定先看看他有没有自己定义Application,如果有定义的话，就需要看他自己的Application类，这里我们看到他定了自己的Application：<strong>com.shuqi.application.ShuqiApplication</strong><br>我们解压apk,得到dex,然后dex2jar进行转化，得到jar，再用jd-gui查看这个类：<br><img src="/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/10.png" alt="_pic10"></p>
+<p>这里我们看到他的代码做混淆了，但是一些系统回调方法肯定不能混淆的，比如onCreate方法，但是这里我们一般找的方法是：</p>
+<ul>
+<li>首先看这个类有没有静态方法和静态代码块，因为这类的代码会在对象初始化之前运行，可能在这里加载so文件，或者是加密校验等操作</li>
+<li>再看看这个类的构造方法</li>
+<li>最后再看生命周期方法</li>
+</ul>
+<p>我们这里看到他的核心代码在onCreate中，调用了很多类的方法，猜想这里的某个方法做工作了？<br>这时候我们就来注入我们的代码来跟踪是哪个方法出现问题了，这里有的同学有疑问，其实就这几个方法，直接一个一个看不就结了，哎，我们这篇文章就是要介绍静态分析技术，当然就需要做案例啦。<br>下面来看看我们怎么添加我们的日志信息，其实很简单，就是添加日志，需要修改smail文件，我们在去查看smail源码：<br><img src="/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/11.png" alt="_pic11"></p>
+<p>关于smail语法，本人认为不是很难，所以大家自己网上去搜一些资料学习一下即可，这里我们可以很清晰的看到调用了这些方法，那么我们就在每个方法加上我们的日志信息，这里加日志有两种方式，一种就是直接在这里调用系统的log方法，但是有两个问题：</p>
+<ul>
+<li>需要导入包，在smail中修改</li>
+<li>需要定义一个两个参数，一个是tag,msg,才能正常的打印log出来</li>
+</ul>
+<p>明显这个方法有点麻烦，这里我们就自己定义一个MyLog类，然后反编译，得到MyLog的smail文件，添加到这个ShuqiApplication.smail的root目录下，然后在代码中直接调用即可，至于为何要放到root目录下，这样在代码中调用就不需要导入包了，比如SuqiApplication.smail中的一些静态方法调用：<br><img src="/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/12.png" alt="_pic12"></p>
+<p>编写日志类MyLog，这里就不粘贴代码了，我们新建一个项目之后，反编译得到MyLog.smail文件，放到目录中：<br><img src="/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/13.png" alt="_pic13"></p>
+<p>我们得到这个文件的时候，一定要注意，把MyLog.smail的包名信息删除，因为我们放到root目录下的，意味着这个MyLog类是没有任何包名的，这个需要注意，不然最后加的话，也是报错的。<br>我们在ShuqiApplication的onCreate方法中插入我们的日志方法：<br><strong>invoke-static {}, LMyLog;-&gt;print()V</strong></p>
+<p><img src="/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/14.png" alt="_pic14"></p>
+<p>但是我们在加代码的时候，需要注意的是，要找对地方加，所谓找对地方，就是在上个方法调用完之后添加，比如：<br>invoke-virtual,invoke-static等，而且这些指令后面不能有：move-result-object，因为这个指令是获取方法的返回值，所以我们一般是这么加代码的：</p>
+<ul>
+<li>在invoke-static/invoke-virtual指令他的返回类型是V之后可以加入</li>
+<li>在invoke-static/invoke-virtual指令返回类型不是V,之后的move-result-object命令之后可以加入</li>
+</ul>
+<p>加好了我们的日志代码之后，下面我们就回编译执行，在这个过程可能会遇到samil语法错误，这个就对应指定的文件修改就可以了，我们得到回编译的apk之后，可以在反编译一下，看看他的java代码：<br><img src="/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/15.png" alt="_pic15"></p>
+<p>我们看到了，我们添加的代码，在每个方法之后打印信息。<br>下面我们运行程序，同时开启我们的log的tag：adb logcat -s JW<br><img src="/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/16.png" alt="_pic16"></p>
+<p>看到我们打印的日志了，我们发现打印了三个log,这里需要注意的是，这里虽然打印了三个log,但是都是在不同的进程中，所以说一个进程中的log的话，只打印了一个，所以我们判断，问题出现在vr.h这个方法<br><img src="/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/17.png" alt="_pic17"><br>我们查看这个方法源码：<br><img src="/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/18.png" alt="_pic18"></p>
+<p>果然，这个方法做了签名验证，不正确的话，直接退出程序。那么我们现在要想正常的运行程序的话，很简单了，直接注释这行代码：vr.h(this)<br>然后回编译，在运行，果然不报错了，这里就不在演示了：<br><img src="/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/19.png" alt="_pic19"></p>
+<p>好了，上面就通过注入代码，来跟踪问题，这个方法是很常用，也是很实在的。</p>
+<h2 id="静态分析Native代码"><a href="#静态分析Native代码" class="headerlink" title="静态分析Native代码"></a>静态分析Native代码</h2><p>下面继续来介绍一下，如何使用IDA来静态分析native代码，这里一定要熟悉汇编指令，不然看起来很费劲的。<br>我们在反编译之后，看到他的onCreate方法中有一个加载so的代码<br><img src="/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/20.png" alt="_pic20"><br>看看这个代码：<br><img src="/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/21.png" alt="_pic21"></p>
+<p>获取密码的方法，是native的，我们就来看看那个getDbPassword方法，用IDA打开libpsProcess.so文件：<br><img src="/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/22.png" alt="_pic22"></p>
+<p>我们看看这个函数的实现，我们一般直接看BL/BLX等信息，跳转逻辑，还有就是返回值，我们在函数的最后部分，发现一个重点，就是：BL __android_log_print  这个是在native层调用log的函数，我们在往上看，发现：tag是System.out.c<br>我们运行程序看起log看看，但是我们此时也可以在java层添加日志的：我们全局搜索这个方法，在yi这个类中调用的<br><img src="/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/23.png" alt="_pic23"></p>
+<p>我们修改yi.smail代码：<br><img src="/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/24.png" alt="_pic24"></p>
+<p>回编译，在运行程序，开启log：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">adb logcat -s JW</span><br><span class="line">adb logcat -s System.out.c</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/25.png" alt="_pic25"></p>
+<p>发现，返回的密码java层和native层是一样的。说明我们静态分析native还是有效的。</p>
+<p>好了，到这里我们今天的内容就介绍完了，当然还有很多静态分析apk的方法，这里只是介绍了本人用到的技术。</p>
+<p>案例下载：<a href="http://download.csdn.net/detail/jiangwei0910410003/9308217" target="_blank" rel="noopener">http://download.csdn.net/detail/jiangwei0910410003/9308217</a><br>案例中有个说明文件，运行前请阅读~~</p>
+<h1 id="未解决的问题"><a href="#未解决的问题" class="headerlink" title="未解决的问题"></a>未解决的问题</h1><ol>
+<li>如何搞定apktool工具反编译出错的问题<br>这个我在开始的时候也说了，这里出错的原因大部分是apk进行加固了，所以后面我会专门介绍一下如何解决这样的问题</li>
+<li>如何搞定让一个Apk可以调试<br>我们在上面看到一个apk想要能调试的话，需要修改android:debug的值，但是有时候，我们会遇到修改失败，导致程序不能运行，后面会专门介绍有几种方式来让一个发布后的apk可以调试</li>
+</ol>
+<h1 id="技术总结"><a href="#技术总结" class="headerlink" title="技术总结"></a>技术总结</h1><p>这篇文章我们介绍了如何使用静态方式去破解一个apk,我们在破解一个apk的时候，其实就是改点代码，然后能够运行起来，达到我们想要的功能，一般就是：</p>
+<ol>
+<li>注释特定功能，比如广告展示等</li>
+<li>得到方法的返回值，比如获取用户的密码</li>
+<li>添加我们的代码，比如加入我们自己的监测代码和广告等</li>
+</ol>
+<p>我们在静态分析代码的时候，需要遵循的大体路线：</p>
+<ol>
+<li>首先能够反编译，得到AndroidManifest.xml文件，找到程序入口代码</li>
+<li>找到我们想要的代码逻辑，一般会结合界面分析，比如我们想得让用户登录成功，我们肯定想要得到用户登录界面Activity,这时候我们可以用adb shell dumpsys activity top命令得到Activity名称，然后用Eclipse自带的程序当前视图分析工具：得到控件名称，或者是在代码中获取layout布局文件，一般是setContentView方法的调用地方，然后用布局文件结合代码得到用户登录的逻辑，进行修改</li>
+<li>在关键的地方通过代码注入技术来跟踪代码执行逻辑</li>
+<li>注意方法的返回值，条件判断等比较显眼的代码</li>
+<li>对于有些apk中的源码，可能他有自己的加密算法，这时候我们需要获取到这个加密方法，如果加密方法比较复杂的话，我们就需要大批的测试数据来获取这个加密方法的逻辑，一般是输入和输出作为一个测试用例，比如阿里安全第一届比赛的第一题就可以用静态分析的方式破解，它内部就是一个加密算法，我们需要用测试数据来破解。</li>
+<li>对于那些System.loadLibrary加载so文件的代码，我们只需要找到这个so文件，然后用IDA打开进行静态分析，因为有些apk中把加密算法放到了so中了，这时候我们也可以通过测试数据来获取加密算法。</li>
+<li>通过上面的例子，我们可以总结一个方式，就是现在很多apk会做一些校验工作，一般在代码中包含：“signature”字符串信息，所以我们可以全局搜索一下，也许可以获取一些重要信息。<br><img src="/2017/10/20/Android逆向之旅-静态分析技术来破解Apk/26.png" alt="_pic26"></li>
+</ol>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>这篇文章总算是讲解完了，其实早就想用写破解的文章了，因为破解比加固有意思，至少破解成功了有成就感。这篇文章主要介绍了如何通过静态分析方式破解，介绍了一些工具的时候，破解流程和破解技巧。最常用的就是代码注入技术和全局搜索关键字符串等方式，但是我们可以看到，现在市面上的很多apk，光通过静态分析是无法满足我们的破解需求了，所以动态分析方式就来了，而且动态方式破解难度会很大，需要掌握的东西也很多，我后面会分几篇文章来一一介绍动态破解的技巧和常见的问题。但是静态方式破解也是很重要的。当然也是动态分析的前提，所以我们既然玩破解，那么这两种技术都必须很好的掌握。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/编译/" rel="tag"># 编译</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/10/15/SharePreferences源码分析/" rel="next" title="SharePreferences源码分析">
+                <i class="fa fa-chevron-left"></i> SharePreferences源码分析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/10/20/Android逆向之旅-Android中如何获取在非Root设备中获取应用隐私数据/" rel="prev" title="Android逆向之旅---Android中如何获取在非Root设备中获取应用隐私数据">
+                Android逆向之旅---Android中如何获取在非Root设备中获取应用隐私数据 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#准备工作"><span class="nav-number">2.</span> <span class="nav-text">准备工作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#首先是基本知识"><span class="nav-number">2.1.</span> <span class="nav-text">首先是基本知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#再者就是几个重要的工具"><span class="nav-number">2.2.</span> <span class="nav-text">再者就是几个重要的工具</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#技术原理"><span class="nav-number">3.</span> <span class="nav-text">技术原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#静态分析的流程"><span class="nav-number">3.1.</span> <span class="nav-text">静态分析的流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用到的技术"><span class="nav-number">3.2.</span> <span class="nav-text">用到的技术</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#全局查找关键字符串和日志信息"><span class="nav-number">3.2.1.</span> <span class="nav-text">全局查找关键字符串和日志信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码的注入技术"><span class="nav-number">3.2.2.</span> <span class="nav-text">代码的注入技术</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用系统的Hook技术，注入破解程序进程，获取关键方法的执行逻辑"><span class="nav-number">3.2.3.</span> <span class="nav-text">使用系统的Hook技术，注入破解程序进程，获取关键方法的执行逻辑</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用IDA来静态分析so文件"><span class="nav-number">3.2.4.</span> <span class="nav-text">使用IDA来静态分析so文件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#案例分析"><span class="nav-number">4.</span> <span class="nav-text">案例分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#静态分析Java-smail-代码"><span class="nav-number">4.1.</span> <span class="nav-text">静态分析Java(smail)代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#静态分析Native代码"><span class="nav-number">4.2.</span> <span class="nav-text">静态分析Native代码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#未解决的问题"><span class="nav-number">5.</span> <span class="nav-text">未解决的问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#技术总结"><span class="nav-number">6.</span> <span class="nav-text">技术总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

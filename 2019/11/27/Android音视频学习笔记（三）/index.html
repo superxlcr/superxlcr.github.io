@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,音视频,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="录制界面、音频录制、视频录制、音视频打包混合">
+<meta name="keywords" content="android,音视频">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android音视频学习笔记（三）">
+<meta property="og:url" content="https://superxlcr.github.io/2019/11/27/Android音视频学习笔记（三）/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="录制界面、音频录制、视频录制、音视频打包混合">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.655Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android音视频学习笔记（三）">
+<meta name="twitter:description" content="录制界面、音频录制、视频录制、音视频打包混合">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2019/11/27/Android音视频学习笔记（三）/">
+
+
+
+
+
+  <title>Android音视频学习笔记（三） | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2019/11/27/Android音视频学习笔记（三）/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android音视频学习笔记（三）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-27T15:16:23+08:00">
+                2019-11-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  4.7k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上篇博客传送门：<a href="/2019/05/21/Android音视频学习笔记（二）/">Android音视频学习笔记（二）</a></p>
+<p>经过了前面的一系列联系，这篇博客我们来总结一下如何实现一个完整的音视频录制功能</p>
+<h1 id="录制界面"><a href="#录制界面" class="headerlink" title="录制界面"></a>录制界面</h1><p>录制界面由一个预览的窗口以及控制按钮组成，相关的布局文件如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span><br><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:id</span>=<span class="string">"@+id/main_layout"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:gravity</span>=<span class="string">"center"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:keepScreenOn</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:orientation</span>=<span class="string">"vertical"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">SurfaceView</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/surface_view"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"0dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_weight</span>=<span class="string">"1"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/btn"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:gravity</span>=<span class="string">"center"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:text</span>=<span class="string">"start"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>界面代码如下所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">VideoActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> <span class="keyword">implements</span> <span class="title">SurfaceHolder</span>.<span class="title">Callback</span>, <span class="title">View</span>.<span class="title">OnClickListener</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">"VideoActivity"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String DIR = Environment.getExternalStorageDirectory() + File.separator + <span class="string">"videoTest"</span> + File.separator;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String PCM_FILE = DIR + <span class="string">"videoTest.pcm"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String AAC_FILE = DIR + <span class="string">"videoTest.aac"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String H264_FILE = DIR + <span class="string">"videoTest.h264"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String MP4_FILE = DIR + <span class="string">"videoTest.mp4"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Camera camera;</span><br><span class="line">    <span class="keyword">private</span> PcmRecorder pcmRecorder;</span><br><span class="line">    <span class="keyword">private</span> AacEncoder aacEncoder;</span><br><span class="line">    <span class="keyword">private</span> H264Encoder h264Encoder;</span><br><span class="line">    <span class="keyword">private</span> MediaMuxerWrapper mediaMuxerWrapper;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> working = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">private</span> BlockingQueue&lt;<span class="keyword">byte</span>[]&gt; audioQueue = <span class="keyword">new</span> LinkedBlockingQueue&lt;&gt;();</span><br><span class="line">    <span class="keyword">private</span> BlockingQueue&lt;<span class="keyword">byte</span>[]&gt; videoQueue = <span class="keyword">new</span> LinkedBlockingQueue&lt;&gt;();</span><br><span class="line">    <span class="keyword">private</span> BlockingQueue&lt;AacFrame&gt; audioEncodeQueue = <span class="keyword">new</span> LinkedBlockingQueue&lt;&gt;();</span><br><span class="line">    <span class="keyword">private</span> BlockingQueue&lt;H264Frame&gt; videoEncodeQueue = <span class="keyword">new</span> LinkedBlockingQueue&lt;&gt;();</span><br><span class="line">    <span class="keyword">private</span> Handler handler = <span class="keyword">new</span> Handler();</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.activity_video);</span><br><span class="line"></span><br><span class="line">        findViewById(R.id.btn).setOnClickListener(<span class="keyword">this</span>);</span><br><span class="line"></span><br><span class="line">        SurfaceView surfaceView = (SurfaceView) findViewById(R.id.surface_view);</span><br><span class="line">        surfaceView.getHolder().addCallback(<span class="keyword">this</span>);</span><br><span class="line"></span><br><span class="line">        checkDir();</span><br><span class="line"></span><br><span class="line">        pcmRecorder = <span class="keyword">new</span> PcmRecorder(<span class="number">44100</span>, <span class="number">1</span>, <span class="number">16</span>, PCM_FILE, audioQueue);</span><br><span class="line">        aacEncoder = <span class="keyword">new</span> AacEncoder(audioQueue, AAC_FILE, pcmRecorder.getSampleRate(),</span><br><span class="line">                pcmRecorder.getChannel(), pcmRecorder.getBitWidth(), audioEncodeQueue);</span><br><span class="line">        aacEncoder.setCallback(<span class="keyword">new</span> AacEncoder.Callback() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onEncodeFinish</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                mediaMuxerWrapper.stopAudio();</span><br><span class="line">                toast(<span class="string">"aac encode finish !"</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onFormatChange</span><span class="params">(MediaFormat format)</span> </span>&#123;</span><br><span class="line">                mediaMuxerWrapper.startMuxAudio(format);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        camera = Camera.open();</span><br><span class="line">        camera.setDisplayOrientation(<span class="number">90</span>);</span><br><span class="line">        Camera.Parameters parameters = camera.getParameters();</span><br><span class="line">        List&lt;<span class="keyword">int</span>[]&gt; frameRateList = parameters.getSupportedPreviewFpsRange();</span><br><span class="line">        <span class="keyword">int</span> frameRateRange[] = frameRateList.get(frameRateList.size() / <span class="number">2</span>);</span><br><span class="line">        parameters.setPreviewFpsRange(frameRateRange[<span class="number">0</span>], frameRateRange[<span class="number">1</span>]);</span><br><span class="line">        List&lt;Camera.Size&gt; sizeList = parameters.getSupportedVideoSizes();</span><br><span class="line">        Camera.Size size = sizeList.get(sizeList.size() / <span class="number">2</span>);</span><br><span class="line">        parameters.setPreviewSize(size.width, size.height);</span><br><span class="line">        parameters.setPreviewFormat(ImageFormat.NV21);</span><br><span class="line">        camera.setParameters(parameters);</span><br><span class="line">        camera.setPreviewCallback(<span class="keyword">new</span> Camera.PreviewCallback() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onPreviewFrame</span><span class="params">(<span class="keyword">byte</span>[] data, Camera camera)</span> </span>&#123;</span><br><span class="line">                <span class="keyword">if</span> (working &amp;&amp; data != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    Log.i(TAG, <span class="string">"data size "</span> + data.length);</span><br><span class="line">                    videoQueue.add(data);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> frameRate = (frameRateRange[<span class="number">0</span>] + frameRateRange[<span class="number">1</span>]) / <span class="number">2</span> / <span class="number">1000</span>;</span><br><span class="line">        h264Encoder = <span class="keyword">new</span> H264Encoder(videoQueue, H264_FILE, size.width, size.height, frameRate,</span><br><span class="line">                videoEncodeQueue);</span><br><span class="line">        h264Encoder.setCallback(<span class="keyword">new</span> H264Encoder.Callback() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onEncodeFinish</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                mediaMuxerWrapper.stopVideo();</span><br><span class="line">                toast(<span class="string">"h264 encode finish !"</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onFormatChange</span><span class="params">(MediaFormat format)</span> </span>&#123;</span><br><span class="line">                mediaMuxerWrapper.startMuxVideo(format);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        mediaMuxerWrapper = <span class="keyword">new</span> MediaMuxerWrapper(videoEncodeQueue, audioEncodeQueue, MP4_FILE);</span><br><span class="line">        mediaMuxerWrapper.setCallback(<span class="keyword">new</span> MediaMuxerWrapper.Callback() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onMuxFinish</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                toast(<span class="string">"mux finish !"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">surfaceCreated</span><span class="params">(SurfaceHolder holder)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            camera.setPreviewDisplay(holder);</span><br><span class="line">            camera.startPreview();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            Log.e(TAG, <span class="string">"error : "</span> + e.toString());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">surfaceChanged</span><span class="params">(SurfaceHolder holder, <span class="keyword">int</span> format, <span class="keyword">int</span> width, <span class="keyword">int</span> height)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">surfaceDestroyed</span><span class="params">(SurfaceHolder holder)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!working) &#123;</span><br><span class="line">            ((Button) v).setText(<span class="string">"stop"</span>);</span><br><span class="line">            start();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            ((Button) v).setText(<span class="string">"finish"</span>);</span><br><span class="line">            stop();</span><br><span class="line">            v.setClickable(<span class="keyword">false</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (working) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        working = <span class="keyword">true</span>;</span><br><span class="line">        pcmRecorder.start();</span><br><span class="line">        aacEncoder.start();</span><br><span class="line">        h264Encoder.start();</span><br><span class="line">        toast(<span class="string">"start recording !"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!working) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        working = <span class="keyword">false</span>;</span><br><span class="line">        pcmRecorder.stop();</span><br><span class="line">        aacEncoder.stop();</span><br><span class="line">        h264Encoder.stop();</span><br><span class="line">        toast(<span class="string">"finish recording !"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">checkDir</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        File dir = <span class="keyword">new</span> File(DIR);</span><br><span class="line">        <span class="keyword">if</span> (!dir.exists()) &#123;</span><br><span class="line">            dir.mkdirs();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">toast</span><span class="params">(<span class="keyword">final</span> String str)</span> </span>&#123;</span><br><span class="line">        handler.post(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                Toast.makeText(VideoActivity.<span class="keyword">this</span>, str, Toast.LENGTH_SHORT).show();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>界面的Activity主要是把各个模块的逻辑汇总协同工作的地方，接下来我们来单独分析每个部分</p>
+<h1 id="音频录制"><a href="#音频录制" class="headerlink" title="音频录制"></a>音频录制</h1><p>音频录制部分主要有：</p>
+<ul>
+<li>PCM录制器</li>
+<li>AAC格式编码器</li>
+</ul>
+<h2 id="PCM录制器"><a href="#PCM录制器" class="headerlink" title="PCM录制器"></a>PCM录制器</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PcmRecorder</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">"PcmRecorder"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> sampleRate;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> channel;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> bitWidth;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> AudioRecord audioRecord;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> bufferSize;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">byte</span> buffer[];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> FileOutputStream fos = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">private</span> BlockingQueue&lt;<span class="keyword">byte</span>[]&gt; queue = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Handler workHandler;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> work;</span><br><span class="line"></span><br><span class="line">    PcmRecorder(<span class="keyword">int</span> sampleRate, <span class="keyword">int</span> channel, <span class="keyword">int</span> bitWidth, String fileOutputPath, BlockingQueue&lt;<span class="keyword">byte</span>[]&gt; queue) &#123;</span><br><span class="line">        <span class="keyword">this</span>(sampleRate, channel, bitWidth);</span><br><span class="line">        File outputFile = <span class="keyword">new</span> File(fileOutputPath);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            fos = <span class="keyword">new</span> FileOutputStream(outputFile);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"create file output stream fail with "</span> + e.toString());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (queue == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"queue can not be null"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">this</span>.queue = queue;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">PcmRecorder</span><span class="params">(<span class="keyword">int</span> sampleRate, <span class="keyword">int</span> channel, <span class="keyword">int</span> bitWidth)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.sampleRate = sampleRate;</span><br><span class="line">        <span class="keyword">this</span>.channel = channel == <span class="number">2</span> ? channel : <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">this</span>.bitWidth = bitWidth == <span class="number">8</span> ? bitWidth : <span class="number">16</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> channelConfig = channel == <span class="number">2</span> ? AudioFormat.CHANNEL_IN_STEREO : AudioFormat.CHANNEL_IN_MONO;</span><br><span class="line">        <span class="keyword">int</span> audioFormat = bitWidth == <span class="number">8</span> ? AudioFormat.ENCODING_PCM_8BIT : AudioFormat.ENCODING_PCM_16BIT;</span><br><span class="line">        bufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat);</span><br><span class="line">        buffer = <span class="keyword">new</span> <span class="keyword">byte</span>[bufferSize];</span><br><span class="line">        Log.i(TAG,</span><br><span class="line">                <span class="string">"sampleRate : "</span> + sampleRate + <span class="string">" channel : "</span> + channel + <span class="string">" bitWidth : "</span> + bitWidth + <span class="string">" bufferSize : "</span> + bufferSize);</span><br><span class="line">        audioRecord = <span class="keyword">new</span> AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate, channelConfig,</span><br><span class="line">                audioFormat, bufferSize);</span><br><span class="line">        Log.i(TAG, <span class="string">"state : "</span> + audioRecord.getState());</span><br><span class="line"></span><br><span class="line">        HandlerThread workThread = <span class="keyword">new</span> HandlerThread(<span class="string">"recordThread"</span>);</span><br><span class="line">        workThread.start();</span><br><span class="line">        workHandler = <span class="keyword">new</span> RecordHandler(workThread.getLooper());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getSampleRate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> sampleRate;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getChannel</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> channel;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getBitWidth</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> bitWidth;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (work) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        work = <span class="keyword">true</span>;</span><br><span class="line">        audioRecord.startRecording();</span><br><span class="line">        workHandler.sendEmptyMessage(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!work) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        work = <span class="keyword">false</span>;</span><br><span class="line">        audioRecord.stop();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">RecordHandler</span> <span class="keyword">extends</span> <span class="title">Handler</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        RecordHandler(Looper looper) &#123;</span><br><span class="line">            <span class="keyword">super</span>(looper);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">super</span>.handleMessage(msg);</span><br><span class="line">            Log.i(TAG, <span class="string">"work handler start"</span>);</span><br><span class="line">            <span class="keyword">while</span> (work) &#123;</span><br><span class="line">                <span class="keyword">int</span> result = audioRecord.read(buffer, <span class="number">0</span>, bufferSize);</span><br><span class="line">                <span class="keyword">if</span> (result == AudioRecord.ERROR_INVALID_OPERATION || result == AudioRecord.ERROR_BAD_VALUE) &#123;</span><br><span class="line">                    Log.e(TAG, <span class="string">"record read fail ! just continue !"</span>);</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                Log.i(TAG, <span class="string">"read result : "</span> + result);</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (fos != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        fos.write(buffer, <span class="number">0</span>, result);</span><br><span class="line">                        fos.flush();</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                        Log.e(TAG, Log.getStackTraceString(e));</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (queue != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    <span class="keyword">boolean</span> offerResult = queue.offer(buffer);</span><br><span class="line">                    Log.i(TAG, <span class="string">"offerResult "</span> + offerResult + <span class="string">" queue size "</span> + queue.size());</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (fos != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    fos.close();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                    Log.e(TAG, Log.getStackTraceString(e));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            Log.i(TAG, <span class="string">"work handler finish"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>PCM录制使用的是官方的AudioRecord</p>
+<p>官方API文档：<a href="https://developer.android.com/reference/android/media/AudioRecord" target="_blank" rel="noopener">https://developer.android.com/reference/android/media/AudioRecord</a></p>
+<p>相关要注意的事项已经在学习笔记（一）中提及，这里不再赘述</p>
+<h2 id="AAC格式编码器"><a href="#AAC格式编码器" class="headerlink" title="AAC格式编码器"></a>AAC格式编码器</h2><p>录制出视频的PCM数据后，我们需要把其编码为AAC格式，相关代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AacEncoder</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">"AacEncoder"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> AAC_PROFILE = MediaCodecInfo.CodecProfileLevel.AACObjectLC;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> ADTS_HEADER_SIZE = <span class="number">7</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> MediaCodec mediaCodec;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> BlockingQueue&lt;<span class="keyword">byte</span>[]&gt; queue;</span><br><span class="line">    <span class="keyword">private</span> BlockingQueue&lt;AacFrame&gt; outputQueue;</span><br><span class="line">    <span class="keyword">private</span> FileOutputStream fos;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> totalSize;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> bufferSize;</span><br><span class="line">    <span class="keyword">private</span> ByteBuffer[] inputByteBuffers;</span><br><span class="line">    <span class="keyword">private</span> ByteBuffer[] outputByteBuffers;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> work = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">private</span> Thread workThread;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> sampleRate;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> channel;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> bitWidth;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Callback callback;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 有些手机压缩后质量奇差，硬件不好</span></span><br><span class="line">    AacEncoder(BlockingQueue&lt;<span class="keyword">byte</span>[]&gt; inputQueue, String outputFile, <span class="keyword">int</span> sampleRate, <span class="keyword">int</span> channel, <span class="keyword">int</span> bitWidth, BlockingQueue&lt;AacFrame&gt; outputQueue) &#123;</span><br><span class="line">        <span class="keyword">if</span> (inputQueue == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"inputQueue can not be null !"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        queue = inputQueue;</span><br><span class="line">        <span class="keyword">this</span>.outputQueue = outputQueue;</span><br><span class="line">        String mime;</span><br><span class="line">        <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.LOLLIPOP) &#123;</span><br><span class="line">            mime = MediaFormat.MIMETYPE_AUDIO_AAC;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            mime = <span class="string">"audio/mp4a-latm"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            fos = <span class="keyword">new</span> FileOutputStream(<span class="keyword">new</span> File(outputFile));</span><br><span class="line">            mediaCodec = MediaCodec.createEncoderByType(mime);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(e.toString());</span><br><span class="line">        &#125;</span><br><span class="line">        MediaFormat mediaFormat = <span class="keyword">new</span> MediaFormat();</span><br><span class="line">        mediaFormat.setString(MediaFormat.KEY_MIME, mime);</span><br><span class="line">        mediaFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, AAC_PROFILE);</span><br><span class="line">        mediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, sampleRate * channel * bitWidth);</span><br><span class="line">        mediaFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, channel);</span><br><span class="line">        <span class="comment">// TODO lmr 帧率对不上视频 ？</span></span><br><span class="line">        <span class="keyword">this</span>.sampleRate = sampleRate;</span><br><span class="line">        <span class="keyword">this</span>.channel = channel == <span class="number">2</span> ? <span class="number">2</span> : <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">this</span>.bitWidth = bitWidth;</span><br><span class="line">        <span class="keyword">int</span> channelConfig = channel == <span class="number">2</span> ? AudioFormat.CHANNEL_IN_STEREO : AudioFormat.CHANNEL_IN_MONO;</span><br><span class="line">        <span class="keyword">int</span> audioFormat = bitWidth == <span class="number">8</span> ? AudioFormat.ENCODING_PCM_8BIT : AudioFormat.ENCODING_PCM_16BIT;</span><br><span class="line">        bufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat);</span><br><span class="line">        mediaFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, bufferSize);</span><br><span class="line">        mediaFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, sampleRate);</span><br><span class="line">        mediaCodec.configure(mediaFormat, <span class="keyword">null</span>, <span class="keyword">null</span>, MediaCodec.CONFIGURE_FLAG_ENCODE);</span><br><span class="line"></span><br><span class="line">        totalSize = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCallback</span><span class="params">(Callback callback)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.callback = callback;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (work) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        work = <span class="keyword">true</span>;</span><br><span class="line">        mediaCodec.start();</span><br><span class="line">        inputByteBuffers = mediaCodec.getInputBuffers();</span><br><span class="line">        outputByteBuffers = mediaCodec.getOutputBuffers();</span><br><span class="line">        workThread = <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                Log.i(TAG, <span class="string">"begin aac encode"</span>);</span><br><span class="line">                <span class="keyword">while</span> (work || !queue.isEmpty()) &#123;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        Log.i(TAG, <span class="string">"before take data"</span>);</span><br><span class="line">                        <span class="keyword">byte</span>[] data = queue.take();</span><br><span class="line">                        Log.i(TAG, <span class="string">"wait for input index"</span>);</span><br><span class="line">                        <span class="keyword">int</span> inputIndex = mediaCodec.dequeueInputBuffer(-<span class="number">1</span>);</span><br><span class="line">                        <span class="keyword">if</span> (inputIndex &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">                            Log.i(TAG,</span><br><span class="line">                                    <span class="string">"input index : "</span> + inputIndex + <span class="string">" data size : "</span> + data.length);</span><br><span class="line">                            ByteBuffer inputByteBuffer = inputByteBuffers[inputIndex];</span><br><span class="line">                            inputByteBuffer.clear();</span><br><span class="line">                            inputByteBuffer.put(data);</span><br><span class="line">                            inputByteBuffer.limit(data.length);</span><br><span class="line">                            <span class="keyword">long</span> time = getPresentationTimeUs();</span><br><span class="line">                            totalSize += data.length;</span><br><span class="line">                            Log.i(TAG, <span class="string">"input data total size "</span> + totalSize + <span class="string">" time "</span> + time);</span><br><span class="line">                            mediaCodec.queueInputBuffer(inputIndex, <span class="number">0</span>, data.length, time, <span class="number">0</span>);</span><br><span class="line">                        &#125;</span><br><span class="line">                        MediaCodec.BufferInfo bufferInfo = <span class="keyword">new</span> MediaCodec.BufferInfo();</span><br><span class="line">                        <span class="keyword">int</span> outputIndex = mediaCodec.dequeueOutputBuffer(bufferInfo, <span class="number">0</span>);</span><br><span class="line">                        Log.i(TAG,</span><br><span class="line">                                <span class="string">"output index : "</span> + outputIndex + <span class="string">" data size : "</span> + bufferInfo.size + <span class="string">" offset : "</span> + bufferInfo.offset);</span><br><span class="line">                        <span class="keyword">while</span> (outputIndex != MediaCodec.INFO_TRY_AGAIN_LATER) &#123;</span><br><span class="line">                            <span class="keyword">if</span> (outputIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) &#123;</span><br><span class="line">                                Log.i(TAG, <span class="string">"get output format"</span>);</span><br><span class="line">                                <span class="keyword">if</span> (callback != <span class="keyword">null</span>) &#123;</span><br><span class="line">                                    callback.onFormatChange(mediaCodec.getOutputFormat());</span><br><span class="line">                                &#125;</span><br><span class="line">                            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (outputIndex == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) &#123;</span><br><span class="line">                                Log.i(TAG, <span class="string">"output buffers change !"</span>);</span><br><span class="line">                                outputByteBuffers = mediaCodec.getOutputBuffers();</span><br><span class="line">                            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                                <span class="keyword">int</span> packetSize = bufferInfo.size + ADTS_HEADER_SIZE;</span><br><span class="line"></span><br><span class="line">                                ByteBuffer outputByteBuffer = outputByteBuffers[outputIndex];</span><br><span class="line">                                outputByteBuffer.position(bufferInfo.offset);</span><br><span class="line">                                outputByteBuffer.limit(bufferInfo.offset + bufferInfo.size);</span><br><span class="line"></span><br><span class="line">                                <span class="keyword">byte</span>[] dataBytes = <span class="keyword">new</span> <span class="keyword">byte</span>[bufferInfo.size];</span><br><span class="line">                                outputByteBuffer.get(dataBytes);</span><br><span class="line">                                Log.i(TAG, <span class="string">"output buffer info time "</span> + bufferInfo.presentationTimeUs);</span><br><span class="line">                                <span class="keyword">if</span> (outputQueue != <span class="keyword">null</span>) &#123;</span><br><span class="line">                                    <span class="comment">// 这个时间戳要保持一直增加，不然的话mux的时候会卡死</span></span><br><span class="line">                                    <span class="comment">// 取 bufferInfo.presentationTimeUs 会出现有增有减的情况</span></span><br><span class="line">                                    outputQueue.add(</span><br><span class="line">                                            <span class="keyword">new</span> AacFrame(dataBytes, getPresentationTimeUs()));</span><br><span class="line">                                &#125;</span><br><span class="line"></span><br><span class="line">                                <span class="keyword">byte</span>[] packetBytes = <span class="keyword">new</span> <span class="keyword">byte</span>[packetSize];</span><br><span class="line">                                addADTSHeader(packetBytes, packetSize);</span><br><span class="line">                                System.arraycopy(dataBytes, <span class="number">0</span>, packetBytes, <span class="number">7</span>, bufferInfo.size);</span><br><span class="line"></span><br><span class="line">                                <span class="keyword">try</span> &#123;</span><br><span class="line">                                    fos.write(packetBytes);</span><br><span class="line">                                    fos.flush();</span><br><span class="line">                                    Log.i(TAG, <span class="string">"write bytes finish"</span>);</span><br><span class="line">                                &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                                    Log.e(TAG, Log.getStackTraceString(e));</span><br><span class="line">                                &#125;</span><br><span class="line"></span><br><span class="line">                                mediaCodec.releaseOutputBuffer(outputIndex, <span class="keyword">false</span>);</span><br><span class="line">                            &#125;</span><br><span class="line">                            outputIndex = mediaCodec.dequeueOutputBuffer(bufferInfo, <span class="number">0</span>);</span><br><span class="line">                            Log.i(TAG,</span><br><span class="line">                                    <span class="string">"output index : "</span> + outputIndex + <span class="string">" data size : "</span> + bufferInfo.size + <span class="string">" offset : "</span> + bufferInfo.offset);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                        <span class="comment">// ignore</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    fos.close();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                    Log.e(TAG, Log.getStackTraceString(e));</span><br><span class="line">                &#125;</span><br><span class="line">                mediaCodec.stop();</span><br><span class="line">                mediaCodec.release();</span><br><span class="line">                Log.i(TAG, <span class="string">"finish aac encode"</span>);</span><br><span class="line">                <span class="keyword">if</span> (callback != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    callback.onEncodeFinish();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        workThread.start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">addADTSHeader</span><span class="params">(<span class="keyword">byte</span>[] packetBytes, <span class="keyword">int</span> totalSize)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (packetBytes.length &lt; <span class="number">7</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"the adts header bytes size is less than 7 !"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">7</span>; i++) &#123;</span><br><span class="line">            packetBytes[i] = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// adts header contains 2 part</span></span><br><span class="line">        <span class="comment">// first part : adts fixed header</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// syncword 0xFFF size:12</span></span><br><span class="line">        packetBytes[<span class="number">0</span>] = (<span class="keyword">byte</span>) <span class="number">0xFF</span>;</span><br><span class="line">        packetBytes[<span class="number">1</span>] |= <span class="number">0xF</span> &lt;&lt; <span class="number">4</span>;</span><br><span class="line">        <span class="comment">// ID MPEG Version: 0 for MPEG-4，1 for MPEG-2 size:1</span></span><br><span class="line">        packetBytes[<span class="number">1</span>] |= <span class="number">1</span> &lt;&lt; <span class="number">3</span>;</span><br><span class="line">        <span class="comment">// Layer 00 size:2</span></span><br><span class="line">        packetBytes[<span class="number">1</span>] |= <span class="number">0</span> &lt;&lt; <span class="number">1</span>;</span><br><span class="line">        <span class="comment">// protection_absent Warning, set to 1 if there is no CRC and 0 if there is CRC size:1 (we use 7 header size , means is 1)</span></span><br><span class="line">        packetBytes[<span class="number">1</span>] |= <span class="number">1</span>;</span><br><span class="line">        <span class="comment">// profile aac 级别 size:2</span></span><br><span class="line">        packetBytes[<span class="number">2</span>] |= (AAC_PROFILE - <span class="number">1</span>) &lt;&lt; <span class="number">6</span>;</span><br><span class="line">        <span class="comment">// sampling_frequency_index 采样率下标 size:4 44100hz means 0x4</span></span><br><span class="line">        packetBytes[<span class="number">2</span>] |= <span class="number">4</span> &lt;&lt; <span class="number">2</span>;</span><br><span class="line">        <span class="comment">// private_bit 私有位，没用 size 1</span></span><br><span class="line">        packetBytes[<span class="number">2</span>] |= <span class="number">0</span> &lt;&lt; <span class="number">1</span>;</span><br><span class="line">        <span class="comment">// channel_configuration 声道数 size 3</span></span><br><span class="line">        packetBytes[<span class="number">2</span>] |= channel &gt;&gt;&gt; <span class="number">2</span>;</span><br><span class="line">        packetBytes[<span class="number">3</span>] |= channel &lt;&lt; <span class="number">6</span>;</span><br><span class="line">        <span class="comment">// original_copy：编码时设置为0，解码时忽略 size 1</span></span><br><span class="line">        packetBytes[<span class="number">3</span>] |= <span class="number">0</span> &lt;&lt; <span class="number">5</span>;</span><br><span class="line">        <span class="comment">// home：编码时设置为0，解码时忽略 size 1</span></span><br><span class="line">        packetBytes[<span class="number">3</span>] |= <span class="number">0</span> &lt;&lt; <span class="number">4</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// second part : adts variable header</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// copyrighted_id_bit：编码时设置为0，解码时忽略 size 1</span></span><br><span class="line">        packetBytes[<span class="number">3</span>] |= <span class="number">0</span> &lt;&lt; <span class="number">3</span>;</span><br><span class="line">        <span class="comment">// copyrighted_id_start：编码时设置为0，解码时忽略 size 1</span></span><br><span class="line">        packetBytes[<span class="number">3</span>] |= <span class="number">0</span> &lt;&lt; <span class="number">2</span>;</span><br><span class="line">        <span class="comment">// aac_frame_length：ADTS帧长度包括ADTS长度和AAC声音数据长度的和 size 13</span></span><br><span class="line">        packetBytes[<span class="number">3</span>] |= totalSize &gt;&gt;&gt; <span class="number">11</span>;</span><br><span class="line">        packetBytes[<span class="number">4</span>] |= totalSize &gt;&gt;&gt; <span class="number">3</span>;</span><br><span class="line">        packetBytes[<span class="number">5</span>] |= totalSize &lt;&lt; <span class="number">5</span>;</span><br><span class="line">        <span class="comment">// adts_buffer_fullness：固定为0x7FF。表示是码率可变的码流 size 11</span></span><br><span class="line">        packetBytes[<span class="number">5</span>] |= <span class="number">0x7FF</span> &gt;&gt;&gt; <span class="number">6</span>;</span><br><span class="line">        packetBytes[<span class="number">6</span>] |= <span class="number">0x7FF</span> &lt;&lt; <span class="number">2</span>;</span><br><span class="line">        <span class="comment">// number_of_raw_data_blocks_in_frame：表示当前帧有number_of_raw_data_blocks_in_frame + 1 个原始帧(一个AAC原始帧包含一段时间内1024个采样及相关数据) size 2</span></span><br><span class="line">        packetBytes[<span class="number">6</span>] |= <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!work) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        work = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">if</span> (workThread != <span class="keyword">null</span> &amp;&amp; workThread.isAlive()) &#123;</span><br><span class="line">            workThread.interrupt();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">long</span> <span class="title">getPresentationTimeUs</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (<span class="keyword">long</span>) (totalSize * <span class="number">8.0</span> / sampleRate / channel / bitWidth * <span class="number">1000</span> * <span class="number">1000</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Callback</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">onEncodeFinish</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">onFormatChange</span><span class="params">(MediaFormat format)</span></span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里使用的是系统提供的MediaCodec接口进行硬件编码，官方文档如下：<br><a href="https://developer.android.com/reference/android/media/MediaCodec" target="_blank" rel="noopener">https://developer.android.com/reference/android/media/MediaCodec</a><br>这里我们使用的MIME为audio/mp4a-latm，同时我们用了一个BlockingQueue阻塞队列来循环编码，每当一段PCM数据准备好之后，就读取并塞到MediaCodec中进行编码</p>
+<p>由于MediaCodec编码出来的AAC数据只是原始的数据流，因此我们需要为其补上元数据（即adts头部信息）<br>有关adts头部信息相关的内容可以参考下面的博客：<br><a href="https://blog.csdn.net/simongyley/article/details/8754157" target="_blank" rel="noopener">https://blog.csdn.net/simongyley/article/details/8754157</a><br>具体的头部信息填写可参考上面代码中的方法addADTSHeader</p>
+<p>有一个需要注意的点是，由于MediaCodec输出的编码时间有点问题（具体原因未明，主要表现是输出的时间有增有减），因此这里使用的是getPresentationTimeUs方法来计算帧时间，防止后面使用MediaMuxer混合出现卡死的情况</p>
+<p>值得注意的是，据博主了解与尝试，由于Android碎片化的缘故，音频使用硬件编码质量并不十分稳定，而音频软件编码的耗时与稳定性都相对不错，因此建议大家学习一下使用如FFMPEG的工具来软件编码</p>
+<p>编码后，输出的AAC帧如下所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AacFrame</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">byte</span>[] data;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">long</span> presentationTimeUs;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">AacFrame</span><span class="params">(<span class="keyword">byte</span>[] data, <span class="keyword">long</span> presentationTimeUs)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data = data;</span><br><span class="line">        <span class="keyword">this</span>.presentationTimeUs = presentationTimeUs;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="视频录制"><a href="#视频录制" class="headerlink" title="视频录制"></a>视频录制</h1><p>视频录制部分主要是把摄像头回调回来的YUV数据经过处理后，使用硬件编码成H264格式输出<br>相关代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">H264Encoder</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">"H264Encoder"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> MediaCodec mediaCodec;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> BlockingQueue&lt;<span class="keyword">byte</span>[]&gt; queue;</span><br><span class="line">    <span class="keyword">private</span> BlockingQueue&lt;H264Frame&gt; outputQueue;</span><br><span class="line">    <span class="keyword">private</span> FileOutputStream fos;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> frameRate;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> width;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> height;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> inputIndexCounter;</span><br><span class="line">    <span class="keyword">private</span> ByteBuffer[] inputByteBuffers;</span><br><span class="line">    <span class="keyword">private</span> ByteBuffer[] outputByteBuffers;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">byte</span>[] configBytes;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">byte</span>[] tempBuffer;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> work = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">private</span> Thread workThread;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Callback callback;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据 stackOverFlow 上老哥的回答</span></span><br><span class="line"><span class="comment">     * https://stackoverflow.com/questions/36114808/android-setting-presentation-time-of-mediacodec</span></span><br><span class="line"><span class="comment">     * 其实 h264 只有流，并没有时间相关的信息，在某些硬件上可能播放会有问题（画面一闪而过，时间戳对不上）</span></span><br><span class="line"><span class="comment">     * 考虑封装成 mp4 处理这个问题</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    H264Encoder(BlockingQueue&lt;<span class="keyword">byte</span>[]&gt; inputQueue, String outputFile, <span class="keyword">int</span> width, <span class="keyword">int</span> height, <span class="keyword">int</span> frameRate, BlockingQueue&lt;H264Frame&gt; outputQueue) &#123;</span><br><span class="line">        <span class="keyword">if</span> (inputQueue == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"inputQueue can not be null !"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        queue = inputQueue;</span><br><span class="line">        <span class="keyword">this</span>.outputQueue = outputQueue;</span><br><span class="line">        String mime;</span><br><span class="line">        <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.LOLLIPOP) &#123;</span><br><span class="line">            mime = MediaFormat.MIMETYPE_VIDEO_AVC;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            mime = <span class="string">"video/avc"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            fos = <span class="keyword">new</span> FileOutputStream(<span class="keyword">new</span> File(outputFile));</span><br><span class="line">            mediaCodec = MediaCodec.createEncoderByType(mime);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(e.toString());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 我们需要把视频内容旋转90度，长宽对调</span></span><br><span class="line">        MediaFormat mediaFormat = MediaFormat.createVideoFormat(mime, height, width);</span><br><span class="line">        mediaFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT,</span><br><span class="line">                MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar); <span class="comment">// NV12</span></span><br><span class="line">        mediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, width * height * <span class="number">5</span>);</span><br><span class="line">        mediaFormat.setInteger(MediaFormat.KEY_FRAME_RATE, frameRate);</span><br><span class="line">        mediaFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        Bundle bundle = <span class="keyword">new</span> Bundle();</span><br><span class="line">        bundle.putInt(MediaFormat.KEY_I_FRAME_INTERVAL, <span class="number">1</span>);</span><br><span class="line">        mediaCodec.setParameters(bundle);</span><br><span class="line">        mediaCodec.configure(mediaFormat, <span class="keyword">null</span>, <span class="keyword">null</span>, MediaCodec.CONFIGURE_FLAG_ENCODE);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">this</span>.frameRate = frameRate;</span><br><span class="line">        <span class="keyword">this</span>.width = width;</span><br><span class="line">        <span class="keyword">this</span>.height = height;</span><br><span class="line"></span><br><span class="line">        tempBuffer = <span class="keyword">new</span> <span class="keyword">byte</span>[width * height * <span class="number">3</span> / <span class="number">2</span>];</span><br><span class="line"></span><br><span class="line">        Log.i(TAG, String.format(<span class="string">"width is %d height is %d frameRate is %d tempBuffer size is %d"</span>,</span><br><span class="line">                width, height, frameRate, tempBuffer.length));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCallback</span><span class="params">(Callback callback)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.callback = callback;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (work) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        work = <span class="keyword">true</span>;</span><br><span class="line">        mediaCodec.start();</span><br><span class="line">        inputByteBuffers = mediaCodec.getInputBuffers();</span><br><span class="line">        outputByteBuffers = mediaCodec.getOutputBuffers();</span><br><span class="line">        workThread = <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                inputIndexCounter = <span class="number">0</span>;</span><br><span class="line">                <span class="keyword">while</span> (work || !queue.isEmpty()) &#123;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        Log.i(TAG, <span class="string">"try take data, left data "</span> + queue.size());</span><br><span class="line">                        <span class="keyword">byte</span>[] data = queue.take();</span><br><span class="line">                        NV21ToNV12(data, tempBuffer);</span><br><span class="line">                        NV12Rotate90(tempBuffer, data);</span><br><span class="line">                        Log.i(TAG, <span class="string">"take data size "</span> + data.length);</span><br><span class="line">                        <span class="keyword">int</span> inputIndex = mediaCodec.dequeueInputBuffer(-<span class="number">1</span>);</span><br><span class="line">                        Log.i(TAG, <span class="string">"get input index "</span> + inputIndex);</span><br><span class="line">                        <span class="keyword">if</span> (inputIndex &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">                            ByteBuffer inputBuffer = inputByteBuffers[inputIndex];</span><br><span class="line">                            inputBuffer.clear();</span><br><span class="line">                            inputBuffer.put(data);</span><br><span class="line">                            inputBuffer.limit(data.length);</span><br><span class="line">                            <span class="keyword">int</span> flags = !work &amp;&amp; queue</span><br><span class="line">                                    .isEmpty() ? MediaCodec.BUFFER_FLAG_END_OF_STREAM : <span class="number">0</span>;</span><br><span class="line">                            <span class="keyword">long</span> time = getPresentationTimeUs(inputIndexCounter);</span><br><span class="line">                            Log.i(TAG, <span class="string">"input indexCounter "</span> + inputIndexCounter + <span class="string">" time "</span> + time);</span><br><span class="line">                            mediaCodec.queueInputBuffer(inputIndex, <span class="number">0</span>, data.length,</span><br><span class="line">                                    time, flags);</span><br><span class="line">                            inputIndexCounter++;</span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        MediaCodec.BufferInfo bufferInfo = <span class="keyword">new</span> MediaCodec.BufferInfo();</span><br><span class="line">                        <span class="keyword">int</span> outputIndex = mediaCodec.dequeueOutputBuffer(bufferInfo, <span class="number">0</span>);</span><br><span class="line">                        Log.i(TAG, <span class="string">"get output index "</span> + outputIndex);</span><br><span class="line">                        <span class="keyword">while</span> (outputIndex != MediaCodec.INFO_TRY_AGAIN_LATER) &#123;</span><br><span class="line">                            <span class="keyword">if</span> (outputIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) &#123;</span><br><span class="line">                                Log.i(TAG, <span class="string">"get output format"</span>);</span><br><span class="line">                                <span class="keyword">if</span> (callback != <span class="keyword">null</span>) &#123;</span><br><span class="line">                                    callback.onFormatChange(mediaCodec.getOutputFormat());</span><br><span class="line">                                &#125;</span><br><span class="line">                            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (outputIndex == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) &#123;</span><br><span class="line">                                Log.i(TAG, <span class="string">"output buffers change !"</span>);</span><br><span class="line">                                outputByteBuffers = mediaCodec.getOutputBuffers();</span><br><span class="line">                            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                                ByteBuffer outputBuffer = outputByteBuffers[outputIndex];</span><br><span class="line">                                <span class="keyword">byte</span>[] outData = <span class="keyword">new</span> <span class="keyword">byte</span>[bufferInfo.size];</span><br><span class="line">                                outputBuffer.position(bufferInfo.offset);</span><br><span class="line">                                outputBuffer.get(outData);</span><br><span class="line">                                <span class="keyword">if</span> ((bufferInfo.flags &amp; MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != <span class="number">0</span>) &#123;</span><br><span class="line">                                    Log.i(TAG, <span class="string">"flag codec config !"</span>);</span><br><span class="line">                                    configBytes = outData;</span><br><span class="line">                                &#125; <span class="keyword">else</span> <span class="keyword">if</span> ((bufferInfo.flags &amp; MediaCodec.BUFFER_FLAG_KEY_FRAME) != <span class="number">0</span>) &#123;</span><br><span class="line">                                    Log.i(TAG, <span class="string">"flag key frame"</span>);</span><br><span class="line">                                    <span class="keyword">byte</span>[] keyframe = <span class="keyword">new</span> <span class="keyword">byte</span>[bufferInfo.size + configBytes.length];</span><br><span class="line">                                    System.arraycopy(configBytes, <span class="number">0</span>, keyframe, <span class="number">0</span>,</span><br><span class="line">                                            configBytes.length);</span><br><span class="line">                                    System.arraycopy(outData, <span class="number">0</span>, keyframe, configBytes.length,</span><br><span class="line">                                            outData.length);</span><br><span class="line">                                    <span class="keyword">if</span> (outputQueue != <span class="keyword">null</span>) &#123;</span><br><span class="line">                                        Log.i(TAG, <span class="string">"output time "</span> + bufferInfo.presentationTimeUs);</span><br><span class="line">                                        outputQueue</span><br><span class="line">                                                .add(<span class="keyword">new</span> H264Frame(keyframe, bufferInfo.flags,</span><br><span class="line">                                                        bufferInfo.presentationTimeUs));</span><br><span class="line">                                    &#125;</span><br><span class="line">                                    <span class="keyword">try</span> &#123;</span><br><span class="line">                                        fos.write(keyframe);</span><br><span class="line">                                        fos.flush();</span><br><span class="line">                                    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                                        <span class="comment">// ignore</span></span><br><span class="line">                                    &#125;</span><br><span class="line">                                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                                    Log.i(TAG, <span class="string">"flag nothing"</span>);</span><br><span class="line">                                    <span class="keyword">if</span> (outputQueue != <span class="keyword">null</span>) &#123;</span><br><span class="line">                                        Log.i(TAG, <span class="string">"output time "</span> + bufferInfo.presentationTimeUs);</span><br><span class="line">                                        outputQueue</span><br><span class="line">                                                .add(<span class="keyword">new</span> H264Frame(outData, bufferInfo.flags,</span><br><span class="line">                                                        bufferInfo.presentationTimeUs));</span><br><span class="line">                                    &#125;</span><br><span class="line">                                    <span class="keyword">try</span> &#123;</span><br><span class="line">                                        fos.write(outData);</span><br><span class="line">                                        fos.flush();</span><br><span class="line">                                    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                                        <span class="comment">// ignore</span></span><br><span class="line">                                    &#125;</span><br><span class="line">                                &#125;</span><br><span class="line">                                mediaCodec.releaseOutputBuffer(outputIndex, <span class="keyword">false</span>);</span><br><span class="line">                            &#125;</span><br><span class="line">                            outputIndex = mediaCodec.dequeueOutputBuffer(bufferInfo, <span class="number">0</span>);</span><br><span class="line">                            Log.i(TAG, <span class="string">"get output index "</span> + outputIndex);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                        <span class="comment">// ignore</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    fos.close();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                    Log.e(TAG, Log.getStackTraceString(e));</span><br><span class="line">                &#125;</span><br><span class="line">                mediaCodec.stop();</span><br><span class="line">                mediaCodec.release();</span><br><span class="line">                Log.i(TAG, <span class="string">"finish h264 encode"</span>);</span><br><span class="line">                <span class="keyword">if</span> (callback != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    callback.onEncodeFinish();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        workThread.start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!work) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        work = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">if</span> (workThread != <span class="keyword">null</span> &amp;&amp; workThread.isAlive()) &#123;</span><br><span class="line">            workThread.interrupt();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">NV21ToNV12</span><span class="params">(<span class="keyword">byte</span>[] nv21, <span class="keyword">byte</span>[] nv12)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (nv21 == <span class="keyword">null</span> || nv12 == <span class="keyword">null</span>) <span class="keyword">return</span>;</span><br><span class="line">        <span class="keyword">int</span> frameSize = width * height;</span><br><span class="line">        <span class="keyword">int</span> j;</span><br><span class="line">        <span class="comment">// Y</span></span><br><span class="line">        System.arraycopy(nv21, <span class="number">0</span>, nv12, <span class="number">0</span>, frameSize);</span><br><span class="line">        <span class="comment">// U</span></span><br><span class="line">        <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; frameSize / <span class="number">2</span>; j += <span class="number">2</span>) &#123;</span><br><span class="line">            nv12[frameSize + j] = nv21[frameSize + j + <span class="number">1</span>];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// V</span></span><br><span class="line">        <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; frameSize / <span class="number">2</span>; j += <span class="number">2</span>) &#123;</span><br><span class="line">            nv12[frameSize + j + <span class="number">1</span>] = nv21[frameSize + j];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">NV12Rotate90</span><span class="params">(<span class="keyword">byte</span>[] nv12, <span class="keyword">byte</span>[] nv12rotate90)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (nv12 == <span class="keyword">null</span> || nv12rotate90 == <span class="keyword">null</span>) <span class="keyword">return</span>;</span><br><span class="line">        <span class="keyword">int</span> frameSize = width * height;</span><br><span class="line">        <span class="comment">// Y</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; frameSize; i++) &#123;</span><br><span class="line">            <span class="keyword">int</span> x = i % height;</span><br><span class="line">            <span class="keyword">int</span> y = i / height;</span><br><span class="line">            <span class="keyword">int</span> oldX = y;</span><br><span class="line">            <span class="keyword">int</span> oldY = height - x - <span class="number">1</span>;</span><br><span class="line">            nv12rotate90[i] = nv12[oldX + oldY * width];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span> halfHeight = height / <span class="number">2</span>;</span><br><span class="line">        <span class="comment">// U</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; frameSize / <span class="number">2</span>; j += <span class="number">2</span>) &#123;</span><br><span class="line">            <span class="keyword">int</span> x = j % height;</span><br><span class="line">            <span class="keyword">int</span> y = j / height;</span><br><span class="line">            <span class="keyword">int</span> oldX = y * <span class="number">2</span>;</span><br><span class="line">            <span class="keyword">int</span> oldY = halfHeight - <span class="number">1</span> - x / <span class="number">2</span>;</span><br><span class="line">            <span class="keyword">int</span> rotateIndex = frameSize + j;</span><br><span class="line">            <span class="keyword">int</span> originIndex = frameSize + oldX + oldY * width;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                nv12rotate90[rotateIndex] = nv12[originIndex];</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IndexOutOfBoundsException e) &#123;</span><br><span class="line">                Log.e(TAG, String.format(</span><br><span class="line">                        <span class="string">"error with j %d x %d y %d oldX %d oldY %d rotateIndex %d originIndex %d"</span>,</span><br><span class="line">                        j, x, y, oldX, oldY, rotateIndex, originIndex));</span><br><span class="line">                <span class="keyword">throw</span> e;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// V</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">1</span>; j &lt; frameSize / <span class="number">2</span>; j += <span class="number">2</span>) &#123;</span><br><span class="line">            <span class="keyword">int</span> x = j % height;</span><br><span class="line">            <span class="keyword">int</span> y = j / height;</span><br><span class="line">            <span class="keyword">int</span> oldX = y * <span class="number">2</span> + <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">int</span> oldY = halfHeight - <span class="number">1</span> - (x - <span class="number">1</span>) / <span class="number">2</span>;</span><br><span class="line">            nv12rotate90[frameSize + j] = nv12[frameSize + oldX + oldY * width];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">long</span> <span class="title">getPresentationTimeUs</span><span class="params">(<span class="keyword">int</span> frameIndex)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> frameIndex * <span class="number">1000</span> * <span class="number">1000</span> / frameRate;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Callback</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">onEncodeFinish</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">onFormatChange</span><span class="params">(MediaFormat format)</span></span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里大部分内容与学习笔记（二）中所提及的一样，主要注意的就是YUV格式的转换以及画面内容旋转的问题，在此不再赘述<br>还有当我们要把音频与视频打包合成MP4的时候，一些MediaCodec.BufferInfo的flag信息以及视频时间戳也是必不可少的</p>
+<p>编码后的H264帧如下所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">H264Frame</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">byte</span>[] data;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> flags;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">long</span> presentationTimeUs;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">H264Frame</span><span class="params">(<span class="keyword">byte</span>[] data, <span class="keyword">int</span> flags, <span class="keyword">long</span> presentationTimeUs)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data = data;</span><br><span class="line">        <span class="keyword">this</span>.flags = flags;</span><br><span class="line">        <span class="keyword">this</span>.presentationTimeUs = presentationTimeUs;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="音视频打包混合"><a href="#音视频打包混合" class="headerlink" title="音视频打包混合"></a>音视频打包混合</h1><p>在分别编码出aac音频以及h264视频数据后，我们需要把他们打包混合成MP4文件<br>相关代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MediaMuxerWrapper</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">"MediaMuxerWrapper"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> BlockingQueue&lt;H264Frame&gt; videoQueue;</span><br><span class="line">    <span class="keyword">private</span> BlockingQueue&lt;AacFrame&gt; audioQueue;</span><br><span class="line">    <span class="keyword">private</span> MediaMuxer mediaMuxer;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> CyclicBarrier startCyclicBarrier;</span><br><span class="line">    <span class="keyword">private</span> CyclicBarrier stopCyclicBarrier;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> videoIndex;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> videoWork = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">private</span> Thread videoWorkThread;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> audioIndex;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> audioWork = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">private</span> Thread audioWorkThread;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Callback callback;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MediaMuxerWrapper</span><span class="params">(BlockingQueue&lt;H264Frame&gt; videoQueue, BlockingQueue&lt;AacFrame&gt; audioQueue, String outputFile)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (videoQueue == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"videoQueue can not be null !"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">this</span>.videoQueue = videoQueue;</span><br><span class="line">        <span class="keyword">if</span> (audioQueue == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"audioQueue can not be null !"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">this</span>.audioQueue = audioQueue;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            mediaMuxer = <span class="keyword">new</span> MediaMuxer(outputFile, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(e.toString());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        startCyclicBarrier = <span class="keyword">new</span> CyclicBarrier(<span class="number">2</span>, <span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                mediaMuxer.start();</span><br><span class="line">                Log.i(TAG, <span class="string">"mux both start"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        stopCyclicBarrier = <span class="keyword">new</span> CyclicBarrier(<span class="number">2</span>, <span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                mediaMuxer.stop();</span><br><span class="line">                mediaMuxer.release();</span><br><span class="line">                Log.i(TAG, <span class="string">"mux both finish"</span>);</span><br><span class="line">                <span class="keyword">if</span> (callback != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    callback.onMuxFinish();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCallback</span><span class="params">(Callback callback)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.callback = callback;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">startMuxVideo</span><span class="params">(MediaFormat mediaFormat)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (videoWork) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        videoWork = <span class="keyword">true</span>;</span><br><span class="line">        videoIndex = mediaMuxer.addTrack(mediaFormat);</span><br><span class="line">        videoWorkThread = <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    startCyclicBarrier.await();</span><br><span class="line">                    <span class="keyword">while</span> (videoWork || !videoQueue.isEmpty()) &#123;</span><br><span class="line">                        H264Frame frame = videoQueue.poll(<span class="number">5</span>, TimeUnit.SECONDS);</span><br><span class="line">                        <span class="keyword">if</span> (frame == <span class="keyword">null</span>) &#123;</span><br><span class="line">                            Log.i(TAG, <span class="string">"video take data null !"</span>);</span><br><span class="line">                            <span class="keyword">continue</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        Log.i(TAG, <span class="string">"video take data, data left "</span> + videoQueue.size());</span><br><span class="line">                        ByteBuffer buffer = ByteBuffer.allocate(frame.data.length);</span><br><span class="line">                        buffer.put(frame.data);</span><br><span class="line">                        MediaCodec.BufferInfo info = <span class="keyword">new</span> MediaCodec.BufferInfo();</span><br><span class="line">                        info.offset = <span class="number">0</span>;</span><br><span class="line">                        info.size = frame.data.length;</span><br><span class="line">                        info.presentationTimeUs = frame.presentationTimeUs;</span><br><span class="line">                        info.flags = frame.flags;</span><br><span class="line">                        Log.i(TAG,</span><br><span class="line">                                <span class="string">"video info flags "</span> + info.flags + <span class="string">" time "</span> + info.presentationTimeUs);</span><br><span class="line">                        <span class="keyword">if</span> ((info.flags &amp; MediaCodec.BUFFER_FLAG_KEY_FRAME) != <span class="number">0</span>) &#123;</span><br><span class="line">                            Log.i(TAG, <span class="string">"video key frame !"</span>);</span><br><span class="line">                        &#125;</span><br><span class="line">                        mediaMuxer.writeSampleData(videoIndex, buffer, info);</span><br><span class="line">                        Log.i(TAG, <span class="string">"video write sample data finish"</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException | BrokenBarrierException e) &#123;</span><br><span class="line">                    <span class="comment">// ignore</span></span><br><span class="line">                    Log.i(TAG, <span class="string">"mux video interrupted ! "</span> + e.toString());</span><br><span class="line">                &#125;</span><br><span class="line">                Log.i(TAG, <span class="string">"mux video finish, await"</span>);</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    stopCyclicBarrier.await();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException | BrokenBarrierException e) &#123;</span><br><span class="line">                    <span class="comment">// ignore</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        videoWorkThread.start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">stopVideo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!videoWork) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        videoWork = <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">startMuxAudio</span><span class="params">(MediaFormat mediaFormat)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (audioWork) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        audioWork = <span class="keyword">true</span>;</span><br><span class="line">        audioIndex = mediaMuxer.addTrack(mediaFormat);</span><br><span class="line">        audioWorkThread = <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    startCyclicBarrier.await();</span><br><span class="line">                    <span class="keyword">while</span> (audioWork || !audioQueue.isEmpty()) &#123;</span><br><span class="line">                        AacFrame frame = audioQueue.poll(<span class="number">5</span>, TimeUnit.SECONDS);</span><br><span class="line">                        <span class="keyword">if</span> (frame == <span class="keyword">null</span>) &#123;</span><br><span class="line">                            Log.i(TAG, <span class="string">"audio take data null !"</span>);</span><br><span class="line">                            <span class="keyword">continue</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        Log.i(TAG, <span class="string">"audio take data, data left "</span> + audioQueue.size());</span><br><span class="line">                        ByteBuffer buffer = ByteBuffer.allocate(frame.data.length);</span><br><span class="line">                        buffer.put(frame.data);</span><br><span class="line">                        MediaCodec.BufferInfo info = <span class="keyword">new</span> MediaCodec.BufferInfo();</span><br><span class="line">                        info.offset = <span class="number">0</span>;</span><br><span class="line">                        info.size = frame.data.length;</span><br><span class="line">                        info.presentationTimeUs = frame.presentationTimeUs;</span><br><span class="line">                        info.flags = <span class="number">0</span>;</span><br><span class="line">                        Log.i(TAG,</span><br><span class="line">                                <span class="string">"audio info flags "</span> + info.flags + <span class="string">" time "</span> + info.presentationTimeUs);</span><br><span class="line">                        <span class="keyword">if</span> ((info.flags &amp; MediaCodec.BUFFER_FLAG_KEY_FRAME) != <span class="number">0</span>) &#123;</span><br><span class="line">                            Log.i(TAG, <span class="string">"audio key frame !"</span>);</span><br><span class="line">                        &#125;</span><br><span class="line">                        mediaMuxer.writeSampleData(audioIndex, buffer, info);</span><br><span class="line">                        Log.i(TAG, <span class="string">"audio write sample data finish"</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException | BrokenBarrierException e) &#123;</span><br><span class="line">                    <span class="comment">// ignore</span></span><br><span class="line">                    Log.i(TAG, <span class="string">"mux audio interrupted !"</span> + e.toString());</span><br><span class="line">                &#125;</span><br><span class="line">                Log.i(TAG, <span class="string">"mux audio finish, await"</span>);</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    stopCyclicBarrier.await();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException | BrokenBarrierException e) &#123;</span><br><span class="line">                    <span class="comment">// ignore</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        audioWorkThread.start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">stopAudio</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!audioWork) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        audioWork = <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Callback</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">onMuxFinish</span><span class="params">()</span></span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里我们使用的是官方的MediaMuxer接口，官方文档如下：<br><a href="https://developer.android.com/reference/android/media/MediaMuxer" target="_blank" rel="noopener">https://developer.android.com/reference/android/media/MediaMuxer</a></p>
+<p>这里我们通过两个BlockingQueue阻塞队列来持续提供数据，分别使用两个线程来添加音频帧与视频帧数据<br>由于音频与视频编码速度存在差异（实践下经常是音频编码比视频快很多），这里我们使用CyclicBarrier来控制混合流程的开始与结束</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/音视频/" rel="tag"># 音视频</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/11/21/JSBridge的原理/" rel="next" title="JSBridge的原理">
+                <i class="fa fa-chevron-left"></i> JSBridge的原理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/01/09/Android-UI卡顿监测框架BlockCanary原理分析/" rel="prev" title="Android UI卡顿监测框架BlockCanary原理分析">
+                Android UI卡顿监测框架BlockCanary原理分析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#录制界面"><span class="nav-number">1.</span> <span class="nav-text">录制界面</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#音频录制"><span class="nav-number">2.</span> <span class="nav-text">音频录制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#PCM录制器"><span class="nav-number">2.1.</span> <span class="nav-text">PCM录制器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AAC格式编码器"><span class="nav-number">2.2.</span> <span class="nav-text">AAC格式编码器</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#视频录制"><span class="nav-number">3.</span> <span class="nav-text">视频录制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#音视频打包混合"><span class="nav-number">4.</span> <span class="nav-text">音视频打包混合</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

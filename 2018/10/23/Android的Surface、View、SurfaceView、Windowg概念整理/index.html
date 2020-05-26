@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,view,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="BufferQueue、SurfaceFlinger、Surface、View、SurfaceView">
+<meta name="keywords" content="android,view">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android的Surface、View、SurfaceView、Window概念整理">
+<meta property="og:url" content="https://superxlcr.github.io/2018/10/23/Android的Surface、View、SurfaceView、Windowg概念整理/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="BufferQueue、SurfaceFlinger、Surface、View、SurfaceView">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2018/10/23/Android的Surface、View、SurfaceView、Windowg概念整理/1.png">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.605Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android的Surface、View、SurfaceView、Window概念整理">
+<meta name="twitter:description" content="BufferQueue、SurfaceFlinger、Surface、View、SurfaceView">
+<meta name="twitter:image" content="https://superxlcr.github.io/2018/10/23/Android的Surface、View、SurfaceView、Windowg概念整理/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2018/10/23/Android的Surface、View、SurfaceView、Windowg概念整理/">
+
+
+
+
+
+  <title>Android的Surface、View、SurfaceView、Window概念整理 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2018/10/23/Android的Surface、View、SurfaceView、Windowg概念整理/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android的Surface、View、SurfaceView、Window概念整理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-23T19:35:39+08:00">
+                2018-10-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.3k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近了解了一下Android中几个关于视图的概念：Surface、View、SurfaceView与Window，在此进行一下总结整理</p>
+<h1 id="BufferQueue"><a href="#BufferQueue" class="headerlink" title="BufferQueue"></a>BufferQueue</h1><p>在此之前，我们先介绍一下BufferQueue。<br>BufferQueue类是 Android 中所有图形处理操作的核心。它的作用很简单：将生成图形数据缓冲区的一方（生产方）连接到接受数据以进行显示或进一步处理的一方（消耗方）。几乎所有在系统中移动图形数据缓冲区的内容都依赖于BufferQueue。<br>简而言之，BufferQueue是图形生产者消费者模型中沟通的桥梁。<br>它的基本用法很简单：生产方请求一个可用的缓冲区 (dequeueBuffer())，并指定一组特性，包括宽度、高度、像素格式和用法标记。生产方填充缓冲区并将其返回到队列 (queueBuffer())。随后，消耗方获取该缓冲区 (acquireBuffer()) 并使用该缓冲区的内容。当消耗方操作完毕后，将该缓冲区返回到队列 (releaseBuffer())。</p>
+<p>更详细介绍可参考官方文档：<br><a href="https://source.android.com/devices/graphics/arch-bq-gralloc" target="_blank" rel="noopener">https://source.android.com/devices/graphics/arch-bq-gralloc</a></p>
+<h1 id="SurfaceFlinger"><a href="#SurfaceFlinger" class="headerlink" title="SurfaceFlinger"></a>SurfaceFlinger</h1><p>在介绍Surface之前，我们还需要先了解一下SurfaceFlinger。<br>SurfaceFlinger的作用是接受来自多个来源的数据缓冲区，对它们进行合成，然后发送到显示设备。<br>当别的服务向SurfaceFlinger请求一个绘图Surface时，它会创建一个主要组件是BufferQueue的新的层（这里的层博主感觉指的是一层层的视图的意思），同时把自己设定为消耗方。大多数应用通常在屏幕上有三个层：屏幕顶部的状态栏、底部或侧面的导航栏以及应用的界面。<br>我们可以通过adb的指令来打印当前屏幕的层信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb shell dumpsys SurfaceFlinger</span><br></pre></td></tr></table></figure>
+
+<p>例，博主的某个应用的信息：<br><img src="/2018/10/23/Android的Surface、View、SurfaceView、Windowg概念整理/1.png" alt="屏幕层的信息"></p>
+<p>从上面的表格不难看出，博主当前的屏幕中包含3个层（自底向上）：</p>
+<ul>
+<li>应用的MainActivity视图层</li>
+<li>StatusBar系统的状态栏视图层</li>
+<li>HWC_FRAMEBUFFER_TARGET（目前不清楚是什么）</li>
+</ul>
+<p>更详细介绍可参考官方文档：<br><a href="https://source.android.com/devices/graphics/arch-sf-hwc" target="_blank" rel="noopener">https://source.android.com/devices/graphics/arch-sf-hwc</a></p>
+<h1 id="Surface"><a href="#Surface" class="headerlink" title="Surface"></a>Surface</h1><p>从 1.0 开始，Surface类一直是公共 API 的一部分。它的描述简单如下：“在由屏幕合成器管理的原始缓冲区上进行处理”。<br>Surface表示通常（但并非总是！）由SurfaceFlinger消耗的缓冲区队列的生产方。当您渲染到Surface上时，产生的结果将进入相关缓冲区，该缓冲区被传递给消耗方。<br>简单来说，博主认为我们可以把Surface当做是一层视图，我们通过在Surface上绘制图像，来往其中的BufferQueue生产视图数据，进而交给其消耗方SurfaceFlinger来与其他视图层合成，最终显示到屏幕上。</p>
+<p>更详细介绍可参考官方文档：<br><a href="https://source.android.com/devices/graphics/arch-sh" target="_blank" rel="noopener">https://source.android.com/devices/graphics/arch-sh</a><br><a href="https://developer.android.com/reference/android/view/Surface" target="_blank" rel="noopener">https://developer.android.com/reference/android/view/Surface</a></p>
+<h1 id="Window"><a href="#Window" class="headerlink" title="Window"></a>Window</h1><p>Window类代表着一个视图的顶层窗口，它管理着这个视图中最顶层的View，提供了一些背景、标题栏、默认按键等标准的UI处理策略。<br>同时，它拥有唯一一个用以绘制自己的内容的Surface，当app通过WindowManager创建一个Window时，WindowManager会为每一个Window创建一个Surface，并把该Surface传递给app以便应用在上面绘制内容。<br>博主认为Window与Surface之前存在着一对一的关系。</p>
+<p>更详细介绍可参考官方文档：<br><a href="https://developer.android.com/reference/android/view/Window" target="_blank" rel="noopener">https://developer.android.com/reference/android/view/Window</a></p>
+<h1 id="View"><a href="#View" class="headerlink" title="View"></a>View</h1><p>View这个类相信大家都普遍比较熟悉，它是Android视图中的一个基本单位。<br>它代表着屏幕上的一个矩形区域，并负责绘制该区域以及处理区域上的点击事件。<br>它与ViewGroup通过组合设计模式，共同组成了Android视图的基石，通过最顶层的ViewRootImpl我们可以一层层遍历View组成的树状结构。<br>最顶层的View会由某个Window进行打理，在对其复杂的层级结构进行测量、布局、绘制后，其中的所有内容最终会绘制到Window拥有的Surface中去。</p>
+<p>更详细介绍可参考官方文档：<br><a href="https://developer.android.com/reference/android/view/View" target="_blank" rel="noopener">https://developer.android.com/reference/android/view/View</a></p>
+<h1 id="SurfaceView"><a href="#SurfaceView" class="headerlink" title="SurfaceView"></a>SurfaceView</h1><p>SurfaceView是一种被特殊实现的View，它拥有自己专门的一个Surface，以便让应用直接在里面绘制内容。<br>它能与普通的View一样，在View组成的树状结构中进行测量与布局，但却独立于普通View所共享Window的那个Surface。它在需要渲染时，内容会变得完全透明，SurfaceView的View部分只是一个透明的占位符。<br>SurfaceView的工作原理如下，它所做的全部就是要求WindowManager创建一个Window，并告诉WindowManager所创建的Window的Z轴顺序（Z-order），这个Z轴顺序可以帮助WindowManager决定将新建的window置于SurfaceView所属Window的前面还是后面。<br>然后，WindowManager会将新建的Window放置到SurfaceView在所属Window中的位置。如果新建Window在SurfaceView所属Window后面，SurfaceView会将它在所属Window中占据的部分变透明，以便让后面的Window显示出来。</p>
+<p>更详细介绍可参考官方文档：<br><a href="https://source.android.com/devices/graphics/arch-sv-glsv" target="_blank" rel="noopener">https://source.android.com/devices/graphics/arch-sv-glsv</a><br><a href="https://developer.android.com/reference/android/view/SurfaceView" target="_blank" rel="noopener">https://developer.android.com/reference/android/view/SurfaceView</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/view/" rel="tag"># view</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/09/Android架构组件学习（一）/" rel="next" title="Android架构组件学习（一）">
+                <i class="fa fa-chevron-left"></i> Android架构组件学习（一）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/10/29/关于Java泛型的一些思考/" rel="prev" title="关于Java泛型的一些思考">
+                关于Java泛型的一些思考 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#BufferQueue"><span class="nav-number">1.</span> <span class="nav-text">BufferQueue</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SurfaceFlinger"><span class="nav-number">2.</span> <span class="nav-text">SurfaceFlinger</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Surface"><span class="nav-number">3.</span> <span class="nav-text">Surface</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Window"><span class="nav-number">4.</span> <span class="nav-text">Window</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#View"><span class="nav-number">5.</span> <span class="nav-text">View</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SurfaceView"><span class="nav-number">6.</span> <span class="nav-text">SurfaceView</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

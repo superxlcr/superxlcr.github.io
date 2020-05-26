@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="gradle,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="gradle插件工程目录、增加extension、本地maven仓库上传">
+<meta name="keywords" content="gradle">
+<meta property="og:type" content="article">
+<meta property="og:title" content="gradle插件编写">
+<meta property="og:url" content="https://superxlcr.github.io/2018/09/06/gradle插件编写/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="gradle插件工程目录、增加extension、本地maven仓库上传">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2018/09/06/gradle插件编写/1.png">
+<meta property="og:image" content="https://superxlcr.github.io/2018/09/06/gradle插件编写/2.png">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.773Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="gradle插件编写">
+<meta name="twitter:description" content="gradle插件工程目录、增加extension、本地maven仓库上传">
+<meta name="twitter:image" content="https://superxlcr.github.io/2018/09/06/gradle插件编写/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2018/09/06/gradle插件编写/">
+
+
+
+
+
+  <title>gradle插件编写 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2018/09/06/gradle插件编写/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">gradle插件编写</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-06T19:49:35+08:00">
+                2018-09-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/gradle/" itemprop="url" rel="index">
+                    <span itemprop="name">gradle</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.2k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近在整理项目中的aop功能模块，在使用了他人的gradle插件发现有不满意的地方，因此稍微了解了一下如何编写gradle插件，在此进行一下记录<br>一些跟gradle相关的基础资料，可以在我的另一篇博文中找到：<a href="/2016/08/14/Gradle介绍/">Gradle介绍</a></p>
+<h1 id="gradle插件工程目录"><a href="#gradle插件工程目录" class="headerlink" title="gradle插件工程目录"></a>gradle插件工程目录</h1><p>想要编写gradle插件，我们首先需要自己组建好相应的工程目录，与其他的module不同，Android Studio并没有便捷的方式让我们一键生成相应的插件工程目录，我们需要自己把所需的文件夹跟文件一个个新建起来<br>插件工程目录截图如下：<br><img src="/2018/09/06/gradle插件编写/1.png" alt="工程目录截图"></p>
+<p>下面来逐一说明目录文件的作用：</p>
+<h2 id="groovy文件夹"><a href="#groovy文件夹" class="headerlink" title="groovy文件夹"></a>groovy文件夹</h2><p>这个文件夹下面保存的是groovy文件，是我们插件的源代码目录</p>
+<h2 id="resources-META-INF-gradle-plugins"><a href="#resources-META-INF-gradle-plugins" class="headerlink" title="resources/META-INF/gradle-plugins"></a>resources/META-INF/gradle-plugins</h2><p>这个文件夹下面有个xxx.properties文件，用于定义我们的插件名称，我们平时在build.gradle中写的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apply plugin: &apos;xxx&apos;</span><br></pre></td></tr></table></figure>
+
+<p>其中的xxx，就是该文件去后缀后定义的名称</p>
+<p>文件的内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation-class=插件实现类的全名</span><br></pre></td></tr></table></figure>
+
+<p>举个例子，比如插件的实现类如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.superxlcr.plugin</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.gradle.api.Plugin</span><br><span class="line"><span class="keyword">import</span> org.gradle.api.Project</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TestPlugin</span> <span class="keyword">implements</span> <span class="title">Plugin</span>&lt;<span class="title">Project</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">apply</span><span class="params">(Project project)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，其实我们在build.gralde调用apply plugin指令，就是在gradle的config阶段执行apply方法里面的内容而已</p>
+<p>上述例子的文件具体内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation-class=com.superxlcr.plugin.TestPlugin</span><br></pre></td></tr></table></figure>
+
+<h2 id="gitignore"><a href="#gitignore" class="headerlink" title=".gitignore"></a>.gitignore</h2><p>git管理工具追踪时忽略的文件，一般标记build文件夹即可：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/build</span><br></pre></td></tr></table></figure>
+
+<h2 id="proguard-rules-pro"><a href="#proguard-rules-pro" class="headerlink" title="proguard-rules.pro"></a>proguard-rules.pro</h2><p>proguard混淆时的规则文件，一般使用随便一个module默认生成的即可：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"># Add project specific ProGuard rules here.</span><br><span class="line"># You can control the set of applied configuration files using the</span><br><span class="line"># proguardFiles setting in build.gradle.</span><br><span class="line">#</span><br><span class="line"># For more details, see</span><br><span class="line">#   http://developer.android.com/guide/developing/tools/proguard.html</span><br><span class="line"></span><br><span class="line"># If your project uses WebView with JS, uncomment the following</span><br><span class="line"># and specify the fully qualified class name to the JavaScript interface</span><br><span class="line"># class:</span><br><span class="line">#-keepclassmembers class fqcn.of.javascript.interface.for.webview &#123;</span><br><span class="line">#   public *;</span><br><span class="line">#&#125;</span><br><span class="line"></span><br><span class="line"># Uncomment this to preserve the line number information for</span><br><span class="line"># debugging stack traces.</span><br><span class="line">#-keepattributes SourceFile,LineNumberTable</span><br><span class="line"></span><br><span class="line"># If you keep the line number information, uncomment this to</span><br><span class="line"># hide the original source file name.</span><br><span class="line">#-renamesourcefileattribute SourceFile</span><br></pre></td></tr></table></figure>
+
+<h2 id="build-gradle"><a href="#build-gradle" class="headerlink" title="build.gradle"></a>build.gradle</h2><p>我们gradle插件工程的配置文件，一般而言，配置如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">apply plugin: &apos;groovy&apos;</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    implementation gradleApi()</span><br><span class="line">    implementation localGroovy()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果要获取一些跟Android Project相关的属性，以及执行一些注册Transform等操作，我们还需要引用Android提供的工具库：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">    implementation &apos;com.android.tools.build:gradle:2.3.2&apos;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="增加extension"><a href="#增加extension" class="headerlink" title="增加extension"></a>增加extension</h1><p>类似Android提供的com.android.application插件，可以在android定义的extension中修改很多属性值，我们的插件也想要自己的extension，要怎么做呢？</p>
+<p>Android插件一个修改版本号属性值的例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    defaultConfig &#123;</span><br><span class="line">        versionCode 6901</span><br><span class="line">        versionName &quot;6.9.0&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>想要自己的extension很简单，只要在apply插件的时候，往project中添加注册即可：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">void apply(Project project) &#123;</span><br><span class="line">	project.extensions.create(&quot;mytest&quot;, TestExtension)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>定义的extension类如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">class TestExtension &#123;</span><br><span class="line"></span><br><span class="line">    boolean testBoolean</span><br><span class="line">    String testName</span><br><span class="line">    private List&lt;Integer&gt; testList = new ArrayList&lt;&gt;()</span><br><span class="line">    </span><br><span class="line">    void addNumbers(int... numbers) &#123;</span><br><span class="line">        testList.addAll(numbers)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如此一来，我们的插件就有了自己的extension，设置相应的extension时，其实就跟修改定义extension的对象一样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mytest &#123;</span><br><span class="line">	testBoolean true</span><br><span class="line">	testName &quot;test&quot;</span><br><span class="line">	addNumbers 1, 2, 3, 4, 5</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="本地maven仓库上传"><a href="#本地maven仓库上传" class="headerlink" title="本地maven仓库上传"></a>本地maven仓库上传</h1><p>由于apply from本地的groovy文件是不能debug调试的，为了方便我们调试编写的gradle插件，我们一般会将插件上传到本地的maven仓库中<br>想要实现本地maven仓库上传非常简单，配置依赖相应的gradle插件即可，在build.gradle文件中加入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">apply plugin: &apos;maven&apos;</span><br><span class="line"></span><br><span class="line">version = &apos;1.0.0&apos;</span><br><span class="line">group = &apos;com.superxlcr.plugin&apos;</span><br><span class="line">archivesBaseName = &apos;test-plugin&apos;</span><br><span class="line"></span><br><span class="line">uploadArchives &#123;</span><br><span class="line">    repositories &#123;</span><br><span class="line">        mavenDeployer &#123;</span><br><span class="line">            repository(url: &apos;file:E:\\mavenTest\\myplugintest&apos;)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编写完成后，先调用build task编译生成，然后调用uploadArchives task上传即可：<br><img src="/2018/09/06/gradle插件编写/2.png" alt="上传仓库"></p>
+<p>在使用时，我们只需要在总工程的build.gradle下加上本地maven仓库以及插件名称即可：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">buildscript &#123;</span><br><span class="line">    repositories &#123;</span><br><span class="line">        maven &#123;</span><br><span class="line">            url &apos;file:E:\\mavenTest\\myplugintest&apos;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    dependencies &#123;</span><br><span class="line">        classpath &apos;com.superxlcr.plugin:test-plugin:1.0.0&apos;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>ps: 除了使用 maven 插件来上传以外，我们还可以通过 maven-publish 插件来把代码上传到本地仓库</p>
+<p>具体配置大致如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">apply plugin: &apos;maven-publish&apos;  // 添加插件</span><br><span class="line"></span><br><span class="line">// 打包源码</span><br><span class="line">task sourceJar(type: Jar) &#123;</span><br><span class="line">    from sourceSets.main.allJava</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">publishing &#123;</span><br><span class="line">    publications &#123;</span><br><span class="line">        maven(MavenPublication) &#123;</span><br><span class="line">            // 指定group/artifact/version信息</span><br><span class="line">            groupId project.group</span><br><span class="line">            artifactId project.name</span><br><span class="line">            version project.version</span><br><span class="line">            // 打包类型 war: components.web jar: components.java</span><br><span class="line">            from components.java</span><br><span class="line"></span><br><span class="line">            // 配置上传源码</span><br><span class="line">            artifact sourceJar &#123;</span><br><span class="line">                classifier &quot;sources&quot;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    repositories &#123;</span><br><span class="line">        mavenLocal() // 本地 maven</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>配置完成后，执行publishToLocalMaven任务即可，发布位置应该在：用户文件夹/.m2/ 里</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/gradle/" rel="tag"># gradle</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/09/04/浮点数的大小比较为什么不能用等号？/" rel="next" title="浮点数的大小比较为什么不能用等号？">
+                <i class="fa fa-chevron-left"></i> 浮点数的大小比较为什么不能用等号？
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/09/20/gradle执行命令行/" rel="prev" title="gradle执行命令行">
+                gradle执行命令行 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#gradle插件工程目录"><span class="nav-number">1.</span> <span class="nav-text">gradle插件工程目录</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#groovy文件夹"><span class="nav-number">1.1.</span> <span class="nav-text">groovy文件夹</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#resources-META-INF-gradle-plugins"><span class="nav-number">1.2.</span> <span class="nav-text">resources/META-INF/gradle-plugins</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gitignore"><span class="nav-number">1.3.</span> <span class="nav-text">.gitignore</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#proguard-rules-pro"><span class="nav-number">1.4.</span> <span class="nav-text">proguard-rules.pro</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#build-gradle"><span class="nav-number">1.5.</span> <span class="nav-text">build.gradle</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#增加extension"><span class="nav-number">2.</span> <span class="nav-text">增加extension</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#本地maven仓库上传"><span class="nav-number">3.</span> <span class="nav-text">本地maven仓库上传</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

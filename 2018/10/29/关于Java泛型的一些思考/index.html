@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="基础知识,java,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="为什么引入泛型、泛型的使用、泛型的擦除、补充">
+<meta name="keywords" content="基础知识,java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于Java泛型的一些思考">
+<meta property="og:url" content="https://superxlcr.github.io/2018/10/29/关于Java泛型的一些思考/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="为什么引入泛型、泛型的使用、泛型的擦除、补充">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2018/10/29/关于Java泛型的一些思考/1.png">
+<meta property="og:image" content="https://superxlcr.github.io/2018/10/29/关于Java泛型的一些思考/2.jpg">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.827Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="关于Java泛型的一些思考">
+<meta name="twitter:description" content="为什么引入泛型、泛型的使用、泛型的擦除、补充">
+<meta name="twitter:image" content="https://superxlcr.github.io/2018/10/29/关于Java泛型的一些思考/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2018/10/29/关于Java泛型的一些思考/">
+
+
+
+
+
+  <title>关于Java泛型的一些思考 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2018/10/29/关于Java泛型的一些思考/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">关于Java泛型的一些思考</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-29T21:00:56+08:00">
+                2018-10-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.2k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="为什么引入泛型"><a href="#为什么引入泛型" class="headerlink" title="为什么引入泛型"></a>为什么引入泛型</h1><p>泛型，即“参数化类型”。是Java 1.5引入的一种新特性。<br>为什么Java要引入泛型呢？我们看一下这个例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">List arrayList = <span class="keyword">new</span> ArrayList();</span><br><span class="line">arrayList.add(<span class="string">"aaaa"</span>); <span class="comment">// it's ok</span></span><br><span class="line">arrayList.add(<span class="number">100</span>); <span class="comment">// it's ok, too</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; arrayList.size(); i++) &#123;</span><br><span class="line">	String str = (String)arrayList.get(i);</span><br><span class="line">	System.out.print(str);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>毫无疑问，程序的运行结果会以崩溃结束：<br>java.lang.ClassCastException: java.lang.Integer cannot be cast to java.lang.String</p>
+<p>这个例子中，我们构造了一个ArrayList列表，并往其中放入了一个String类型与一个Integer类型。而在使用时，我们都是以String类型的方式来强转取出，因此程序崩溃了。<br>为了让这种类似的容器类能够带上其内容的类型信息，解决类似的类型转换问题，泛型应运而生。<br>有了泛型之后，我们的例子可以优化成这个样子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; arrayList = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line">arrayList.add(<span class="string">"aaaa"</span>); <span class="comment">// it's ok</span></span><br><span class="line">arrayList.add(<span class="number">100</span>); <span class="comment">// it's not ok !!!!</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; arrayList.size(); i++) &#123;</span><br><span class="line">	String str = (String)arrayList.get(i);</span><br><span class="line">	System.out.print(str);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>泛型能让编译器在编译阶段避免不少类似的类型转换问题。</p>
+<h1 id="泛型的使用"><a href="#泛型的使用" class="headerlink" title="泛型的使用"></a>泛型的使用</h1><p>泛型的使用主要有三种：</p>
+<ul>
+<li>泛型类：通常定义于各种容器类中，如List&lt;T&gt;</li>
+<li>泛型方法：提供类型参数推断的功能，很方便</li>
+<li>泛型构造方法：博主感觉与泛型方法类似，只是为了区分普通方法与构造方法，因此有了泛型方法与泛型构造方法</li>
+</ul>
+<p>从Java的Type体系中我们可以看出三种泛型的定义：</p>
+<p>Type是Java中所有类型的公共高级接口，其子类如下：</p>
+<ul>
+<li>ParameterizedType：参数化类型，即泛型；例如：List&lt;T&gt;、Map&lt;K,V&gt;等带有参数化的类</li>
+<li>TypeVariable：类型变量，即泛型中的变量；例如：T、K、V等变量，可以表示任何类；在这需要强调的是，TypeVariable代表着泛型中的变量，而ParameterizedType则代表整个泛型</li>
+<li>GenericArrayType：泛型数组类型，用来描述ParameterizedType、TypeVariable类型的数组；即List&lt;T&gt;[] 、T[]等</li>
+<li>Class：上三者不同，Class是Type的一个实现类，属于原始类型，是Java反射的基础，对Java类的抽象</li>
+<li>WildcardType：泛型表达式（或者通配符表达式），即？ extend Number、？ super Integer这样的表达式</li>
+</ul>
+<p>其中，TypeVariable的接口定义如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">TypeVariable</span>&lt;<span class="title">D</span> <span class="keyword">extends</span> <span class="title">GenericDeclaration</span>&gt; <span class="keyword">extends</span> <span class="title">Type</span> </span>&#123;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，它也是一个泛型类，它的泛型表示的是：它所表示的类型变量的具体种类，是泛型类、泛型方法还是泛型构造方法<br>GenericDeclaration的子类如下图所示：<br><img src="/2018/10/29/关于Java泛型的一些思考/1.png" alt="GenericDeclaration的子类"></p>
+<p>从图中可以看出：Method、Constructor、Class分别表示类、方法以及构造方法三种泛型</p>
+<p>更多泛型的使用与特性可以参考博主以前的文章：<br><a href="/2016/03/22/关于一些基础的Java问题的解答（七）/#泛型常用特点，List-lt-String-gt-能否转为List-lt-Object-gt">泛型常用特点，List&lt;String&gt;能否转为List&lt;Object&gt;</a></p>
+<h1 id="泛型的擦除"><a href="#泛型的擦除" class="headerlink" title="泛型的擦除"></a>泛型的擦除</h1><p>泛型的擦除可谓是Java泛型的一大特点，那么什么是泛型擦除呢？<br>博主认为：泛型擦除即我们无法获得某个泛型实例对象的精确泛型参数</p>
+<p>我们可以从两个现象来看这个特点：</p>
+<ul>
+<li>泛型类中的编译器静态检查</li>
+<li>泛型类反射</li>
+</ul>
+<h2 id="泛型类中的编译器静态检查"><a href="#泛型类中的编译器静态检查" class="headerlink" title="泛型类中的编译器静态检查"></a>泛型类中的编译器静态检查</h2><p>我们来看下下面的例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fa</span><span class="params">()</span> </span>&#123;&#125;;  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span> &lt;<span class="title">T</span>&gt; </span>&#123; <span class="comment">// 擦除到Object  </span></span><br><span class="line">    T t;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">f</span><span class="params">(Object a)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">if</span> (a <span class="keyword">instanceof</span> T) &#123;&#125; <span class="comment">// error，不知道具体的类型信息  </span></span><br><span class="line">        T var = <span class="keyword">new</span> T(); <span class="comment">// error，不知道该类型是否有默认构造函数  </span></span><br><span class="line">        T[] array = <span class="keyword">new</span> T[<span class="number">1</span>]; <span class="comment">// error    </span></span><br><span class="line">        t.fa(); <span class="comment">// error  </span></span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">D</span> &lt;<span class="title">T</span> <span class="keyword">extends</span> <span class="title">A</span>&gt; </span>&#123; <span class="comment">// 擦除到A  </span></span><br><span class="line">    T t;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">f</span><span class="params">(Object a)</span> </span>&#123;  </span><br><span class="line">        t.fa(); <span class="comment">// this works  </span></span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当我们的编译器执行静态检查时，是没有运行时的信息的<br>因此，对于例子中的泛型类C，编译器只能把它的泛型参数T当做其上界来处理（即把类型信息擦除到边界），由于Object类为所有类的父类，因此编译器检查时T都是被当成Object类来处理的<br>当然这种情况我们可以使用extends关键字来改善，对于例子中的泛型类D，其泛型参数的上界就变为了类A</p>
+<h2 id="泛型类反射"><a href="#泛型类反射" class="headerlink" title="泛型类反射"></a>泛型类反射</h2><p>要解释这个，我们需要先知道Java提供的反射功能是什么<br>Java的反射功能，是Java提供的一种允许我们在运行时，获取某个类（class）全部信息的能力，包括类的成员变量，方法，构造函数等等，同时还提供了一系列设置与调用的手段</p>
+<p>我们来看下下面的例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;&#125;  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">extends</span> <span class="title">A</span> </span>&#123;&#125;  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span> <span class="keyword">extends</span> <span class="title">B</span> </span>&#123;&#125;;  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">D</span> &lt;<span class="title">T</span>&gt; </span>&#123;  </span><br><span class="line">    T t;  </span><br><span class="line">    D(T t) &#123;  </span><br><span class="line">        <span class="keyword">this</span>.t = t;  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">f</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        System.out.println(Arrays.toString(<span class="keyword">this</span>.getClass().getTypeParameters()));  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;;  </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;  </span><br><span class="line">        D&lt;A&gt; a = <span class="keyword">new</span> D&lt;A&gt;(<span class="keyword">new</span> A());  </span><br><span class="line">        D&lt;B&gt; b = <span class="keyword">new</span> D&lt;B&gt;(<span class="keyword">new</span> B());  </span><br><span class="line">        D&lt;C&gt; c = <span class="keyword">new</span> D&lt;C&gt;(<span class="keyword">new</span> C());  </span><br><span class="line">        a.f();  </span><br><span class="line">        b.f();  </span><br><span class="line">        c.f();  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>D中的f方法通过获取D的Class类来获取其类型信息，其打印的结果如下：<br><img src="/2018/10/29/关于Java泛型的一些思考/2.jpg" alt="例子打印结果"></p>
+<p>可以看到打印出来的结果并不是我们传人的泛型参数A、B、C三个类，这是为什么呢？<br>博主认为，这是因为这里用的是Java的反射机制获取D类的类型信息，而泛型参数实际上应该属于生成实例时传入的参数，因此我们只能获取<strong>类</strong>相关的信息，即TypeVariable（类型变量）以及它的名称T，而不能获取<strong>实例</strong>相关的泛型实际参数A、B、C</p>
+<p>受这个特点影响比较大的要数如Gson等支持反序列化泛型对象的工具了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">  T value;</span><br><span class="line">&#125;</span><br><span class="line">Gson gson = <span class="keyword">new</span> Gson();</span><br><span class="line">Foo&lt;Bar&gt; foo = <span class="keyword">new</span> Foo&lt;Bar&gt;();</span><br><span class="line">gson.toJson(foo); <span class="comment">// May not serialize foo.value correctly</span></span><br><span class="line"></span><br><span class="line">gson.fromJson(json, foo.getClass()); <span class="comment">// Fails to deserialize foo.value as Bar</span></span><br></pre></td></tr></table></figure>
+
+<p>上面是一段Gson的官方例子，可以想象到从foo实例中通过反射获取Foo类中的泛型参数是失败的<br>由于泛型参数的缘故，我们只能拿到TypeVariable（类型变量）以及它的名称T，并不能获得实际的Bar类<br>官方介绍链接：<br><a href="https://github.com/google/gson/blob/master/UserGuide.md#serializing-and-deserializing-generic-types" target="_blank" rel="noopener">https://github.com/google/gson/blob/master/UserGuide.md#serializing-and-deserializing-generic-types</a></p>
+<p>那么有没有什么方法可以缓解这种问题呢？<br>当然是有的，反射可以帮助我们获取<strong>类型</strong>相关的信息，因此这种情况我们只需要继承实现一个子类就可以了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Class Foo&lt;T&gt; &#123;</span><br><span class="line">	T value;</span><br><span class="line">&#125;</span><br><span class="line">Class SubFoo extends Foo&lt;String&gt; &#123;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Class clazz = SubFoo.class;</span><br><span class="line">ParameterizedType type = (ParameterizedType)clazz.getGenericSuperclass();</span><br><span class="line">type.getActualTypeArguments()[<span class="number">0</span>]; <span class="comment">// String Class</span></span><br></pre></td></tr></table></figure>
+
+<p>在继承实现子类的时候，由于我们显式地定义了SubFoo类的基类Foo的泛型参数，因此通过Java的反射，我们也能轻松的获取相关的泛型信息<br>可以看到Gson官方提供的解决方案也是类似的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Type fooType = <span class="keyword">new</span> TypeToken&lt;Foo&lt;Bar&gt;&gt;() &#123;&#125;.getType();</span><br><span class="line">gson.toJson(foo, fooType);</span><br><span class="line"></span><br><span class="line">gson.fromJson(json, fooType);</span><br></pre></td></tr></table></figure>
+
+<p>通过继承创建匿名内部类TypeToken后，再使用Java的反射机制，获取相关的泛型信息(TypeToken内部的源码在此就不进行分析了)</p>
+<h1 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h1><p>泛型其实是Java中的一种语法糖（Syntactic Sugar），也称糖衣语法，是由英国计算机学家Peter.J.Landin发明的一个术语，指在计算机语言中添加的某种语法，这种语法对语言的功能并没有影响，但是更方便程序员使用<br>Java中最常用的语法糖主要有泛型、变长参数、条件编译、自动拆装箱、内部类等。虚拟机并不支持这些语法，它们在编译阶段就被还原回了简单的基础语法结构，这个过程成为解语法糖<br>Java语言在JDK1.5之后引入的泛型实际上只在程序源码中存在，在编译后的字节码文件中，就已经被替换为了原来的原生类型，并且在相应的地方插入了强制转型代码，因此对于运行期的Java语言来说，ArrayList和ArrayList就是同一个类。所以泛型技术实际上是Java语言的一颗语法糖，Java语言中的泛型实现方法称为类型擦除，基于这种方法实现的泛型被称为<strong>伪泛型</strong></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/基础知识/" rel="tag"># 基础知识</a>
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/23/Android的Surface、View、SurfaceView、Windowg概念整理/" rel="next" title="Android的Surface、View、SurfaceView、Window概念整理">
+                <i class="fa fa-chevron-left"></i> Android的Surface、View、SurfaceView、Window概念整理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/11/19/（转载）带你了解腾讯开源的多渠道打包技术-VasDolly源码解析/" rel="prev" title="带你了解腾讯开源的多渠道打包技术 VasDolly源码解析">
+                带你了解腾讯开源的多渠道打包技术 VasDolly源码解析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么引入泛型"><span class="nav-number">1.</span> <span class="nav-text">为什么引入泛型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#泛型的使用"><span class="nav-number">2.</span> <span class="nav-text">泛型的使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#泛型的擦除"><span class="nav-number">3.</span> <span class="nav-text">泛型的擦除</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#泛型类中的编译器静态检查"><span class="nav-number">3.1.</span> <span class="nav-text">泛型类中的编译器静态检查</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#泛型类反射"><span class="nav-number">3.2.</span> <span class="nav-text">泛型类反射</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#补充"><span class="nav-number">4.</span> <span class="nav-text">补充</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

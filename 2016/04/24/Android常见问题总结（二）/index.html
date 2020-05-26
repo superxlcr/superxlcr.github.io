@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,基础知识,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="广播的两种注册方法、Intent的使用、ContentProvider使用方法、Thread、AsycTask、IntentService的使用场景与特点、五种Layout各自特点">
+<meta name="keywords" content="android,基础知识">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android常见问题总结（二）">
+<meta property="og:url" content="https://superxlcr.github.io/2016/04/24/Android常见问题总结（二）/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="广播的两种注册方法、Intent的使用、ContentProvider使用方法、Thread、AsycTask、IntentService的使用场景与特点、五种Layout各自特点">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.580Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android常见问题总结（二）">
+<meta name="twitter:description" content="广播的两种注册方法、Intent的使用、ContentProvider使用方法、Thread、AsycTask、IntentService的使用场景与特点、五种Layout各自特点">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2016/04/24/Android常见问题总结（二）/">
+
+
+
+
+
+  <title>Android常见问题总结（二） | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2016/04/24/Android常见问题总结（二）/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android常见问题总结（二）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-24T21:51:06+08:00">
+                2016-04-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.8k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上一篇文章的传送门：<a href="/2016/04/22/Android常见问题总结（一）/">Android常见问题总结（一）</a></p>
+<h1 id="广播的两种注册方法"><a href="#广播的两种注册方法" class="headerlink" title="广播的两种注册方法"></a>广播的两种注册方法</h1><p>Android四大组件之一的broadcast（广播）拥有两种不同的注册方法：静态注册与动态注册</p>
+<h2 id="静态注册"><a href="#静态注册" class="headerlink" title="静态注册"></a>静态注册</h2><p>广播静态注册指把广播相应的信息写在AndroidManifest.xml中，例子如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">receiver</span> <span class="attr">android:name</span>=<span class="string">".StaticReceiver"</span>&gt;</span>    </span><br><span class="line">   <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span>    </span><br><span class="line">      <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"XXX"</span> /&gt;</span>   </span><br><span class="line">   <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span>    </span><br><span class="line"><span class="tag">&lt;/<span class="name">receiver</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>静态广播的好处在于：不需程序启动即可接收，可用作自动启动程序</p>
+<h2 id="动态注册"><a href="#动态注册" class="headerlink" title="动态注册"></a>动态注册</h2><p>广播动态注册指在程序中调用registerReceiver方法来注册广播，例子如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">IntentFilter filter = <span class="keyword">new</span> IntentFilter();  </span><br><span class="line">filter.addAction(<span class="string">"XXX"</span>);  </span><br><span class="line">DynamicReceiver receiver = <span class="keyword">new</span> DynamicReceiver();  </span><br><span class="line">registerReceiver(receiver,  filter);  </span><br><span class="line"><span class="comment">// 不使用后记得取消注册  </span></span><br><span class="line">unregisterReceiver(receiver);</span><br></pre></td></tr></table></figure>
+
+<p>动态广播的好处在于：程序适应系统变化做操作，但在程序运行状态才能接收到</p>
+<h1 id="Intent的使用"><a href="#Intent的使用" class="headerlink" title="Intent的使用"></a>Intent的使用</h1><p>Intent即意图，是Android中连接四大组件的枢纽，Android中的Activity、Service和BroadcastReceiver都依靠Intent来启动<br>Intent对象的属性大致包含七种，分别是Component、Action、Category、Data、Type、Extra、Flag</p>
+<h2 id="Component"><a href="#Component" class="headerlink" title="Component"></a>Component</h2><p>Component用于明确指定需要启动的目标组件，使用方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();  </span><br><span class="line"><span class="comment">// 方法一：传入上下文参数与class参数  </span></span><br><span class="line">intent.setComponent(<span class="keyword">new</span> ComponentName(context, XXX.class));  </span><br><span class="line"><span class="comment">// 方法二：传入包名与类名  </span></span><br><span class="line">intent.setComponent(<span class="keyword">new</span> ComponentName(pkg, cls));</span><br></pre></td></tr></table></figure>
+
+<p>指定Component属性的Intent已经明确了它将要启动的组件，因此这种Intent也被称为显示Intent，没有指定Component属性的Intent被称为隐试Intent</p>
+<h2 id="Action、Category"><a href="#Action、Category" class="headerlink" title="Action、Category"></a>Action、Category</h2><p>Action代表Intent所要完成的一个抽象“动作”，而Category则用于为Action增加额外的附加类别信息，它们的使用方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();  </span><br><span class="line"><span class="comment">// 设置一个字符串代表Action  </span></span><br><span class="line">intent.setAction(action);  </span><br><span class="line"><span class="comment">// 添加一个字符串代表category  </span></span><br><span class="line">intent.addCategory(category1);  </span><br><span class="line">intent.addCategory(category2);</span><br></pre></td></tr></table></figure>
+
+<p>值得注意的是Action属性是唯一的，但Category属性可以有多个。通常设置了Action和Category来启动组件的Intent就不指定Component属性了，因此这种Intent被称为隐试Intent</p>
+<h2 id="Data、Type"><a href="#Data、Type" class="headerlink" title="Data、Type"></a>Data、Type</h2><p>Data属性接受一个Uri对象，Data属性通常用于向Action属性提供操作的数据。Type属性用于指定该Data属性所指定Uri对应的MIME类型。它们的使用方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();  </span><br><span class="line"><span class="comment">// 设置Data属性  </span></span><br><span class="line">intent.setData(<span class="keyword">new</span> Uri());  </span><br><span class="line"><span class="comment">// 设置Type属性  </span></span><br><span class="line">intent.setType(type);  </span><br><span class="line"><span class="comment">// 同时设置Data和Type属性  </span></span><br><span class="line">intent.setDataAndType(data, type);</span><br></pre></td></tr></table></figure>
+
+<p>值得注意的是Data属性和Type属性会互相覆盖，如果需要同时设置Data属性和Type属性需要使用setDataAndType</p>
+<h2 id="Extra"><a href="#Extra" class="headerlink" title="Extra"></a>Extra</h2><p>Intent的Extra属性用于进行数据交换，Intent的Extra属性值应该是一个Bundle对象（一个类似Map的对象，可以存入多个键值对，但存入的对象必须是基本类型或可序列化的），用法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();  </span><br><span class="line"><span class="comment">// 直接往Intent添加基本类型，在方法内也是把数据存入Bundle  </span></span><br><span class="line"><span class="comment">// 该方法有多种重载  </span></span><br><span class="line">intent.putExtra(name, value);  </span><br><span class="line"><span class="comment">// 新建Bundle  </span></span><br><span class="line">Bundle bundle = <span class="keyword">new</span> Bundle();  </span><br><span class="line"><span class="comment">// 往Bundle添加数据，XXX为基本类型  </span></span><br><span class="line">bundle.putXXX(key, value);  </span><br><span class="line">bundle.putXXXArray(key, value);  </span><br><span class="line"><span class="comment">// 把Bundle添加进Intent  </span></span><br><span class="line">intent.putExtras(bundle);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Flag"><a href="#Flag" class="headerlink" title="Flag"></a>Flag</h2><p>Intent的Flag属性用于为该Intent添加一些额外的控制旗标，Intent可调用addFlags方法来添加控制旗标</p>
+<h1 id="ContentProvider使用方法"><a href="#ContentProvider使用方法" class="headerlink" title="ContentProvider使用方法"></a>ContentProvider使用方法</h1><p>为了在应用程序之间交换数据，Android提供了ContentProvider。当一个应用程序需要把自己的数据暴露给其他程序使用时，该应用程序就可以通过ContentProvider来实现，而其他程序则使用ContentResolver来操作ContentProvider暴露的数据。<br>实现ContentProvider的Java代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyProvider</span> <span class="keyword">extends</span> <span class="title">ContentProvider</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onCreate</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        <span class="comment">// 第一次创建时调用，如果创建成功则返回true  </span></span><br><span class="line">        <span class="comment">// 可以在这里打开数据库什么的  </span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getType</span><span class="params">(Uri uri)</span> </span>&#123;  </span><br><span class="line">        <span class="comment">// 返回ContentProvider所提供数据的MIME类型  </span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> Cursor <span class="title">query</span><span class="params">(Uri uri, String[] projection, String selection,  </span></span></span><br><span class="line"><span class="function"><span class="params">            String[] selectionArgs, String sortOrder)</span> </span>&#123;  </span><br><span class="line">        <span class="comment">// 实现查询方法  </span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">      </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> Uri <span class="title">insert</span><span class="params">(Uri uri, ContentValues values)</span> </span>&#123;  </span><br><span class="line">        <span class="comment">// 实现插入方法，返回插入条数  </span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">delete</span><span class="params">(Uri uri, String selection, String[] selectionArgs)</span> </span>&#123;  </span><br><span class="line">        <span class="comment">// 实现删除方法，返回删除条数  </span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">update</span><span class="params">(Uri uri, ContentValues values, String selection,  </span></span></span><br><span class="line"><span class="function"><span class="params">            String[] selectionArgs)</span> </span>&#123;  </span><br><span class="line">        <span class="comment">// 实现更新方法，返回更新条数  </span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当我们实现了自己的ContentProvider后，还需要去AndroidManifest.xml中注册才行：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;provider   </span><br><span class="line">    android:name=<span class="string">".MyProvider"</span>  </span><br><span class="line">    android:authorities=<span class="string">"com.example.test.provider"</span>  </span><br><span class="line">    android:exported=<span class="string">"true"</span> /&gt;</span><br></pre></td></tr></table></figure>
+
+<p>配置ContentProvider时我们需要设置如下属性：</p>
+<ul>
+<li>name：类名</li>
+<li>authorities：为ContentProvider指定一个对应的Uri，其他程序通过这个Uri来找到该ContentProvider</li>
+<li>exported：允许ContentProvider被其他应用调用</li>
+</ul>
+<p>当其他应用需要访问我们提供的ContentProvider的使用，只需使用ContentResolver并传入相应的Uri即可：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyActivity</span> <span class="keyword">extends</span> <span class="title">Activity</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> String TAG = <span class="string">"MyActivity"</span>;  </span><br><span class="line">      </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);  </span><br><span class="line">        setContentView(R.layout.activity_main);  </span><br><span class="line">        ContentResolver resolver = getContentResolver();  </span><br><span class="line">        <span class="comment">// 传入对应的Uri进行增删查改操作  </span></span><br><span class="line">        resolver.query(uri, projection, selection, selectionArgs, sortOrder);  </span><br><span class="line">        resolver.insert(url, values);  </span><br><span class="line">        resolver.delete(url, where, selectionArgs);  </span><br><span class="line">        resolver.update(uri, values, where, selectionArgs);  </span><br><span class="line">    &#125;  </span><br><span class="line">      </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>除此之外，我们还可以使用ContentObserver来为ContentProvider添加观察者。我们在其他程序的ContentResolver中注册ContentObserver，当ContentProvider发生改变时，我们在数据改动的使用调用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">getContext().getContentResolver().notifyChange(uri, <span class="keyword">null</span>);</span><br></pre></td></tr></table></figure>
+
+<p>那么此时ContentObserver中的onChange回调方法就会被调用，我们就可以简单地监听ContentProvider的数据改变了</p>
+<h1 id="Thread、AsycTask、IntentService的使用场景与特点"><a href="#Thread、AsycTask、IntentService的使用场景与特点" class="headerlink" title="Thread、AsycTask、IntentService的使用场景与特点"></a>Thread、AsycTask、IntentService的使用场景与特点</h1><p>Thread、AsyncTask和IntentService都与多线程有关，当我们在Android中涉及并发编程时（进行网络请求、加载较大的文件等操作）就需要使用</p>
+<h2 id="Thread"><a href="#Thread" class="headerlink" title="Thread"></a>Thread</h2><p>Java中的子线程，可以通过传入Runnable接口或继承Thread重写run方法新建</p>
+<h2 id="AsyncTask"><a href="#AsyncTask" class="headerlink" title="AsyncTask"></a>AsyncTask</h2><p>由Java线程池改造的异步任务工具</p>
+<h2 id="IntentService"><a href="#IntentService" class="headerlink" title="IntentService"></a>IntentService</h2><p>Android四大组件之一的Service默认是在主线程中运行的，IntentService是Service的子类，有如下特点：</p>
+<ol>
+<li>IntentService会创建单独的worker线程来处理所有的Intent请求</li>
+<li>当所有请求处理完成后，IntentService会自动停止</li>
+<li>为Service的onBind方法提供了默认实现，返回null</li>
+<li>为Service的onStartCommand方法提供了默认实现，把请求Intent添加到队列中</li>
+</ol>
+<p>实现IntentService的例子如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyIntentService</span> <span class="keyword">extends</span> <span class="title">IntentService</span> </span>&#123;  </span><br><span class="line">      </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyIntentService</span><span class="params">(String name)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">super</span>(name);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onHandleIntent</span><span class="params">(Intent intent)</span> </span>&#123;  </span><br><span class="line">        <span class="comment">// IntentService会创建单独的worker线程来处理此处的代码  </span></span><br><span class="line">  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们只需重写onHandleIntent方法即可，该方法的代码会在一个子线程中运行</p>
+<h1 id="五种Layout各自特点"><a href="#五种Layout各自特点" class="headerlink" title="五种Layout各自特点"></a>五种Layout各自特点</h1><h2 id="FrameLayout"><a href="#FrameLayout" class="headerlink" title="FrameLayout"></a>FrameLayout</h2><p>FrameLayout即单帧布局，在该布局中的所有空间都会被置于布局的左上角</p>
+<h2 id="LinearLayout"><a href="#LinearLayout" class="headerlink" title="LinearLayout"></a>LinearLayout</h2><p>LinearLayout即线性布局，使用该布局必须为其指定orientation属性（排列方向属性，可以设置为水平或垂直的），其中的空间就会根据设置的属性呈水平或垂直排列</p>
+<h2 id="AbsoluteLayout"><a href="#AbsoluteLayout" class="headerlink" title="AbsoluteLayout"></a>AbsoluteLayout</h2><p>AbsoluteLayout即绝对布局，对布局中的控件我们使用x，y坐标值进行定位</p>
+<h2 id="RelativeLayout"><a href="#RelativeLayout" class="headerlink" title="RelativeLayout"></a>RelativeLayout</h2><p>RelativeLayout即相对布局，在其中的控件可以相对于父布局或布局中别的控件的位置进行定位布局</p>
+<h2 id="TableLayout"><a href="#TableLayout" class="headerlink" title="TableLayout"></a>TableLayout</h2><p>TableLayout即表格布局，TableLayout中的每一行的控件由TableRow包含，最终的布局效果会呈现成表格状</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/基础知识/" rel="tag"># 基础知识</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/04/22/Android常见问题总结（一）/" rel="next" title="Android常见问题总结（一）">
+                <i class="fa fa-chevron-left"></i> Android常见问题总结（一）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/04/30/Head-First-Java设计模式思维导图总结/" rel="prev" title="Head First Java设计模式思维导图总结">
+                Head First Java设计模式思维导图总结 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#广播的两种注册方法"><span class="nav-number">1.</span> <span class="nav-text">广播的两种注册方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#静态注册"><span class="nav-number">1.1.</span> <span class="nav-text">静态注册</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动态注册"><span class="nav-number">1.2.</span> <span class="nav-text">动态注册</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Intent的使用"><span class="nav-number">2.</span> <span class="nav-text">Intent的使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Component"><span class="nav-number">2.1.</span> <span class="nav-text">Component</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Action、Category"><span class="nav-number">2.2.</span> <span class="nav-text">Action、Category</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Data、Type"><span class="nav-number">2.3.</span> <span class="nav-text">Data、Type</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Extra"><span class="nav-number">2.4.</span> <span class="nav-text">Extra</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Flag"><span class="nav-number">2.5.</span> <span class="nav-text">Flag</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ContentProvider使用方法"><span class="nav-number">3.</span> <span class="nav-text">ContentProvider使用方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Thread、AsycTask、IntentService的使用场景与特点"><span class="nav-number">4.</span> <span class="nav-text">Thread、AsycTask、IntentService的使用场景与特点</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Thread"><span class="nav-number">4.1.</span> <span class="nav-text">Thread</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AsyncTask"><span class="nav-number">4.2.</span> <span class="nav-text">AsyncTask</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IntentService"><span class="nav-number">4.3.</span> <span class="nav-text">IntentService</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#五种Layout各自特点"><span class="nav-number">5.</span> <span class="nav-text">五种Layout各自特点</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#FrameLayout"><span class="nav-number">5.1.</span> <span class="nav-text">FrameLayout</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LinearLayout"><span class="nav-number">5.2.</span> <span class="nav-text">LinearLayout</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AbsoluteLayout"><span class="nav-number">5.3.</span> <span class="nav-text">AbsoluteLayout</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RelativeLayout"><span class="nav-number">5.4.</span> <span class="nav-text">RelativeLayout</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TableLayout"><span class="nav-number">5.5.</span> <span class="nav-text">TableLayout</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

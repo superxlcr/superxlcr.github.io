@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="（转载）View的事件分发机制、滑动冲突、滑动冲突的处理方法、后记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="View的事件分发机制和滑动冲突解决方案">
+<meta property="og:url" content="https://superxlcr.github.io/2019/11/14/View的事件分发机制和滑动冲突解决方案/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="（转载）View的事件分发机制、滑动冲突、滑动冲突的处理方法、后记">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2019/11/14/View的事件分发机制和滑动冲突解决方案/1.gif">
+<meta property="og:image" content="https://superxlcr.github.io/2019/11/14/View的事件分发机制和滑动冲突解决方案/2.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2019/11/14/View的事件分发机制和滑动冲突解决方案/3.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2019/11/14/View的事件分发机制和滑动冲突解决方案/4.gif">
+<meta property="og:image" content="https://superxlcr.github.io/2019/11/14/View的事件分发机制和滑动冲突解决方案/5.gif">
+<meta property="og:image" content="https://superxlcr.github.io/2019/11/14/View的事件分发机制和滑动冲突解决方案/6.gif">
+<meta property="og:image" content="https://superxlcr.github.io/2019/11/14/View的事件分发机制和滑动冲突解决方案/7.gif">
+<meta property="og:image" content="https://superxlcr.github.io/2019/11/14/View的事件分发机制和滑动冲突解决方案/8.gif">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.751Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="View的事件分发机制和滑动冲突解决方案">
+<meta name="twitter:description" content="（转载）View的事件分发机制、滑动冲突、滑动冲突的处理方法、后记">
+<meta name="twitter:image" content="https://superxlcr.github.io/2019/11/14/View的事件分发机制和滑动冲突解决方案/1.gif">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2019/11/14/View的事件分发机制和滑动冲突解决方案/">
+
+
+
+
+
+  <title>View的事件分发机制和滑动冲突解决方案 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2019/11/14/View的事件分发机制和滑动冲突解决方案/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">View的事件分发机制和滑动冲突解决方案</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-14T15:48:07+08:00">
+                2019-11-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3.8k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文转载自：<a href="https://www.jianshu.com/p/057832528bdd" target="_blank" rel="noopener">https://www.jianshu.com/p/057832528bdd</a></p>
+<p>这篇文章会先讲Android中View的事件分发机制，然后再介绍Android滑动冲突的形成原因并给出解决方案。因水平有限，讲的不会太过深入，只希望各位看了之后对事件分发机制的流程有个大概的概念，并且以后能自己解决有关滑动冲突的问题，用语浅薄，文笔生疏，见谅。</p>
+<h1 id="View的事件分发机制"><a href="#View的事件分发机制" class="headerlink" title="View的事件分发机制"></a>View的事件分发机制</h1><p>View的事件分发机制说白了就是点击事件的传递，也就是一个Down事件,若干个Move事件，一个Up事件构成的事件序列的传递。<br>当你手指按了屏幕，点击事件就会遵循Activity-&gt;Window-&gt;View这一顺序传递。<br>这一传递过程有三个重要的方法，分别是：</p>
+<p>boolean dispatchTouchEcent(MotionEvent ev),</p>
+<p>boolean onInterceptTouchEvent(MotionEvent event),</p>
+<p>boolean onTouchEvent(MotionEvent event)<br>先一个一个简单介绍下：</p>
+<h2 id="dispatchTouchEcent："><a href="#dispatchTouchEcent：" class="headerlink" title="dispatchTouchEcent："></a>dispatchTouchEcent：</h2><p>只要事件传递到了当前View,那么dispatchTouchEcent方法就一定会被调用。返回结果表示是否消耗当前事件。</p>
+<h2 id="onInterceptTouchEvent："><a href="#onInterceptTouchEvent：" class="headerlink" title="onInterceptTouchEvent："></a>onInterceptTouchEvent：</h2><p>在dispatchTouchEcent方法内部调用此方法，用来判断是否拦截某个事件。如果当前View拦截了某个事件，那么在这同一个事件序列中，此方法不会再次被调用。返回结果表示是否拦截当前事件。</p>
+<h2 id="onTouchEvent："><a href="#onTouchEvent：" class="headerlink" title="onTouchEvent："></a>onTouchEvent：</h2><p>在dispatchTouchEcent方法内调用此方法，用来处理事件。返回结果表示是否处理当前事件，如果不处理，那么在同一个事件序列里面，当前View无法再收到后续的事件。<br>上面的解释听起来比较抽象，我们可以用一段伪代码来表示上面三个方法的关系：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchTouchEvent</span><span class="params">(MotionEvent ev)</span></span>&#123;</span><br><span class="line">    <span class="keyword">boolean</span> consum = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">if</span>(onInterceptTouchEvent(ev))&#123;</span><br><span class="line">        consum = onTouchEvent(ev);</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        consum = child.dispatchTouchEvent(ev);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> consum;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面代码很好的解释了三个方法之间的关系，我们也可以从代码中大致摸索到事件传递的顺序规则：当点击事件传递到根ViewGroup里，会执行dispatchTouchEvent，在其内部会先调用onInterceptTouchEvent询问是否拦截事件，若拦截，则执行onTouchEvent方法处理这个事件；若不拦截，则执行子元素的dispatchTouchEvent，进入向下分发的传递，直到事件被处理。<br>在处理一个事件的时候，是有优先级的，如果设置了OnTouchListener,会先执行其内部的onTouch方法，这时若onTouch方法返回true，那么表示事件被处理了，不会向下传递了；如果返回了false，那么事件会继续传递给onTouchEvent方法处理,在onTouchEvent方法中如果当前设置了OnClickListener,那么就会调用其onClick方法。所以其优先级为：OnTouchListen&gt;onTouchEvent&gt;OnClickListen。<br>这里有一种情况，如果一个View的onTouchEvent返回了false,那么它父容器的onTouchEvent方法将会被调用。我们写个例子来试一下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">    Toast.makeText(mContext, <span class="string">"Button"</span>, Toast.LENGTH_SHORT).show();</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>先自定义一个Button,重写其onTouchEvent方法返回false。在自定义一个MyTouchView作为父布局。效果如下：</p>
+<p><img src="/2019/11/14/View的事件分发机制和滑动冲突解决方案/1.gif" alt="pic1"></p>
+<p>大家可以自己试试。<br>既然如此，在开头我们说过事件的传递顺序是Activity-&gt;Window-&gt;View,所以如果所有的元素都返回了false,那么最后事件就会再次传递到Activity里，由Activity的onTouchEvent方法来处理。<br>《Android开发艺术探索》这本书里总结了11条关于事件传递的结论：</p>
+<ol>
+<li>同一个事件序列是指手机接触屏幕那一刻起，到离开屏幕那一刻结束，有一个down事件，若干个move事件，一个up事件构成。</li>
+<li>某个View一旦决定拦截事件，那么这个事件序列之后的事件都会由它来处理，并且不会再调用onInterceptTouchEvent。</li>
+<li>正常情况下，一个事件序列只能被一个View拦截并消耗。这个原因可以参考第2条，因为一旦拦截了某个事件，那么这个事件序列里的其他事件都会交给这个View来处理，所以同一事件序列中的事件不能分别由两个View同时处理，但是我们可以通过特殊手段做到，比如一个View将本该自己处理的事件通过onTouchEvent强行传递给其他View处理。</li>
+<li>一个View如果开始处理事件，如果它不处理down事件（onTouchEvent里面返回了false）,那么这个事件序列的其他事件就不会交给它来继续处理了，而是会交给它的父元素去处理。</li>
+<li>如果一个View处理了down事件，却没有处理其他事件，那么这些事件不会交给父元素处理，并且这个View还能继续受到后续的事件。而这些未处理的事件，最终会交给Activity来处理。</li>
+<li>ViewGroup的onInterceptToucheEvent默认返回false,也就是默认不拦截事件。</li>
+<li>View没有InterceptTouchEvent方法，如果有事件传过来，就会直接调用onTouchEvent方法。</li>
+<li>View的onTouchEvent方法默认都会消耗事件，也就是默认返回true,除非他是不可点击的（longClickable和clickable同时为false）。</li>
+<li>View的enable属性不会影响onTouchEvent的默认返回值。就算一个View是不可见的，只要他是可点击的（clickable或者longClickable有一个为true）,它的onTouchEvent默认返回值也是true。</li>
+<li>onClick方法会执行的前提是当前View是可点击的，并且它收到了down和up事件。</li>
+<li>事件传递过程是由外向内的，也就是事件会先传给父元素在向下传递给子元素。但是子元素可以通过requestDisallowInterceptTouchEvent来干预父元素的分发过程，但是down事件除外（因为down事件方法里，会清除所有的标志位）。</li>
+</ol>
+<h1 id="滑动冲突"><a href="#滑动冲突" class="headerlink" title="滑动冲突"></a>滑动冲突</h1><p>介绍完了事件分发机制的基本流程，我们来看看滑动冲突。滑动冲突的基本形式分为两种，其他复杂的滑动冲突都可以拆成这两种基本形式：</p>
+<ol>
+<li>外部滑动方向与内部方向不一致。</li>
+<li>外部方向与内部方向一致。<br>先来看第一种，比如你用ViewPaper和Fragment搭配，而Fragment里往往是一个竖直滑动的ListView,这种情况是就会产生滑动冲突,但是由于ViewPaper本身已经处理好了滑动冲突，所以我们无需考虑，不过若是换成ScrollView，我们就得自己处理滑动冲突了。图示如下：</li>
+</ol>
+<p><img src="/2019/11/14/View的事件分发机制和滑动冲突解决方案/2.jpg" alt="pic2"></p>
+<p>再看看第二种，这种情况下，因为内部和外部滑动方向一致，系统会分不清你要滑动哪个部分，所以会要么只有一层能滑动，要么两层一起滑动得很卡顿。图示如下:</p>
+<p><img src="/2019/11/14/View的事件分发机制和滑动冲突解决方案/3.jpg" alt="pic3"></p>
+<p>对于这两种情况，我们处理的方法也很简单，并且都有相应的套路。</p>
+<ol>
+<li>第一种的冲突主要是一个横向一个竖向的，所以我们只要判断滑动方向是竖向还是横向的，再让对应的View滑动即可。判断的方法有很多，比如竖直距离与横向距离的大小比较；滑动路径与水平形成的夹角等等。</li>
+<li>对于这种情况，比较特殊，我们没有通用的规则，得根据业务逻辑来得出相应的处理规则。举个最常见的例子，ListView下拉刷新，需要ListView自身滑动，但是当滑动到头部时需要ListView和Header一起滑动，也就是整个父容器的滑动。如果不处理好滑动冲突，就会出现各种意想不到情况。</li>
+</ol>
+<h1 id="滑动冲突的处理方法"><a href="#滑动冲突的处理方法" class="headerlink" title="滑动冲突的处理方法"></a>滑动冲突的处理方法</h1><p>滑动冲突的拦截方法有两种：</p>
+<p>一种是让事件都经过父容器的拦截处理，如果父容器需要则拦截，如果不需要则不拦截，成为外部拦截法，其伪代码如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onInterceptTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">boolean</span> intercepted = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">int</span> x = (<span class="keyword">int</span>)event.getX();</span><br><span class="line">    <span class="keyword">int</span> y = (<span class="keyword">int</span>)event.getY();</span><br><span class="line">    <span class="keyword">switch</span> (event.getAction()) &#123;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_DOWN: &#123;</span><br><span class="line">            intercepted = <span class="keyword">false</span>;</span><br><span class="line">           <span class="keyword">break</span>;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">case</span> MotionEvent.ACTION_MOVE: &#123;</span><br><span class="line">           <span class="keyword">if</span> (满足父容器的拦截要求) &#123;</span><br><span class="line">                intercepted = <span class="keyword">true</span>;</span><br><span class="line">           &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                intercepted = <span class="keyword">false</span>;</span><br><span class="line">           &#125;</span><br><span class="line">           <span class="keyword">break</span>;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">case</span> MotionEvent.ACTION_UP: &#123;</span><br><span class="line">           intercepted = <span class="keyword">false</span>;</span><br><span class="line">           <span class="keyword">break</span>;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">default</span>:</span><br><span class="line">           <span class="keyword">break</span>;</span><br><span class="line">       &#125;</span><br><span class="line">            mLastXIntercept = x;</span><br><span class="line">            mLastYIntercept = y;</span><br><span class="line">            <span class="keyword">return</span> intercepted;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这里，首先down事件父容器必须返回false ，因为若是返回true，也就是拦截了down事件，那么后续的move和up事件就都会传递给父容器，子元素就没有机会处理事件了。其次是up事件也返回了false，一是因为up事件对父容器没什么意义，其次是因为若事件是子元素处理的，却没有收到up事件会让子元素的onClick事件无法触发。<br>另一种是父容器不拦截任何事件，将所有事件传递给子元素，如果子元素需要则消耗掉，如果不需要则通过requestDisallowInterceptTouchEvent方法交给父容器处理，称为内部拦截法，使用起来稍显麻烦。伪代码如下：</p>
+<p>首先我们需要重写子元素的dispatchTouchEvent方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"> <span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> x = (<span class="keyword">int</span>) event.getX();</span><br><span class="line">    <span class="keyword">int</span> y = (<span class="keyword">int</span>) event.getY();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">switch</span> (event.getAction()) &#123;</span><br><span class="line">    <span class="keyword">case</span> MotionEvent.ACTION_DOWN: &#123;</span><br><span class="line">        parent.requestDisallowInterceptTouchEvent(<span class="keyword">true</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">case</span> MotionEvent.ACTION_MOVE: &#123;</span><br><span class="line">        <span class="keyword">int</span> deltaX = x - mLastX;</span><br><span class="line">        <span class="keyword">int</span> deltaY = y - mLastY;</span><br><span class="line">        <span class="keyword">if</span> (父容器需要此类点击事件) &#123;</span><br><span class="line">            parent.requestDisallowInterceptTouchEvent(<span class="keyword">false</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">case</span> MotionEvent.ACTION_UP: &#123;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    mLastX = x;</span><br><span class="line">    mLastY = y;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">super</span>.dispatchTouchEvent(event);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后修改父容器的onInterceptTouchEvent方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onInterceptTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> action = event.getAction();</span><br><span class="line">    <span class="keyword">if</span> (action == MotionEvent.ACTION_DOWN) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里父容器也不能拦截down事件。<br>看代码看不出所以然，我们通过实例来看看滑动冲突是怎么样的。</p>
+<h2 id="外部滑动方向与内部方向不一致"><a href="#外部滑动方向与内部方向不一致" class="headerlink" title="外部滑动方向与内部方向不一致"></a>外部滑动方向与内部方向不一致</h2><p>我们先模拟第一种场景，内外滑动方向不一致，我们先自定义一个父控件，让其可以左右滑动，类似于ViewPaper：</p>
+<p><img src="/2019/11/14/View的事件分发机制和滑动冲突解决方案/4.gif" alt="pic4"></p>
+<p>然后将里面换成三个ListView:</p>
+<p><img src="/2019/11/14/View的事件分发机制和滑动冲突解决方案/5.gif" alt="pic5"></p>
+<p>可以看到左右滑动失效了，说明确实冲突了。那么我们就来解决一下，首先我们要明白滑动规则是什么，这个例子中如果我们竖直滑动就让ListView消耗事件，水平滑动就让我们自定义的父容器滑动。知道了这个我们只需要将其替换到之前伪代码里的拦截条件里即可。<br>先用外部拦截法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onInterceptTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">boolean</span> intercepted = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">int</span> x = (<span class="keyword">int</span>) event.getX();</span><br><span class="line">    <span class="keyword">int</span> y = (<span class="keyword">int</span>) event.getY();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">switch</span> (event.getAction()) &#123;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_DOWN: &#123;</span><br><span class="line">            Log.d(TAG, <span class="string">"onInterceptTouchEvent: ACTION_DOWN"</span>);</span><br><span class="line">            intercepted = <span class="keyword">false</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_MOVE: &#123;</span><br><span class="line">            Log.d(TAG, <span class="string">"onInterceptTouchEvent: ACTION_MOVE"</span>);</span><br><span class="line">            <span class="keyword">int</span> deltaX = x - mLastXIntercept;</span><br><span class="line">            <span class="keyword">int</span> deltaY = y - mLastYIntercept;</span><br><span class="line">            <span class="keyword">if</span> (Math.abs(deltaX) &gt; Math.abs(deltaY)) &#123;</span><br><span class="line">                intercepted = <span class="keyword">true</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                intercepted = <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_UP: &#123;</span><br><span class="line">            intercepted = <span class="keyword">false</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Log.d(TAG, <span class="string">"intercepted="</span> + intercepted);</span><br><span class="line">    mLastX = x;</span><br><span class="line">    mLastY = y;</span><br><span class="line">    mLastXIntercept = x;</span><br><span class="line">    mLastYIntercept = y;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> intercepted;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里我们判断横向滑动的距离与竖直滑动距离的长短。若是竖直滑动的长，则判断为竖直滑动，那么就是ListView的滑动，就将intercepted置为false，让父容器不拦截，交由子元素ListView处理。若是横向，则intercepted置为true，交由父容器处理。<br>效果如下：</p>
+<p><img src="/2019/11/14/View的事件分发机制和滑动冲突解决方案/6.gif" alt="pic6"></p>
+<p>接下来看看内部拦截法：</p>
+<p>先自定义一个MyListView继承ListView，重写其dispatchTouchEvent方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> x = (<span class="keyword">int</span>) event.getX();</span><br><span class="line">    <span class="keyword">int</span> y = (<span class="keyword">int</span>) event.getY();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">switch</span> (event.getAction()) &#123;</span><br><span class="line">    <span class="keyword">case</span> MotionEvent.ACTION_DOWN: &#123;</span><br><span class="line">        mHorizontalScrollViewEx.requestDisallowInterceptTouchEvent(<span class="keyword">true</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">case</span> MotionEvent.ACTION_MOVE: &#123;</span><br><span class="line">        <span class="keyword">int</span> deltaX = x - mLastX;</span><br><span class="line">        <span class="keyword">int</span> deltaY = y - mLastY;</span><br><span class="line">        Log.d(TAG, <span class="string">"dx:"</span> + deltaX + <span class="string">" dy:"</span> + deltaY);</span><br><span class="line">        <span class="keyword">if</span> (Math.abs(deltaX) &gt; Math.abs(deltaY)) &#123;</span><br><span class="line">            mHorizontalScrollViewEx.requestDisallowInterceptTouchEvent(<span class="keyword">false</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">case</span> MotionEvent.ACTION_UP: &#123;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    mLastX = x;</span><br><span class="line">    mLastY = y;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">super</span>.dispatchTouchEvent(event);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>再重写外部父容器的oninterceptTouchEvent方法:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onInterceptTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> x = (<span class="keyword">int</span>) event.getX();</span><br><span class="line">    <span class="keyword">int</span> y = (<span class="keyword">int</span>) event.getY();</span><br><span class="line">    <span class="keyword">int</span> action = event.getAction();</span><br><span class="line">    <span class="keyword">if</span> (action == MotionEvent.ACTION_DOWN) &#123;</span><br><span class="line">        mLastX = x;</span><br><span class="line">        mLastY = y;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>效果和外部拦截法一样。</p>
+<h2 id="外部方向与内部方向一致"><a href="#外部方向与内部方向一致" class="headerlink" title="外部方向与内部方向一致"></a>外部方向与内部方向一致</h2><p>接下来看看同方向的滑动冲突,这里我们用一个竖直的ScrollView嵌套一个ListView做例子。首先看看没有解决滑动冲突的时候是咋样的：</p>
+<p><img src="/2019/11/14/View的事件分发机制和滑动冲突解决方案/7.gif" alt="pic7"></p>
+<p>我们看到只要ScrollView可以滑动，内部的ListView是不能滑动的。那我们现在来解决这个问题，同向滑动冲突和与不同向滑动冲突不一样，得根据实际的需求来确定拦截的规则。这里我们的需求是当ListView滑到顶部了，并且继续向下滑就让ScrollView拦截掉；当ListView滑到底部了，并且继续向下滑，就让ScrollView拦截掉，其余时候都交给ListView自身处理事件。</p>
+<p>首先用外部拦截法，我们需要重写ScrollView的onInterceptTouchEvent方法，代码如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onInterceptTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">boolean</span> intercepted = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">int</span> y = (<span class="keyword">int</span>) event.getY();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">switch</span> (event.getAction()) &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_DOWN: &#123;</span><br><span class="line">            nowY = y;</span><br><span class="line">            intercepted = <span class="keyword">super</span>.onInterceptTouchEvent(event);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_MOVE: &#123;</span><br><span class="line">            <span class="keyword">if</span>(mListView.getFirstVisiblePosition()==<span class="number">0</span></span><br><span class="line">                    &amp;&amp; y&gt;nowY)&#123;</span><br><span class="line">                intercepted = <span class="keyword">true</span>;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span>(mListView.getLastVisiblePosition()==mListView.getCount()-<span class="number">1</span></span><br><span class="line">                    &amp;&amp; y&lt;nowY)&#123;</span><br><span class="line">                intercepted = <span class="keyword">true</span>;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            intercepted = <span class="keyword">false</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_UP: &#123;</span><br><span class="line">            intercepted = <span class="keyword">false</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> intercepted;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里我们看到Down事件里我们并没有返回false而是返回了super.onInterceptTouchEvent(event),这是因为ScrollView在Down方法时需要初始化一些参数如果我们直接返回false,会导致滑动出现问题。并且前面说过ViewGroup</p>
+<p>的onInterceptTouchEvent方法是默认返回false的，所以我们这里直接返回super方法即可。</p>
+<p>处理了滑动冲突后效果如下：</p>
+<p><img src="/2019/11/14/View的事件分发机制和滑动冲突解决方案/8.gif" alt="pic8"></p>
+<p>接下来看看内部拦截法：</p>
+<p>先重写ScrollView的onInterceptTouchEvent方法，让其拦截除了Down事件以外的其他方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onInterceptTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> x = (<span class="keyword">int</span>) event.getX();</span><br><span class="line">        <span class="keyword">int</span> y = (<span class="keyword">int</span>) event.getY();</span><br><span class="line">        <span class="keyword">int</span> action = event.getAction();</span><br><span class="line">        <span class="keyword">if</span> (action == MotionEvent.ACTION_DOWN) &#123;</span><br><span class="line">            mLastX = x;</span><br><span class="line">            mLastY = y;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">super</span>.onInterceptTouchEvent(event);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>在重写ListView的dispatchTouchEvent方法，规则已经说明过了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"> <span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> y = (<span class="keyword">int</span>) event.getY();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">switch</span> (event.getAction()) &#123;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_DOWN: &#123;</span><br><span class="line">            nowY = y;</span><br><span class="line">            mHorizontalScrollViewEx2.requestDisallowInterceptTouchEvent(<span class="keyword">true</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_MOVE: &#123;</span><br><span class="line">            <span class="keyword">if</span>(<span class="keyword">this</span>.getFirstVisiblePosition()==<span class="number">0</span></span><br><span class="line">                    &amp;&amp; y&gt;nowY)&#123;</span><br><span class="line">                mHorizontalScrollViewEx2.requestDisallowInterceptTouchEvent(<span class="keyword">false</span>);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span>(<span class="keyword">this</span>.getLastVisiblePosition()==<span class="keyword">this</span>.getCount()-<span class="number">1</span></span><br><span class="line">                    &amp;&amp; y&lt;nowY)&#123;</span><br><span class="line">                mHorizontalScrollViewEx2.requestDisallowInterceptTouchEvent(<span class="keyword">false</span>);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            mHorizontalScrollViewEx2.requestDisallowInterceptTouchEvent(<span class="keyword">true</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_UP: &#123;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">super</span>.dispatchTouchEvent(event);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最终效果和外部拦截法一样。<br>好了，这篇文章到此结束，希望各位看了能对事件分发机制有个大致的了解，并且遇到了滑动冲突的问题能够迎刃而解。谢谢忍受我的文章。</p>
+<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>2月17号更新：感谢 @ShadowXv所指出的问题，我已改正，改正如下：</p>
+<p>将listView是否滑动到顶部或者底部的判断改为</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isBottom</span><span class="params">(<span class="keyword">final</span> ListView listView)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">boolean</span> result=<span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">if</span> (listView.getLastVisiblePosition() == (listView.getCount() - <span class="number">1</span>)) &#123;</span><br><span class="line">            <span class="keyword">final</span> View bottomChildView = listView.getChildAt(listView.getLastVisiblePosition() - listView.getFirstVisiblePosition());</span><br><span class="line">            result= (listView.getHeight()&gt;=bottomChildView.getBottom());</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="keyword">return</span>  result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isTop</span><span class="params">(<span class="keyword">final</span> ListView listView)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">boolean</span> result=<span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">if</span>(listView.getFirstVisiblePosition()==<span class="number">0</span>)&#123;</span><br><span class="line">            <span class="keyword">final</span> View topChildView = listView.getChildAt(<span class="number">0</span>);</span><br><span class="line">            result=topChildView.getTop()==<span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result ;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>那么onInterceptTouchEvent方法也该改为如下所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onInterceptTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">boolean</span> intercepted = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">int</span> y = (<span class="keyword">int</span>) event.getY();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">switch</span> (event.getAction()) &#123;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">case</span> MotionEvent.ACTION_DOWN: &#123;</span><br><span class="line">                nowY = y;</span><br><span class="line">                intercepted = <span class="keyword">super</span>.onInterceptTouchEvent(event);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">case</span> MotionEvent.ACTION_MOVE: &#123;</span><br><span class="line">                <span class="keyword">if</span>(isTop(mListView)</span><br><span class="line">                        &amp;&amp; y&gt;nowY)&#123;</span><br><span class="line">                    intercepted = <span class="keyword">true</span>;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(isBottom(mListView)</span><br><span class="line">                        &amp;&amp; y&lt;nowY)&#123;</span><br><span class="line">                    intercepted = <span class="keyword">true</span>;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                intercepted = <span class="keyword">false</span>;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">case</span> MotionEvent.ACTION_UP: &#123;</span><br><span class="line">                intercepted = <span class="keyword">false</span>;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">default</span>:</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> intercepted;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>内部拦截法也是将判断条件换一下就可以了，这里就不贴代码了。。。<br>最后再一次感谢指出问题！</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/11/03/md5介绍/" rel="next" title="md5介绍">
+                <i class="fa fa-chevron-left"></i> md5介绍
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/11/18/属性动画执行流程探究/" rel="prev" title="属性动画执行流程探究">
+                属性动画执行流程探究 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#View的事件分发机制"><span class="nav-number">1.</span> <span class="nav-text">View的事件分发机制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#dispatchTouchEcent："><span class="nav-number">1.1.</span> <span class="nav-text">dispatchTouchEcent：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#onInterceptTouchEvent："><span class="nav-number">1.2.</span> <span class="nav-text">onInterceptTouchEvent：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#onTouchEvent："><span class="nav-number">1.3.</span> <span class="nav-text">onTouchEvent：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#滑动冲突"><span class="nav-number">2.</span> <span class="nav-text">滑动冲突</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#滑动冲突的处理方法"><span class="nav-number">3.</span> <span class="nav-text">滑动冲突的处理方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#外部滑动方向与内部方向不一致"><span class="nav-number">3.1.</span> <span class="nav-text">外部滑动方向与内部方向不一致</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#外部方向与内部方向一致"><span class="nav-number">3.2.</span> <span class="nav-text">外部方向与内部方向一致</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#后记"><span class="nav-number">4.</span> <span class="nav-text">后记</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

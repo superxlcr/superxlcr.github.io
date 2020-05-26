@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,基础知识,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="addFooterView与setAdapter顺序问题、查看应用是否已安装、gradle 插件版本号与gradle 版本号对应关系、处理安装出现INSTALL_FAILED_TEST_ONLY错误、Activity启动流程图总结">
+<meta name="keywords" content="android,基础知识">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android常见问题总结（九）">
+<meta property="og:url" content="https://superxlcr.github.io/2019/08/07/Android常见问题总结（九）/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="addFooterView与setAdapter顺序问题、查看应用是否已安装、gradle 插件版本号与gradle 版本号对应关系、处理安装出现INSTALL_FAILED_TEST_ONLY错误、Activity启动流程图总结">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2019/08/07/Android常见问题总结（九）/1.jpg">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.579Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android常见问题总结（九）">
+<meta name="twitter:description" content="addFooterView与setAdapter顺序问题、查看应用是否已安装、gradle 插件版本号与gradle 版本号对应关系、处理安装出现INSTALL_FAILED_TEST_ONLY错误、Activity启动流程图总结">
+<meta name="twitter:image" content="https://superxlcr.github.io/2019/08/07/Android常见问题总结（九）/1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2019/08/07/Android常见问题总结（九）/">
+
+
+
+
+
+  <title>Android常见问题总结（九） | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2019/08/07/Android常见问题总结（九）/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android常见问题总结（九）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-07T18:50:20+08:00">
+                2019-08-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.9k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上一篇博客传送门：<a href="/2019/05/06/Android常见问题总结（八）/">Android常见问题总结（八）</a></p>
+<h1 id="addFooterView与setAdapter顺序问题"><a href="#addFooterView与setAdapter顺序问题" class="headerlink" title="addFooterView与setAdapter顺序问题"></a>addFooterView与setAdapter顺序问题</h1><p>最近博主遇到了一个 cannot be cast to android.widget.HeaderViewListAdapter 的崩溃，在网上查阅了相关资料，发现是ListView的addFooterView与setAdapter调用顺序不当导致的（addHeaderView同理）</p>
+<p>结论：在Android 4.4之前，如果在调用setAdapter之后调用addFooterView，则会在调用removeFooterView的时候抛出异常</p>
+<p>原因：</p>
+<p>先贴上Android 4.2的listView源码：<br><a href="http://androidxref.com/4.2_r1/xref/frameworks/base/core/java/android/widget/ListView.java" target="_blank" rel="noopener">http://androidxref.com/4.2_r1/xref/frameworks/base/core/java/android/widget/ListView.java</a><br>再贴上Android 4.4的listView源码：<br><a href="http://androidxref.com/4.4.4_r1/xref/frameworks/base/core/java/android/widget/ListView.java" target="_blank" rel="noopener">http://androidxref.com/4.4.4_r1/xref/frameworks/base/core/java/android/widget/ListView.java</a></p>
+<p>我们先看下抛出异常的方法removeFooterView：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* Removes a previously-added footer view.</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">* <span class="doctag">@param</span> v The view to remove</span></span><br><span class="line"><span class="comment">* <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">* true if the view was removed, false if the view was not a footer view</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">removeFooterView</span><span class="params">(View v)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (mFooterViewInfos.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">		<span class="keyword">boolean</span> result = <span class="keyword">false</span>;</span><br><span class="line">		<span class="keyword">if</span> (mAdapter != <span class="keyword">null</span> &amp;&amp; ((HeaderViewListAdapter) mAdapter).removeFooter(v)) &#123;</span><br><span class="line">			<span class="keyword">if</span> (mDataSetObserver != <span class="keyword">null</span>) &#123;</span><br><span class="line">				mDataSetObserver.onChanged();</span><br><span class="line">			&#125;</span><br><span class="line">			result = <span class="keyword">true</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		removeFixedViewInfo(v, mFooterViewInfos);</span><br><span class="line">		<span class="keyword">return</span> result;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果我们addFooterView与setAdapter调用顺序不当，当我们调用removeFooterView时，在上面的源码中的第11行，会由于mAdapter强制转换为HeaderViewListAdapter类型而抛出异常</p>
+<p>接下来我们来看下setAdapter方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Sets the data behind this ListView.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * The adapter passed to this method may be wrapped by a &#123;<span class="doctag">@link</span> WrapperListAdapter&#125;,</span></span><br><span class="line"><span class="comment"> * depending on the ListView features currently in use. For instance, adding</span></span><br><span class="line"><span class="comment"> * headers and/or footers will cause the adapter to be wrapped.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> adapter The ListAdapter which is responsible for maintaining the</span></span><br><span class="line"><span class="comment"> *        data backing this list and for producing a view to represent an</span></span><br><span class="line"><span class="comment"> *        item in that data set.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> #getAdapter()</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAdapter</span><span class="params">(ListAdapter adapter)</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (mHeaderViewInfos.size() &gt; <span class="number">0</span>|| mFooterViewInfos.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">		mAdapter = <span class="keyword">new</span> HeaderViewListAdapter(mHeaderViewInfos, mFooterViewInfos, adapter);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		mAdapter = adapter;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在setAdapter方法第19行我们可以看到，如果我们在setAdapter之前添加了headerView或者是footerView的话，则会把我们的adapter包装为HeaderViewListAdapter，因此在这种情况下当我们removeFooterView时，强制转换并不会抛出异常</p>
+<p>接下来我们看一下4.2版本的addFooterView方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addFooterView</span><span class="params">(View v, Object data, <span class="keyword">boolean</span> isSelectable)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// <span class="doctag">NOTE:</span> do not enforce the adapter being null here, since unlike in</span></span><br><span class="line">	<span class="comment">// addHeaderView, it was never enforced here, and so existing apps are</span></span><br><span class="line">	<span class="comment">// relying on being able to add a footer and then calling setAdapter to</span></span><br><span class="line">	<span class="comment">// force creation of the HeaderViewListAdapter wrapper</span></span><br><span class="line"></span><br><span class="line">	FixedViewInfo info = <span class="keyword">new</span> FixedViewInfo();</span><br><span class="line">	info.view = v;</span><br><span class="line">	info.data = data;</span><br><span class="line">	info.isSelectable = isSelectable;</span><br><span class="line">	mFooterViewInfos.add(info);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// in the case of re-adding a footer view, or adding one later on,</span></span><br><span class="line">	<span class="comment">// we need to notify the observer</span></span><br><span class="line">	<span class="keyword">if</span> (mAdapter != <span class="keyword">null</span> &amp;&amp; mDataSetObserver != <span class="keyword">null</span>) &#123;</span><br><span class="line">		mDataSetObserver.onChanged();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后再对比下4.4版本的addFooterView方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Add a fixed view to appear at the bottom of the list. If addFooterView is</span></span><br><span class="line"><span class="comment"> * called more than once, the views will appear in the order they were</span></span><br><span class="line"><span class="comment"> * added. Views added using this call can take focus if they want.</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;</span></span><br><span class="line"><span class="comment"> * Note: When first introduced, this method could only be called before</span></span><br><span class="line"><span class="comment"> * setting the adapter with &#123;<span class="doctag">@link</span> #setAdapter(ListAdapter)&#125;. Starting with</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> android.os.Build.VERSION_CODES#KITKAT&#125;, this method may be</span></span><br><span class="line"><span class="comment"> * called at any time. If the ListView's adapter does not extend</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> HeaderViewListAdapter&#125;, it will be wrapped with a supporting</span></span><br><span class="line"><span class="comment"> * instance of &#123;<span class="doctag">@link</span> WrapperListAdapter&#125;.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> v The view to add.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> data Data to associate with this view</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> isSelectable true if the footer view can be selected</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addFooterView</span><span class="params">(View v, Object data, <span class="keyword">boolean</span> isSelectable)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">final</span> FixedViewInfo info = <span class="keyword">new</span> FixedViewInfo();</span><br><span class="line">	info.view = v;</span><br><span class="line">	info.data = data;</span><br><span class="line">	info.isSelectable = isSelectable;</span><br><span class="line">	mFooterViewInfos.add(info);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Wrap the adapter if it wasn't already wrapped.</span></span><br><span class="line">	<span class="keyword">if</span> (mAdapter != <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="keyword">if</span> (!(mAdapter <span class="keyword">instanceof</span> HeaderViewListAdapter)) &#123;</span><br><span class="line">			mAdapter = <span class="keyword">new</span> HeaderViewListAdapter(mHeaderViewInfos, mFooterViewInfos, mAdapter);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// In the case of re-adding a footer view, or adding one later on,</span></span><br><span class="line">		<span class="comment">// we need to notify the observer.</span></span><br><span class="line">		<span class="keyword">if</span> (mDataSetObserver != <span class="keyword">null</span>) &#123;</span><br><span class="line">			mDataSetObserver.onChanged();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们可以看到，为什么4.4及其以上版本就允许addFooterView在setAdapter以后调用，关键的地方在于第27行，发现如果此时mAdapter不为HeaderViewListAdapter，则会将其包装为HeaderViewListAdapter<br>因此，在4.4及其以上版本，我们并不需要关心setAdapter与addFooterView的调用顺序（headerView同理）</p>
+<h1 id="查看应用是否已安装"><a href="#查看应用是否已安装" class="headerlink" title="查看应用是否已安装"></a>查看应用是否已安装</h1><p>最近博主遇到一个需求，需要查看应用是否已安装<br>经过一番查找后，找到了如下方案：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">isInstallApp</span><span class="params">(String appPackage)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        PackageManager manager = KGCommonApplication.getContext().getPackageManager();</span><br><span class="line">        List&lt;PackageInfo&gt; pkgList = manager.getInstalledPackages(<span class="number">0</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; pkgList.size(); i++) &#123;</span><br><span class="line">            PackageInfo pI = pkgList.get(i);</span><br><span class="line">            <span class="keyword">if</span> (pI.packageName.equalsIgnoreCase(appPackage))</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (NullPointerException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>原理是使用 android.content.pm.PackageManager#getInstalledPackages 方法，获取所有已安装的apk，然后从返回的列表中，查找是否包含特定包名来判断特定应用是否安装<br>然而，该方案在高版本的Android中，也许是因为系统权限的限制，我们并不能拿到所有的已安装应用<br>在没有权限的情况下，该方法只返回了部分系统的应用</p>
+<p>因此再通过一番查到，博主找到了一个新的方案：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">isInstallApp</span><span class="params">(String appPackage)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        PackageManager manager = KGCommonApplication.getContext().getPackageManager();</span><br><span class="line">        PackageInfo info = manager.getPackageInfo(appPackage, PackageManager.GET_ACTIVITIES);</span><br><span class="line">        <span class="keyword">return</span> info != <span class="keyword">null</span>;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        <span class="comment">// ignore</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过 android.content.pm.PackageManager#getPackageInfo(java.lang.String, int) 方法，我们可以获取特定的应用信息，如果用户并没有安装该应用，则会抛出 NameNotFoundException 异常<br>由于该方法没有系统权限的限制，所以我们可以放心使用</p>
+<h1 id="gradle-插件版本号与gradle-版本号对应关系"><a href="#gradle-插件版本号与gradle-版本号对应关系" class="headerlink" title="gradle 插件版本号与gradle 版本号对应关系"></a>gradle 插件版本号与gradle 版本号对应关系</h1><p>gradle 插件版本号：指build.gradle文件里，classpath ‘com.android.tools.build:gradle:3.1.2’，应用的插件的版本号<br>gradle 版本号：指“gradle-wrapper.properties”中，配置的gradle 的版本号</p>
+<p>其中，gradle 插件的版本号和 gradle 的版本号是有关联的，关系如下：</p>
+<table>
+<thead>
+<tr>
+<th>插件版本号</th>
+<th>gradle版本号</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1.0.0 - 1.1.3</td>
+<td>2.2.1 - 2.3</td>
+</tr>
+<tr>
+<td>1.2.0 - 1.3.1</td>
+<td>2.2.1 - 2.9</td>
+</tr>
+<tr>
+<td>1.5.0</td>
+<td>2.2.1 - 2.13</td>
+</tr>
+<tr>
+<td>2.0.0 -2.1.2</td>
+<td>2.10 - 2.13</td>
+</tr>
+<tr>
+<td>2.1.3 - 2.2.3</td>
+<td>2.14.1+</td>
+</tr>
+<tr>
+<td>2.3.0+</td>
+<td>3.3+</td>
+</tr>
+<tr>
+<td>3.0.0+</td>
+<td>4.1+</td>
+</tr>
+<tr>
+<td>3.1.0+</td>
+<td>4.4+</td>
+</tr>
+<tr>
+<td>3.2.0 - 3.2.1</td>
+<td>4.6+</td>
+</tr>
+<tr>
+<td>3.3.0 - 3.3.2</td>
+<td>4.10.1+</td>
+</tr>
+<tr>
+<td>3.4.0 - 3.4.1</td>
+<td>5.1.1+</td>
+</tr>
+<tr>
+<td>3.5.0+</td>
+<td>5.4.1 - 5.6.4</td>
+</tr>
+</tbody></table>
+<p>详细gradle插件版本与gradle版本更新日志如下：</p>
+<p><a href="https://developer.android.google.cn/studio/releases/gradle-plugin#updating-plugin" target="_blank" rel="noopener">https://developer.android.google.cn/studio/releases/gradle-plugin#updating-plugin</a></p>
+<h1 id="处理安装出现INSTALL-FAILED-TEST-ONLY错误"><a href="#处理安装出现INSTALL-FAILED-TEST-ONLY错误" class="headerlink" title="处理安装出现INSTALL_FAILED_TEST_ONLY错误"></a>处理安装出现INSTALL_FAILED_TEST_ONLY错误</h1><p>某次在本地debug模式编译打包apk后，通过adb install指令发现竟然无法正常安装，提示了INSTALL_FAILED_TEST_ONLY错误<br>在网上查询资料后发现，原来是Android Studio 3.0会在debug类型apk的manifest文件application标签里自动添加 android:testOnly=”true”属性</p>
+<p>官方文档如下：<br><a href="https://developer.android.google.cn/guide/topics/manifest/application-element#testOnly" target="_blank" rel="noopener">https://developer.android.google.cn/guide/topics/manifest/application-element#testOnly</a></p>
+<p>解决方案有两个：</p>
+<p>我们可以在项目中的gradle.properties全局配置中设置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">android.injected.testOnly=false</span><br></pre></td></tr></table></figure>
+
+<p>除此以外，我们还可以安装apk时，增加上-t的参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb install -t app-debug.apk</span><br></pre></td></tr></table></figure>
+
+<h1 id="Activity启动流程图总结"><a href="#Activity启动流程图总结" class="headerlink" title="Activity启动流程图总结"></a>Activity启动流程图总结</h1><p>Activity启动流程图如下所示：<br><img src="/2019/08/07/Android常见问题总结（九）/1.jpg" alt="Activity启动流程图"></p>
+<p>流程主要分为以下几步：</p>
+<ol>
+<li>当前Activity把需要启动的目标Activity相关信息包装成Intent的形式，发送给ActivityManagerService(AMS)</li>
+<li>AMS检验信息合法后，保存信息，并通知当前Activity进入中止状态（onPaused），并通过Handler监控是否超时</li>
+<li>当前Activity进入中止状态后，通知AMS</li>
+<li>AMS检查目标Activity在Manifest中设定启动的进程启动了没有，如果进程没有启动，则启动进程（也通过Handler计算超时），有则跳到第7步</li>
+<li>AMS通知zygote进程fork一个子进程，以ActivityThread的main函数作为进程执行入口</li>
+<li>新进程初始化Handler消息循环机制，初始化Application，完成启动工作后，发送ApplicationThread给AMS（以后AMS就通过ApplicationThread找到这个进程）</li>
+<li>AMS通过进程启动后传回的ApplicationThread找到进程，发送命令启动目标Activity，同时开始Handler计算超时</li>
+<li>目标进程接到IPC指令后，通过消息循环机制，在主线程中反射实例化Activity，并执行Activity的生命周期，完成后通知AMS</li>
+<li>AMS收到Activity启动的消息后，Activity启动流程结束</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/基础知识/" rel="tag"># 基础知识</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/06/修改debugable调试手机应用/" rel="next" title="修改debuggable调试手机应用">
+                <i class="fa fa-chevron-left"></i> 修改debuggable调试手机应用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/03/git拉取大工程项目RPC-failed处理/" rel="prev" title="git拉取大工程项目RPC failed处理">
+                git拉取大工程项目RPC failed处理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#addFooterView与setAdapter顺序问题"><span class="nav-number">1.</span> <span class="nav-text">addFooterView与setAdapter顺序问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#查看应用是否已安装"><span class="nav-number">2.</span> <span class="nav-text">查看应用是否已安装</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#gradle-插件版本号与gradle-版本号对应关系"><span class="nav-number">3.</span> <span class="nav-text">gradle 插件版本号与gradle 版本号对应关系</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#处理安装出现INSTALL-FAILED-TEST-ONLY错误"><span class="nav-number">4.</span> <span class="nav-text">处理安装出现INSTALL_FAILED_TEST_ONLY错误</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Activity启动流程图总结"><span class="nav-number">5.</span> <span class="nav-text">Activity启动流程图总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

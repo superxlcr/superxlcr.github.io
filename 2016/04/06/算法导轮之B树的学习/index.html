@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="算法,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="引言、B树的定义、B树的插入、B树的删除">
+<meta name="keywords" content="算法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="算法导轮之B树的学习">
+<meta property="og:url" content="https://superxlcr.github.io/2016/04/06/算法导轮之B树的学习/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="引言、B树的定义、B树的插入、B树的删除">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2016/04/06/算法导轮之B树的学习/1.png">
+<meta property="og:image" content="https://superxlcr.github.io/2016/04/06/算法导轮之B树的学习/2.png">
+<meta property="og:image" content="https://superxlcr.github.io/2016/04/06/算法导轮之B树的学习/3.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2016/04/06/算法导轮之B树的学习/4.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2016/04/06/算法导轮之B树的学习/5.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2016/04/06/算法导轮之B树的学习/6.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2016/04/06/算法导轮之B树的学习/7.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2016/04/06/算法导轮之B树的学习/8.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2016/04/06/算法导轮之B树的学习/9.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2016/04/06/算法导轮之B树的学习/10.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2016/04/06/算法导轮之B树的学习/11.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2016/04/06/算法导轮之B树的学习/12.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2016/04/06/算法导轮之B树的学习/13.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2016/04/06/算法导轮之B树的学习/14.jpg">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.885Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="算法导轮之B树的学习">
+<meta name="twitter:description" content="引言、B树的定义、B树的插入、B树的删除">
+<meta name="twitter:image" content="https://superxlcr.github.io/2016/04/06/算法导轮之B树的学习/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2016/04/06/算法导轮之B树的学习/">
+
+
+
+
+
+  <title>算法导轮之B树的学习 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2016/04/06/算法导轮之B树的学习/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">算法导轮之B树的学习</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-06T12:44:50+08:00">
+                2016-04-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/算法/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.2k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近学习了算法导轮里B树相关的知识，在此写一篇博客作为总结。</p>
+<h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>B树是为磁盘或其他直接存取的辅助存储设备而设计的一种平衡搜索树。B树类似于红黑树，但它与红黑树最大不同之处在于B树的节点可以拥有很多孩子，因此B树的高度会比红黑树小很多，也因此B树在磁盘I/O方面表现要比红黑树好。（对于磁盘操作最耗时的部分在于磁盘读写，而每次读取一个新的树的节点就必须进行一次磁盘读取，因此节点较大、树高度较小的B树会进行较少的磁盘I/O操作）</p>
+<h1 id="B树的定义"><a href="#B树的定义" class="headerlink" title="B树的定义"></a>B树的定义</h1><p>一颗B树的定义如下：<br>每个节点x均有如下属性：</p>
+<ol>
+<li>n表示存储在该节点的关键字个数</li>
+<li>n个关键字本身key1、key2……keyn以非降序存放，即key1 &lt;= key2 &lt;= …… &lt;= keyn</li>
+<li>一个leaf布尔值表示该节点是否为叶节点</li>
+<li>每个内部节点包含了n+1个孩子，叶节点没有孩子</li>
+<li>关键字keyi对存储在各子树中的关键字范围加以分割：即比keyi小的元素在其左子树，比keyi大的元素在其右子树</li>
+<li>每个叶节点具有相同的深度</li>
+<li>每个节点包含的关键字个数有上界与下界。我们定义B树的最小度数为t，则除根节点外的每个节点至少有t-1个关键字，每个节点最多有2t-1个关键字（即每个节点最少有t个孩子，最多有2t个孩子）（当一个节点有2t-1个关键字时，我们称它为满的）。</li>
+</ol>
+<p>B树的示意图如下：<br><img src="/2016/04/06/算法导轮之B树的学习/1.png" alt="B树示意图"></p>
+<p>上图是一个最小度数为2的B树，因此每个节点拥有1个、2个或3个元素，拥有2个、3个或4个孩子，也被称为2-3-4树。<br>根节点只有一个元素，因此它拥有两个孩子；两个孩子分别拥有3个和2个元素，因此他们分别拥有4个和3个孩子。<br>看到DEF叶节点位于关键字C与G的中间，表明了关键字对于存储在各子树中的关键字范围进行了分割，其余同理。</p>
+<h1 id="B树的插入"><a href="#B树的插入" class="headerlink" title="B树的插入"></a>B树的插入</h1><p>要讲到树，就不得不提树中关键的插入与删除操作，这里我们先总结B树的插入操作。<br>当我们往B树中插入一个新的关键字时，由于B树节点的关键字是受到限制的，因此当一个节点关键字数目为2t-1时（该节点是满的），我们就必须进行分裂操作。</p>
+<h2 id="分裂节点"><a href="#分裂节点" class="headerlink" title="分裂节点"></a>分裂节点</h2><p>分裂节点的主要操作为把满节点的中间关键字提升至父节点，把原满节点分裂为中间关键字的两个左右节点<br>其示意图如下：<br><img src="/2016/04/06/算法导轮之B树的学习/2.png" alt="分裂节点示意图"></p>
+<p>对于某个非满的节点x，若其孩子节点x.ci为满的（即孩子节点的关键字数目为2t-1)。则把其孩子节点的中间关键字（S）提升为父节点（x节点）的关键字，并把原孩子节点（x.c节点）分成两个t-1个关键字的节点，分别位于中间关键字（S）的左、右。<br>还有一种比较特殊的情况就是B树根的分裂：<br><img src="/2016/04/06/算法导轮之B树的学习/3.jpg" alt="根节点分裂示意图"></p>
+<p>分裂是B树长高的唯一途径，因此分裂是非常重要的。</p>
+<h2 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h2><p>讲完分裂操作再讲插入操作就非常简单了。插入的时候我们通过比较不断地根据关键字的值寻找孩子节点，当发现一个满的节点时便分裂，最后找到对应的叶节点时根据关键字的值插入相应位置即可。<br>下面是一个插入关键字的例子：</p>
+<p><img src="/2016/04/06/算法导轮之B树的学习/4.jpg" alt="B树插入示意图1"></p>
+<p>B树的初始状态如图所示，这是一颗最小度数为3的B树，即他的关键字个数为2～5个。</p>
+<p><img src="/2016/04/06/算法导轮之B树的学习/5.jpg" alt="B树插入示意图2"></p>
+<p>插入关键字B，在根节点由于（B &lt; G）往进入G的左节点，到达叶节点后添加至A与C关键字之间。</p>
+<p><img src="/2016/04/06/算法导轮之B树的学习/6.jpg" alt="B树插入示意图3"></p>
+<p>插入关键字Q：<br>在根节点，由于P &lt; Q 而且 Q &lt; X，进入P与X之间的子节点<br>发现该子节点是满的，则进行分裂，把关键字T上升到父节点，原子节点分为RS与UV，分为在T关键字的左右<br>由于Q &lt; T，于是进入T的左子节点<br>在RS叶节点中找到对应位置并加入</p>
+<p><img src="/2016/04/06/算法导轮之B树的学习/7.jpg" alt="B树插入示意图4"></p>
+<p>插入关键字L：<br>发现根节点是满的，分裂根节点，上移P<br>L &lt; P 进入P的左子节点<br>G &lt; L &lt; M，进入G与M关键字间的节点<br>在叶节点的相应位置中插入</p>
+<p><img src="/2016/04/06/算法导轮之B树的学习/8.jpg" alt="B树插入示意图5"></p>
+<p>插入关键字F：<br>F &lt; P，进入P的左子节点<br>F &lt; G，进入G的左子节点<br>发现满的节点，分裂，上移C<br>F &gt; C，进入C的右子节点<br>在叶节点的相应位置中插入</p>
+<h1 id="B树的删除"><a href="#B树的删除" class="headerlink" title="B树的删除"></a>B树的删除</h1><p>讲完了B树的插入操作，我们再来讲讲B树的删除操作。<br>对于删除操作，我们必须保证每个节点在删除前必须至少有t（最小度数）个关键字。</p>
+<p>首先我们把要删除的关键字（假设为k）分两种情况：</p>
+<ol>
+<li>关键字k在叶节点中：直接删除</li>
+<li>关键字k在内部节点中，分三种情况：<ol>
+<li>k的左子节点拥有t个关键字，则把k的左子节点的最后一个关键字（假设为j）上移到父节点，然后递归的删除j</li>
+<li>k的右子节点拥有t个关键字，则把k的右子节点的第一个关键字（假设为l）上移到父节点，然后递归的删除l</li>
+<li>k的左右子节点都只有t-1个关键字，则把k下降与左右子节点合并成一个拥有2t-1个关键字的节点，然后递归的删除k</li>
+</ol>
+</li>
+</ol>
+<p>然后我们再定义一些在寻找删除节点路上的操作：如果在寻找删除节点的路上，我们发现某个节点关键字数只有t-1个关键字，则分两种情况：</p>
+<ol>
+<li>看该节点的相邻兄弟节点是否含有至少t个关键字，如果是则向相邻的兄弟节点“借一个关键字”（以该节点的左节点为例：把左节点的最后一个关键字上升至父节点，然后父节点位置的节点下移到关键字个数为t-1的节点上）</li>
+<li>如果该节点相邻的兄弟节点都只含有t-1个关键字，则选择一个兄弟节点合并，并把两兄弟之间的父节点下移</li>
+</ol>
+<p>下面我们来看一个B树删除的例子：<br><img src="/2016/04/06/算法导轮之B树的学习/9.jpg" alt="B树删除示意图1"></p>
+<p>B树的初始状态如图，这是一颗最小度数为3的B树，即每个节点拥有2～5个关键字。</p>
+<p><img src="/2016/04/06/算法导轮之B树的学习/10.jpg" alt="B树删除示意图2"></p>
+<p>删除F操作：<br>F &lt; P，进入P的左子节点<br>C &lt; F &lt; G，进入C与G之间的子节点<br>在叶节点中删除F</p>
+<p><img src="/2016/04/06/算法导轮之B树的学习/11.jpg" alt="B树删除示意图3"></p>
+<p>删除M操作：<br>M &lt; P，进入P的左子节点<br>在内部节点中发现M，查看M的左子节点JKL，拥有3个关键字，则把最后一个关键字L上升至M的位置，递归的删除L<br>节点JKL是叶节点，直接删除L即可</p>
+<p><img src="/2016/04/06/算法导轮之B树的学习/12.jpg" alt="B树删除示意图4"></p>
+<p>删除G操作：<br>G &lt; P，进入P的左子节点<br>在内部节点中发现G，查看G的左右子节点均只有2个关键字（不足最小度数3个），下降G关键字并合并其左右子节点<br>节点DEGJK为叶节点，直接删除G即可</p>
+<p><img src="/2016/04/06/算法导轮之B树的学习/13.jpg" alt="B树删除示意图5"></p>
+<p>删除D操作：<br>D &lt; P，进入P的左子节点<br>发现内部节点CL只有2个关键字（不足最小度数3个），其兄弟节点也只有2个关键字，下降父节点P，与兄弟节点一起合并成一个节点<br>由于C &lt; D &lt; L，进入C与L间的子节点<br>DEJK节点是叶节点，直接删除D即可</p>
+<p><img src="/2016/04/06/算法导轮之B树的学习/14.jpg" alt="B树删除示意图6"></p>
+<p>删除B操作：<br>B &lt; C，进入E的左子节点<br>发现节点AC只有两个关键字，其兄弟节点EJK有三个关键字，则E上移到父节点，C下移到子节点，变为节点ABC<br>节点ABC为叶节点，直接删除B即可</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/算法/" rel="tag"># 算法</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/04/05/TCP-IP常见问题总结（一）/" rel="next" title="TCP/IP常见问题总结（一）">
+                <i class="fa fa-chevron-left"></i> TCP/IP常见问题总结（一）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/04/07/TCP-IP常见问题总结（二）/" rel="prev" title="TCP/IP常见问题总结（二）">
+                TCP/IP常见问题总结（二） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#B树的定义"><span class="nav-number">2.</span> <span class="nav-text">B树的定义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#B树的插入"><span class="nav-number">3.</span> <span class="nav-text">B树的插入</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#分裂节点"><span class="nav-number">3.1.</span> <span class="nav-text">分裂节点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#插入"><span class="nav-number">3.2.</span> <span class="nav-text">插入</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#B树的删除"><span class="nav-number">4.</span> <span class="nav-text">B树的删除</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

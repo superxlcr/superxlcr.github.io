@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="基础知识,java,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="九种基本数据类型的包装类及大小、switch的参数、equals与==的区别、Object有哪些公用方法、Java的四种引用，强弱软虚，用到的场景">
+<meta name="keywords" content="基础知识,java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于一些基础的Java问题的解答（一）">
+<meta property="og:url" content="https://superxlcr.github.io/2016/03/15/关于一些基础的Java问题的解答（一）/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="九种基本数据类型的包装类及大小、switch的参数、equals与==的区别、Object有哪些公用方法、Java的四种引用，强弱软虚，用到的场景">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2016/03/15/关于一些基础的Java问题的解答（一）/1.jpg">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.827Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="关于一些基础的Java问题的解答（一）">
+<meta name="twitter:description" content="九种基本数据类型的包装类及大小、switch的参数、equals与==的区别、Object有哪些公用方法、Java的四种引用，强弱软虚，用到的场景">
+<meta name="twitter:image" content="https://superxlcr.github.io/2016/03/15/关于一些基础的Java问题的解答（一）/1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2016/03/15/关于一些基础的Java问题的解答（一）/">
+
+
+
+
+
+  <title>关于一些基础的Java问题的解答（一） | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2016/03/15/关于一些基础的Java问题的解答（一）/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">关于一些基础的Java问题的解答（一）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-15T16:13:53+08:00">
+                2016-03-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.5k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>学习一门语言基础是非常重要的，因此本文总结了一些常见的Java基础问题的解答，希望可以帮到大家。</p>
+<h1 id="九种基本数据类型的包装类及大小。"><a href="#九种基本数据类型的包装类及大小。" class="headerlink" title="九种基本数据类型的包装类及大小。"></a>九种基本数据类型的包装类及大小。</h1><p>9种基本数据类型：</p>
+<table>
+<thead>
+<tr>
+<th>基本类型</th>
+<th>包装类型</th>
+<th>大小</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>boolean</td>
+<td>Boolean</td>
+<td>-</td>
+</tr>
+<tr>
+<td>byte</td>
+<td>Byte</td>
+<td>8bit</td>
+</tr>
+<tr>
+<td>short</td>
+<td>Short</td>
+<td>16bit</td>
+</tr>
+<tr>
+<td>int</td>
+<td>Integer</td>
+<td>32bit</td>
+</tr>
+<tr>
+<td>long</td>
+<td>Long</td>
+<td>64bit</td>
+</tr>
+<tr>
+<td>float</td>
+<td>Float</td>
+<td>32bit</td>
+</tr>
+<tr>
+<td>double</td>
+<td>Double</td>
+<td>64bit</td>
+</tr>
+<tr>
+<td>char</td>
+<td>Character</td>
+<td>16bit</td>
+</tr>
+<tr>
+<td>void</td>
+<td>Void</td>
+<td>-</td>
+</tr>
+</tbody></table>
+<p>上面有两个比较值得注意的地方：<br>一个是boolean的大小并非是确定的，根据网上找来的JVM规范：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Instead, expressions in the Java programming language that operate on boolean values are compiled to use values of the Java virtual machine int data type.  </span><br><span class="line">Where Java programming language boolean values are mapped by compilers to values of Java virtual machine type int, the compilers must use the same encoding. Java virtual machine type int, whose values are 32-bit signed two&apos;s-complement integers。</span><br><span class="line">Arrays of type boolean are accessed and modified using the byte array instructions  </span><br><span class="line">In Sun&apos;s JDK releases 1.0 and 1.1, and the Java 2 SDK, Standard Edition, v1.2, boolean arrays in the Java programming language are encoded as Java virtual machine byte arrays, using 8 bits per boolean element.</span><br></pre></td></tr></table></figure>
+
+<p>从上文我们可以得知，boolean变量单独声明的时候被当做int变量处理，其大小为32bit，当boolean变量声明数组的时候，每个boolean当做byte变量处理，大小为8bit。</p>
+<p>另一个是void也是Java的基本类型之一，其对应的包装类是不可实例化的，如下所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> java.lang;  </span><br><span class="line">  </span><br><span class="line"><span class="comment">/** </span></span><br><span class="line"><span class="comment"> * The &#123;<span class="doctag">@code</span> Void&#125; class is an uninstantiable placeholder class to hold a </span></span><br><span class="line"><span class="comment"> * reference to the &#123;<span class="doctag">@code</span> Class&#125; object representing the Java keyword </span></span><br><span class="line"><span class="comment"> * void. </span></span><br><span class="line"><span class="comment"> * </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>  unascribed </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span>   JDK1.1 </span></span><br><span class="line"><span class="comment"> */</span>  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span>  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Void</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="comment">/** </span></span><br><span class="line"><span class="comment">     * The &#123;<span class="doctag">@code</span> Class&#125; object representing the pseudo-type corresponding to </span></span><br><span class="line"><span class="comment">     * the keyword &#123;<span class="doctag">@code</span> void&#125;. </span></span><br><span class="line"><span class="comment">     */</span>  </span><br><span class="line">    <span class="meta">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Class&lt;Void&gt; TYPE = (Class&lt;Void&gt;) Class.getPrimitiveClass(<span class="string">"void"</span>);  </span><br><span class="line">  </span><br><span class="line">    <span class="comment">/* </span></span><br><span class="line"><span class="comment">     * The Void class cannot be instantiated. </span></span><br><span class="line"><span class="comment">     */</span>  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Void</span><span class="params">()</span> </span>&#123;&#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="switch的参数"><a href="#switch的参数" class="headerlink" title="switch的参数"></a>switch的参数</h1><p>在Java中，switch后面的括号里放的参数类型只能是int类型，虽然说放入char，byte，short类型也不会报错，但其实是因为char，byte和short类型可以自己转化（宽化）为int类型，实际上最后操作的还是int类型。</p>
+<p>原理：在Java的9种基本类型中，boolean和void类型不能进行转换。大小较小的类型向大小较大的类型转换叫宽化（如char转int），宽化会自动在变量前面补零且是安全的，因此可以自动转换。大小较大的类型向大小较小的类型转化叫窄化（如double转int），窄化不能自动转换，必须使用强制类型转换，如：（int）double。</p>
+<p>补充：除了int类型外还支持枚举类型。另外在jdk1.7中有了新的特性，支持String类型。</p>
+<h1 id="equals与-的区别"><a href="#equals与-的区别" class="headerlink" title="equals与==的区别"></a>equals与==的区别</h1><p>很经典的一个问题了。首先==在Java中，对于基本类型比较的是他们的值是否相等，对于引用类型则比较两个对象是否地址相同，是否为同一引用。equals在Object中的默认实现和==没有区别：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object obj)</span> </span>&#123;  </span><br><span class="line">       <span class="keyword">return</span> (<span class="keyword">this</span> == obj);  </span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>值的注意的是用的较多的String类重写了equals方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object anObject)</span> </span>&#123;  </span><br><span class="line">       <span class="keyword">if</span> (<span class="keyword">this</span> == anObject) &#123;  </span><br><span class="line">           <span class="keyword">return</span> <span class="keyword">true</span>;  </span><br><span class="line">       &#125;  </span><br><span class="line">       <span class="keyword">if</span> (anObject <span class="keyword">instanceof</span> String) &#123;  </span><br><span class="line">           String anotherString = (String)anObject;  </span><br><span class="line">           <span class="keyword">int</span> n = value.length;  </span><br><span class="line">           <span class="keyword">if</span> (n == anotherString.value.length) &#123;  </span><br><span class="line">               <span class="keyword">char</span> v1[] = value;  </span><br><span class="line">               <span class="keyword">char</span> v2[] = anotherString.value;  </span><br><span class="line">               <span class="keyword">int</span> i = <span class="number">0</span>;  </span><br><span class="line">               <span class="keyword">while</span> (n-- != <span class="number">0</span>) &#123;  </span><br><span class="line">                   <span class="keyword">if</span> (v1[i] != v2[i])  </span><br><span class="line">                       <span class="keyword">return</span> <span class="keyword">false</span>;  </span><br><span class="line">                   i++;  </span><br><span class="line">               &#125;  </span><br><span class="line">               <span class="keyword">return</span> <span class="keyword">true</span>;  </span><br><span class="line">           &#125;  </span><br><span class="line">       &#125;  </span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">false</span>;  </span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>从上面方法我们可以看出，首先String比较传入的Object对象是否和当前String为同一引用，是则返回true。如果不是，则判断传入的Object对象是否String对象及其子类实例，如果不是则返回false。再然后如果传入的参数是String的实例，则比较两个String的内容是否完全相同。</p>
+<h1 id="Object有哪些公用方法"><a href="#Object有哪些公用方法" class="headerlink" title="Object有哪些公用方法"></a>Object有哪些公用方法</h1><p><img src="/2016/03/15/关于一些基础的Java问题的解答（一）/1.jpg" alt="Object公用方法截图"></p>
+<p>Object中的public方法如图所示，简单介绍下每个方法：</p>
+<ol>
+<li>Object()，默认构造函数，略</li>
+<li>getClass()，native和final方法，返回此对象的运行时类</li>
+<li>hashCode()，native方法，返回此对象的哈希码数值</li>
+<li>equals(Object)，详见上一个问题</li>
+<li>toString()，返回一个代表该对象的字符串，此处返回：“类名@16进制哈希码”</li>
+<li>notify()，native和final方法，唤醒在此对象监视器上等待的单个线程</li>
+<li>notifyAll()，native和final方法，唤醒在此对象监视器等待上的所有线程</li>
+<li>wait()，该方法有3个重载，作用是让当前线程处于等待状态，直到其他线程调用此对象的 notify() 方法或 notifyAll() 方法，或超过指定时间，或其他线程中断当前线程。</li>
+</ol>
+<h1 id="Java的四种引用，强弱软虚，用到的场景"><a href="#Java的四种引用，强弱软虚，用到的场景" class="headerlink" title="Java的四种引用，强弱软虚，用到的场景"></a>Java的四种引用，强弱软虚，用到的场景</h1><p>在Java中，对象的引用和JVM的GC有着密切的联系，对于对象我们有4中不同的引用：</p>
+<ol>
+<li>强引用：我们平时普通创建对象的方法就是强引用，普通系统99%以上都是强引用。如果一个对象是强引用创建的，则需要手动置null，JVM的GC才能回收其内存，否则即使是报内存不足，也不会清理具有强引用的对象。</li>
+<li>软引用：通过SoftReference<t>方法创建为软引用，一般JVM的GC不会清理软引用，但会在发生OOM（out of memory）时清理软引用。一般软引用可以用来实现内存敏感的高速缓存。</t></li>
+<li>弱引用：通过WeakReference<t>方法创建即弱引用，弱引用的生命周期比软引用短很多，如果一个对象只具有弱引用，那么他会在JVM GC时被清理掉。JDK有使用弱引用实现的WeakHashMap，他会在GC时回收掉不怎么使用的键值对。</t></li>
+<li>虚引用：通过PhantomReference<t>方法创建即为虚引用，虚引用形同虚设，如果一个对象只具有虚引用，那么它就和没有任何引用一样，随时会被JVM当作垃圾进行回收。虚引用主要用来跟踪对象被垃圾回收的活动。</t></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/基础知识/" rel="tag"># 基础知识</a>
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/03/12/Android-关于dp-dip-sp-px-dpi-density解析/" rel="next" title="Android 关于dp dip sp px dpi density解析">
+                <i class="fa fa-chevron-left"></i> Android 关于dp dip sp px dpi density解析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/03/16/关于一些基础的Java问题的解答（二）/" rel="prev" title="关于一些基础的Java问题的解答（二）">
+                关于一些基础的Java问题的解答（二） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#九种基本数据类型的包装类及大小。"><span class="nav-number">1.</span> <span class="nav-text">九种基本数据类型的包装类及大小。</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#switch的参数"><span class="nav-number">2.</span> <span class="nav-text">switch的参数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#equals与-的区别"><span class="nav-number">3.</span> <span class="nav-text">equals与==的区别</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Object有哪些公用方法"><span class="nav-number">4.</span> <span class="nav-text">Object有哪些公用方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java的四种引用，强弱软虚，用到的场景"><span class="nav-number">5.</span> <span class="nav-text">Java的四种引用，强弱软虚，用到的场景</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

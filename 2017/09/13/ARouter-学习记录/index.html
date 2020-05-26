@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,应用,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="框架配置与初始化、Activity基础跳转、传递参数与参数注入、使用新旧转场动画处理跳转、kotlin跳转、接口调用、获取Fragment、跨模块调用、处理跳转结果、拦截器">
+<meta name="keywords" content="android,应用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ARouter 学习记录">
+<meta property="og:url" content="https://superxlcr.github.io/2017/09/13/ARouter-学习记录/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="框架配置与初始化、Activity基础跳转、传递参数与参数注入、使用新旧转场动画处理跳转、kotlin跳转、接口调用、获取Fragment、跨模块调用、处理跳转结果、拦截器">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.487Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ARouter 学习记录">
+<meta name="twitter:description" content="框架配置与初始化、Activity基础跳转、传递参数与参数注入、使用新旧转场动画处理跳转、kotlin跳转、接口调用、获取Fragment、跨模块调用、处理跳转结果、拦截器">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2017/09/13/ARouter-学习记录/">
+
+
+
+
+
+  <title>ARouter 学习记录 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2017/09/13/ARouter-学习记录/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ARouter 学习记录</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-13T14:53:35+08:00">
+                2017-09-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.5k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>ARouter 是阿里巴巴开源的一个Android页面路由框架，它提供了url跳转、自动解析bundle数据赋值，自定义拦截跳转过程，url调用接口服务等功能<br>下面我们来了解下ARouter 框架的使用</p>
+<h1 id="框架配置与初始化"><a href="#框架配置与初始化" class="headerlink" title="框架配置与初始化"></a>框架配置与初始化</h1><p>gradle 版本 &gt;= 2.2 的配置方法（使用annotationProcessor）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    defaultConfig &#123;</span><br><span class="line">	...</span><br><span class="line">	javaCompileOptions &#123;</span><br><span class="line">	    annotationProcessorOptions &#123;</span><br><span class="line">		arguments = [ moduleName : project.getName() ]</span><br><span class="line">	    &#125;</span><br><span class="line">	&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    <span class="comment">// 替换成最新版本, 需要注意的是api</span></span><br><span class="line">    <span class="comment">// 要与compiler匹配使用，均使用最新版可以保证兼容</span></span><br><span class="line">    compile <span class="string">'com.alibaba:arouter-api:x.x.x'</span></span><br><span class="line">    annotationProcessor <span class="string">'com.alibaba:arouter-compiler:x.x.x'</span></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>gradle 版本 &lt; 2.2 的配置方法（使用apt）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">apply plugin: <span class="string">'com.neenbedankt.android-apt'</span></span><br><span class="line"></span><br><span class="line">buildscript &#123;</span><br><span class="line">    repositories &#123;</span><br><span class="line">	jcenter()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    dependencies &#123;</span><br><span class="line">	classpath <span class="string">'com.neenbedankt.gradle.plugins:android-apt:1.4'</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">apt &#123;</span><br><span class="line">    arguments &#123;</span><br><span class="line">	moduleName project.getName();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    compile <span class="string">'com.alibaba:arouter-api:x.x.x'</span></span><br><span class="line">    apt <span class="string">'com.alibaba:arouter-compiler:x.x.x'</span></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在Application中初始化ARouter：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyApplication</span> <span class="keyword">extends</span> <span class="title">Application</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate();</span><br><span class="line">        <span class="keyword">if</span> (BuildConfig.DEBUG) &#123;           <span class="comment">// 这两行必须写在init之前，否则这些配置在init过程中将无效</span></span><br><span class="line">            ARouter.openLog();     <span class="comment">// 打印日志</span></span><br><span class="line">            ARouter.openDebug();   <span class="comment">// 开启调试模式(如果在InstantRun模式下运行，必须开启调试模式！线上版本需要关闭,否则有安全风险)</span></span><br><span class="line">        &#125;</span><br><span class="line">        ARouter.init(<span class="keyword">this</span>); <span class="comment">// 尽可能早，推荐在Application中初始化</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Activity基础跳转"><a href="#Activity基础跳转" class="headerlink" title="Activity基础跳转"></a>Activity基础跳转</h1><p>在Activity声明注解Route，并赋予path值（即url），值得注意的是path必须至少有两级目录，否则会在编译期报错：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Route</span>(path = <span class="string">"/arouterTest/activities/jumpTestActivity"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JumpTestActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</span><br></pre></td></tr></table></figure>
+
+<p>然后调用ARouter的build方法输入url，调用navigation方法即可打开对应的Activity：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ARouter.getInstance().build(<span class="string">"/arouterTest/activities/jumpTestActivity"</span>).navigation();</span><br></pre></td></tr></table></figure>
+
+<p>也可以传入uri进行跳转：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Uri testUri = Uri.parse(<span class="string">"test://test.com/arouterTest/activities/jumpTestActivity"</span>);</span><br><span class="line">ARouter.getInstance().build(testUri)</span><br><span class="line">        .navigation();</span><br></pre></td></tr></table></figure>
+
+<p>需要接收ActivityResult的可以在navigation中传入requestCode：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ARouter.getInstance().build(<span class="string">"/arouterTest/activities/jumpTestActivity"</span>).navigation(<span class="keyword">this</span>, <span class="number">666</span>);</span><br></pre></td></tr></table></figure>
+
+<h1 id="传递参数与参数注入"><a href="#传递参数与参数注入" class="headerlink" title="传递参数与参数注入"></a>传递参数与参数注入</h1><p>传递参数调用ARouter的with系列方法即可：</p>
+<ul>
+<li>with各种基本类型</li>
+<li>withObject</li>
+<li>withParcelable</li>
+<li>with：直接传递Bundle参数</li>
+</ul>
+<p>例，传入名为text的字符串参数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ARouter.getInstance().build(<span class="string">"/arouterTest/activities/jumpTestActivity"</span>)</span><br><span class="line">                .withString(<span class="string">"text"</span>, <span class="string">"老子吃火锅，你吃火锅底料！"</span>)</span><br><span class="line">                .navigation();</span><br></pre></td></tr></table></figure>
+
+<p>参数注入，即在目标Activity中自动解析传入的参数：</p>
+<p>首先我们需要使用Autowired注解，并且把注解标记的属性设置为public的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Autowired</span>(name = <span class="string">"text"</span>)</span><br><span class="line"><span class="keyword">public</span> String text;</span><br></pre></td></tr></table></figure>
+
+<p>然后调用ARoute的inject方法即可：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ARouter.getInstance().inject(<span class="keyword">this</span>);</span><br></pre></td></tr></table></figure>
+
+<h1 id="使用新旧转场动画处理跳转"><a href="#使用新旧转场动画处理跳转" class="headerlink" title="使用新旧转场动画处理跳转"></a>使用新旧转场动画处理跳转</h1><p>旧动画：<br>使用withTransition方法即可：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ARouter.getInstance().build(testUri).withTransition(R.anim.slide_in, R.anim.slide_out)</span><br><span class="line">                .navigation();</span><br></pre></td></tr></table></figure>
+
+<p>新动画：<br>使用withOptionsCompat方法即可：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ActivityOptionsCompat compat = ActivityOptionsCompat.</span><br><span class="line">                makeScaleUpAnimation(view, view.getWidth() / <span class="number">2</span>, view.getHeight() / <span class="number">2</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">        ARouter.getInstance().build(<span class="string">"/module/jumpTestActivity2"</span>).withOptionsCompat(compat)</span><br><span class="line">                .navigation();</span><br></pre></td></tr></table></figure>
+
+<h1 id="kotlin跳转"><a href="#kotlin跳转" class="headerlink" title="kotlin跳转"></a>kotlin跳转</h1><p>与Java相似，声明Route注解并为path属性赋值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">@Route(path = &quot;/kotlin/test&quot;)</span><br><span class="line">class KotlinTestActivity : Activity() &#123;</span><br></pre></td></tr></table></figure>
+
+<p>然后跳转即可：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ARouter.getInstance()</span><br><span class="line">                        .build(<span class="string">"/kotlin/test"</span>)</span><br><span class="line">                        .navigation();</span><br></pre></td></tr></table></figure>
+
+<h1 id="接口调用"><a href="#接口调用" class="headerlink" title="接口调用"></a>接口调用</h1><p>除了跳转Activity外，ARouter还允许用户进行接口调用<br>首先我们需要新建接口，我们的接口需要继承IProvider接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MyServiceInterface</span> <span class="keyword">extends</span> <span class="title">IProvider</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">doSomething</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接着实现这个接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Route</span>(path = <span class="string">"/interface/my-service"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyServiceImpl</span> <span class="keyword">implements</span> <span class="title">MyServiceInterface</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomething</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Log.d(<span class="string">"MyServiceImpl"</span>, <span class="string">"I just do something!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        Log.d(<span class="string">"MyServiceImpl"</span>, <span class="string">"init!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们可以在init方法中进行一些接口首次被调用时的初始化操作。</p>
+<p>调用接口的方式有几种：<br>使用url调用接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">((MyServiceInterface) ARouter.getInstance().build(<span class="string">"/interface/my-service"</span>).navigation())</span><br><span class="line">                .doSomething();</span><br></pre></td></tr></table></figure>
+
+<p>通过类型（.class）来调用接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ARouter.getInstance().navigation(MyServiceImpl.class).doSomething();</span><br></pre></td></tr></table></figure>
+
+<h1 id="获取Fragment"><a href="#获取Fragment" class="headerlink" title="获取Fragment"></a>获取Fragment</h1><p>ARouter还允许我们获取某个Fragment：<br>使用Route注解声明：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Route</span>(path = <span class="string">"/test/fragment"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BlankFragment</span> <span class="keyword">extends</span> <span class="title">Fragment</span> </span>&#123;</span><br></pre></td></tr></table></figure>
+
+<p>通过url获取：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Fragment fragment = (Fragment) ARouter.getInstance().build(<span class="string">"/test/fragment"</span>).navigation();</span><br></pre></td></tr></table></figure>
+
+<h1 id="跨模块调用"><a href="#跨模块调用" class="headerlink" title="跨模块调用"></a>跨模块调用</h1><p>ARouter的调用除了能在本module中运行外，也可以跨module运行，由于代码类似，在此不多研究</p>
+<h1 id="处理跳转结果"><a href="#处理跳转结果" class="headerlink" title="处理跳转结果"></a>处理跳转结果</h1><p>ARouter可以让我们处理跳转过程的结果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">ARouter.getInstance().build(<span class="string">"/module/jumpTestActivity2"</span>).navigation(<span class="keyword">null</span>,</span><br><span class="line">        <span class="keyword">new</span> NavigationCallback() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onFound</span><span class="params">(Postcard postcard)</span> </span>&#123;</span><br><span class="line">                <span class="comment">// 找到目标后进行的操作</span></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onLost</span><span class="params">(Postcard postcard)</span> </span>&#123;</span><br><span class="line">                <span class="comment">// 找不到目标进行的操作</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br></pre></td></tr></table></figure>
+
+<h1 id="拦截器"><a href="#拦截器" class="headerlink" title="拦截器"></a>拦截器</h1><p>ARouter的拦截器可以在navigation的过程中拦截请求，并进行一系列的处理，是一种AOP的编程模式（应用场景为检查登录状态等）<br>要实现拦截器，首先我们需要实现IInterceptor接口，并使用Interceptor注解标记我们的拦截器，并传入priority优先级参数（数字越小、优先级越高）<br>例子：这里实现了两个拦截器：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Interceptor</span>(priority = <span class="number">6</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyInterceptorFirst</span> <span class="keyword">implements</span> <span class="title">IInterceptor</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(Postcard postcard, InterceptorCallback callback)</span> </span>&#123;</span><br><span class="line">        Log.i(<span class="string">"MyInterceptorFirst"</span>, postcard.toString());</span><br><span class="line">        callback.onContinue(postcard);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        Log.i(<span class="string">"MyInterceptorFirst"</span>, <span class="string">"init"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Interceptor</span>(priority = <span class="number">7</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyInterceptorSecond</span> <span class="keyword">implements</span> <span class="title">IInterceptor</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(Postcard postcard, InterceptorCallback callback)</span> </span>&#123;</span><br><span class="line">        Log.i(<span class="string">"MyInterceptorSecond"</span>, postcard.toString());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        Log.i(<span class="string">"MyInterceptorSecond"</span>, <span class="string">"init"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>IInterceptor接口定义了两个方法：</p>
+<ul>
+<li>init方法：在ARouter初始化的时候会调用，用于进行一系列初始化操作</li>
+<li>process方法：拦截请求的处理方法，分别传入Postcard（请求的具体信息），InterceptorCallback（用于控制拦截流程）两个参数</li>
+</ul>
+<p>这里说一下InterceptorCallback这个参数，这个接口定义了两个方法：</p>
+<ul>
+<li>onContinue：传入Postcard参数（可以更改请求参数），表示当前拦截器放行此请求（该请求可以被更低优先级的拦截器拦截，或者没有拦截器了就执行对应操作）</li>
+<li>onInterrupt：拦截此次请求，不再传递下去</li>
+<li>如果不调用任何方法则默认拦截此次请求</li>
+</ul>
+<p>因此，上面例子中的拦截器实现的效果是，分别执行MyInterceptorFirst、MyInterceptorSecond拦截器，并拦截请求，无法跳转</p>
+<p>以上就是本人探究的ARouter的功能，如有遗漏欢迎补充~</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/应用/" rel="tag"># 应用</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/09/11/Android-加壳尝试（一）/" rel="next" title="Android 加壳尝试（一）">
+                <i class="fa fa-chevron-left"></i> Android 加壳尝试（一）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/09/16/MVP-模式简单易懂的介绍方式/" rel="prev" title="MVP 模式简单易懂的介绍方式">
+                MVP 模式简单易懂的介绍方式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#框架配置与初始化"><span class="nav-number">1.</span> <span class="nav-text">框架配置与初始化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Activity基础跳转"><span class="nav-number">2.</span> <span class="nav-text">Activity基础跳转</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#传递参数与参数注入"><span class="nav-number">3.</span> <span class="nav-text">传递参数与参数注入</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用新旧转场动画处理跳转"><span class="nav-number">4.</span> <span class="nav-text">使用新旧转场动画处理跳转</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#kotlin跳转"><span class="nav-number">5.</span> <span class="nav-text">kotlin跳转</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#接口调用"><span class="nav-number">6.</span> <span class="nav-text">接口调用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#获取Fragment"><span class="nav-number">7.</span> <span class="nav-text">获取Fragment</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#跨模块调用"><span class="nav-number">8.</span> <span class="nav-text">跨模块调用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#处理跳转结果"><span class="nav-number">9.</span> <span class="nav-text">处理跳转结果</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#拦截器"><span class="nav-number">10.</span> <span class="nav-text">拦截器</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

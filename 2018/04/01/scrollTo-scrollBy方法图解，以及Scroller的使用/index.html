@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,view,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="scrollTo方法图解、Scroller的使用、scroll原理">
+<meta name="keywords" content="android,view">
+<meta property="og:type" content="article">
+<meta property="og:title" content="scrollTo方法图解，以及Scroller的使用">
+<meta property="og:url" content="https://superxlcr.github.io/2018/04/01/scrollTo-scrollBy方法图解，以及Scroller的使用/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="scrollTo方法图解、Scroller的使用、scroll原理">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2018/04/01/scrollTo-scrollBy方法图解，以及Scroller的使用/1.png">
+<meta property="og:image" content="https://superxlcr.github.io/2018/04/01/scrollTo-scrollBy方法图解，以及Scroller的使用/2.png">
+<meta property="og:image" content="https://superxlcr.github.io/2018/04/01/scrollTo-scrollBy方法图解，以及Scroller的使用/3.png">
+<meta property="og:image" content="https://superxlcr.github.io/2018/04/01/scrollTo-scrollBy方法图解，以及Scroller的使用/4.png">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.782Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="scrollTo方法图解，以及Scroller的使用">
+<meta name="twitter:description" content="scrollTo方法图解、Scroller的使用、scroll原理">
+<meta name="twitter:image" content="https://superxlcr.github.io/2018/04/01/scrollTo-scrollBy方法图解，以及Scroller的使用/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2018/04/01/scrollTo-scrollBy方法图解，以及Scroller的使用/">
+
+
+
+
+
+  <title>scrollTo方法图解，以及Scroller的使用 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2018/04/01/scrollTo-scrollBy方法图解，以及Scroller的使用/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">scrollTo方法图解，以及Scroller的使用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-01T10:16:41+08:00">
+                2018-04-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.4k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="scrollTo方法图解"><a href="#scrollTo方法图解" class="headerlink" title="scrollTo方法图解"></a>scrollTo方法图解</h1><p>Android系统手机屏幕的左上角为坐标系，同时y轴方向与笛卡尔坐标系的y轴方向想反。通过提供的api如getLeft , getTop, getBottom, getRight可以获得控件在parent中的相对位置。<br>当我们编写一些自定义的滑动控件时，会用到一些api如scrollTo(),scrollBy(),getScrollX(), getScrollY()。由于常常会对函数getScrollX(), getScrollY()返回的值的含义产生混淆，尤其是正负关系，因此本文将使用几幅图来对这些函数进行讲解以方便大家记忆。<br>值得注意的是，调用View的scrollTo()和scrollBy()是用于<font color="#ff0000">滑动View中的内容，而不是把某个View的位置进行改变。</font><br>scrollTo(int x, int y) 是<font color="#ff0000">将View中内容滑动到相应的位置</font>，参考的坐标系原点为parent View的左上角。<br>调用scrollTo(100, 0)表示将View中的内容移动到x = 100， y = 0的位置，如下图所示。注意，图中黄色矩形区域表示的是一个parent View，绿色虚线矩形为parent view中的内容。一般情况下两者的大小一致，本文为了显示方便，将虚线框画小了一点。图中的黄色区域的位置始终不变，发生位置变化的是显示的内容。<br><img src="/2018/04/01/scrollTo-scrollBy方法图解，以及Scroller的使用/1.png" alt="scrollTo(100,0)示意图"><br>同理，scrollTo(0, 100)的效果如下图所示：<br><img src="/2018/04/01/scrollTo-scrollBy方法图解，以及Scroller的使用/2.png" alt="scrollTo(0,100)示意图"><br>scrollTo(100, 100)的效果图如下：<br><img src="/2018/04/01/scrollTo-scrollBy方法图解，以及Scroller的使用/3.png" alt="scrollTo(100,100)示意图"><br>若函数中参数为负值，则子View的移动方向将相反:<br><img src="/2018/04/01/scrollTo-scrollBy方法图解，以及Scroller的使用/4.png" alt="scrollTo(-100,0)示意图"></p>
+<h1 id="Scroller的使用"><a href="#Scroller的使用" class="headerlink" title="Scroller的使用"></a>Scroller的使用</h1><p>使用scrollTo方法时，我们看到view的内容位置是立即进行刷新的，会给人一种不是特别友好的感觉<br>当我们需要实现一种滑动动画的效果时，就需要使用Scroller工具类<br>Scroller是一个用于计算滑动动画的工具类，我们的调用方式如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 调用方法开始计算滑动</span></span><br><span class="line">scroller.startScroll(startX, startY, endX, endY, duration)</span><br><span class="line"><span class="comment">// 判断是否滑动结束，如果返回true，表示滑动动画仍未结束</span></span><br><span class="line">scroller.computeScrollOffset</span><br><span class="line"><span class="comment">// 通过各种getter获取各种坐标</span></span><br><span class="line">scroller.getStartX</span><br><span class="line">scroller.getStartY</span><br><span class="line">scroller.getCurrX</span><br><span class="line">scroller.getCurrY</span><br><span class="line">scroller.getFinalX</span><br><span class="line">scroller.getFinalY</span><br></pre></td></tr></table></figure>
+
+<p>我们可以通过重写View#computeScroll回调方法来计算每次滑动的距离，最终实现滑动动画的效果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">computeScroll</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (scroller.computeScrollOffset()) &#123;</span><br><span class="line">        scrollTo(scroller.getCurrX(), scroller.getCurrY());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="scroll原理"><a href="#scroll原理" class="headerlink" title="scroll原理"></a>scroll原理</h1><p>Scroll滚动的本质，实际上是针对View显示内容区域的偏移，通过canvas的translate方法来偏移绘制的原点，来达到绘制内容移动的效果</p>
+<p>我们可以追踪下View的draw方法来了解scroll的原理：</p>
+<p>以下有部分内容转自：<a href="https://juejin.im/entry/5948bfabfe88c2006a939278" target="_blank" rel="noopener">https://juejin.im/entry/5948bfabfe88c2006a939278</a></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">draw</span><span class="params">(Canvas canvas)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> privateFlags = mPrivateFlags;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">boolean</span> dirtyOpaque = (privateFlags &amp; PFLAG_DIRTY_MASK) == PFLAG_DIRTY_OPAQUE &amp;&amp;</span><br><span class="line">            (mAttachInfo == <span class="keyword">null</span> || !mAttachInfo.mIgnoreDirtyState);</span><br><span class="line">    mPrivateFlags = (privateFlags &amp; ~PFLAG_DIRTY_MASK) | PFLAG_DRAWN;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * Draw traversal performs several drawing steps which must be executed</span></span><br><span class="line"><span class="comment">     * in the appropriate order:</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     *      1. Draw the background</span></span><br><span class="line"><span class="comment">     *      2. If necessary, save the canvas' layers to prepare for fading</span></span><br><span class="line"><span class="comment">     *      3. Draw view's content</span></span><br><span class="line"><span class="comment">     *      4. Draw children</span></span><br><span class="line"><span class="comment">     *      5. If necessary, draw the fading edges and restore layers</span></span><br><span class="line"><span class="comment">     *      6. Draw decorations (scrollbars for instance)</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Step 1, draw the background, if needed</span></span><br><span class="line">    <span class="keyword">int</span> saveCount;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!dirtyOpaque) &#123;</span><br><span class="line">        drawBackground(canvas);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// skip step 2 &amp; 5 if possible (common case)</span></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> viewFlags = mViewFlags;</span><br><span class="line">    <span class="keyword">boolean</span> horizontalEdges = (viewFlags &amp; FADING_EDGE_HORIZONTAL) != <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">boolean</span> verticalEdges = (viewFlags &amp; FADING_EDGE_VERTICAL) != <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (!verticalEdges &amp;&amp; !horizontalEdges) &#123;</span><br><span class="line">        <span class="comment">// Step 3, draw the content</span></span><br><span class="line">        <span class="keyword">if</span> (!dirtyOpaque) onDraw(canvas);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Step 4, draw the children</span></span><br><span class="line">        dispatchDraw(canvas);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Overlay is part of the content and draws beneath Foreground</span></span><br><span class="line">        <span class="keyword">if</span> (mOverlay != <span class="keyword">null</span> &amp;&amp; !mOverlay.isEmpty()) &#123;</span><br><span class="line">            mOverlay.getOverlayView().dispatchDraw(canvas);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Step 6, draw decorations (foreground, scrollbars)</span></span><br><span class="line">        onDrawForeground(canvas);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// we're done...</span></span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代码有删简，去掉了 Fading 边缘效果的处理代码。不过，我们仍然可以得到一些很重要的信息，其中包括一个 View 的绘制流程。代码注释中写的很详细。</p>
+<p>View 绘制流程 </p>
+<ol>
+<li>绘制背景 </li>
+<li>绘制内容 </li>
+<li>绘制 children </li>
+<li>如果有需要，绘制渐隐(fading) 效果 </li>
+<li>绘制装饰物 （scrollbars）</li>
+</ol>
+<p>大家可能会注意到 dirtyOpaque 这个变量，它代表的是一个 View 是否是实心的，如果不是实心的就要绘制 background，否则就不需要。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">drawBackground</span><span class="params">(Canvas canvas)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Drawable background = mBackground;</span><br><span class="line">    <span class="keyword">if</span> (background == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    setBackgroundBounds();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Attempt to use a display list if requested.</span></span><br><span class="line">    <span class="keyword">if</span> (canvas.isHardwareAccelerated() &amp;&amp; mAttachInfo != <span class="keyword">null</span></span><br><span class="line">            &amp;&amp; mAttachInfo.mHardwareRenderer != <span class="keyword">null</span>) &#123;</span><br><span class="line">        mBackgroundRenderNode = getDrawableRenderNode(background, mBackgroundRenderNode);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">final</span> RenderNode renderNode = mBackgroundRenderNode;</span><br><span class="line">        <span class="keyword">if</span> (renderNode != <span class="keyword">null</span> &amp;&amp; renderNode.isValid()) &#123;</span><br><span class="line">            setBackgroundRenderNodeProperties(renderNode);</span><br><span class="line">            ((DisplayListCanvas) canvas).drawRenderNode(renderNode);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> scrollX = mScrollX;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> scrollY = mScrollY;</span><br><span class="line">    <span class="keyword">if</span> ((scrollX | scrollY) == <span class="number">0</span>) &#123;</span><br><span class="line">        background.draw(canvas);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        canvas.translate(scrollX, scrollY);</span><br><span class="line">        background.draw(canvas);</span><br><span class="line">        canvas.translate(-scrollX, -scrollY);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这里面，倒是看到了 canvas.translate(scrollX, scrollY),但是绘制了背景之后它又立马平移回去了。这里有些莫名其妙。但是，它不是我们的目标，我们的目标是 view.onDraw()。</p>
+<p>在 draw()方法中，我们并没有找到线索。那么，我们注意到这个方法中来————dispatchDraw(),注释说它是绘制 children，那么显然它是属于 ViewGroup 中的方法。 ViewGroup.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">dispatchDraw</span><span class="params">(Canvas canvas)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">boolean</span> usingRenderNodeProperties = canvas.isRecordingFor(mRenderNode);</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> childrenCount = mChildrenCount;</span><br><span class="line">    <span class="keyword">final</span> View[] children = mChildren;</span><br><span class="line">    <span class="keyword">int</span> flags = mGroupFlags;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> clipSaveCount = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">// We will draw our child's animation, let's reset the flag</span></span><br><span class="line">    mPrivateFlags &amp;= ~PFLAG_DRAW_ANIMATION;</span><br><span class="line">    mGroupFlags &amp;= ~FLAG_INVALIDATE_REQUIRED;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">boolean</span> more = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">long</span> drawingTime = getDrawingTime();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> transientCount = mTransientIndices == <span class="keyword">null</span> ? <span class="number">0</span> : mTransientIndices.size();</span><br><span class="line">    <span class="keyword">int</span> transientIndex = transientCount != <span class="number">0</span> ? <span class="number">0</span> : -<span class="number">1</span>;</span><br><span class="line">    <span class="comment">// Only use the preordered list if not HW accelerated, since the HW pipeline will do the</span></span><br><span class="line">    <span class="comment">// draw reordering internally</span></span><br><span class="line">    <span class="keyword">final</span> ArrayList&lt;View&gt; preorderedList = usingRenderNodeProperties</span><br><span class="line">            ? <span class="keyword">null</span> : buildOrderedChildList();</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">boolean</span> customOrder = preorderedList == <span class="keyword">null</span></span><br><span class="line">            &amp;&amp; isChildrenDrawingOrderEnabled();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; childrenCount; i++) &#123;</span><br><span class="line">        <span class="keyword">while</span> (transientIndex &gt;= <span class="number">0</span> &amp;&amp; mTransientIndices.get(transientIndex) == i) &#123;</span><br><span class="line">            <span class="keyword">final</span> View transientChild = mTransientViews.get(transientIndex);</span><br><span class="line">            <span class="keyword">if</span> ((transientChild.mViewFlags &amp; VISIBILITY_MASK) == VISIBLE ||</span><br><span class="line">                    transientChild.getAnimation() != <span class="keyword">null</span>) &#123;</span><br><span class="line">                more |= drawChild(canvas, transientChild, drawingTime);</span><br><span class="line">            &#125;</span><br><span class="line">            transientIndex++;</span><br><span class="line">            <span class="keyword">if</span> (transientIndex &gt;= transientCount) &#123;</span><br><span class="line">                transientIndex = -<span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> childIndex = getAndVerifyPreorderedIndex(childrenCount, i, customOrder);</span><br><span class="line">        <span class="keyword">final</span> View child = getAndVerifyPreorderedView(preorderedList, children, childIndex);</span><br><span class="line">        <span class="keyword">if</span> ((child.mViewFlags &amp; VISIBILITY_MASK) == VISIBLE || child.getAnimation() != <span class="keyword">null</span>) &#123;</span><br><span class="line">            more |= drawChild(canvas, child, drawingTime);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span> (transientIndex &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// there may be additional transient views after the normal views</span></span><br><span class="line">        <span class="keyword">final</span> View transientChild = mTransientViews.get(transientIndex);</span><br><span class="line">        <span class="keyword">if</span> ((transientChild.mViewFlags &amp; VISIBILITY_MASK) == VISIBLE ||</span><br><span class="line">                transientChild.getAnimation() != <span class="keyword">null</span>) &#123;</span><br><span class="line">            more |= drawChild(canvas, transientChild, drawingTime);</span><br><span class="line">        &#125;</span><br><span class="line">        transientIndex++;</span><br><span class="line">        <span class="keyword">if</span> (transientIndex &gt;= transientCount) &#123;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">// mGroupFlags might have been updated by drawChild()</span></span><br><span class="line">    flags = mGroupFlags;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((flags &amp; FLAG_INVALIDATE_REQUIRED) == FLAG_INVALIDATE_REQUIRED) &#123;</span><br><span class="line">        invalidate(<span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们注意到 drawChild() 这个方法。 ViewGroup.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">boolean</span> <span class="title">drawChild</span><span class="params">(Canvas canvas, View child, <span class="keyword">long</span> drawingTime)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> child.draw(canvas, <span class="keyword">this</span>, drawingTime);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里引出了 View.draw(Canvas canvas, ViewGroup parent, long drawingTime) 方法，这个方法不同于 View.draw(Canvas canvas)。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* This method is called by ViewGroup.drawChild() to have each child view draw itself.</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">* This is where the View specializes rendering behavior based on layer type,</span></span><br><span class="line"><span class="comment">* and hardware acceleration.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">draw</span><span class="params">(Canvas canvas, ViewGroup parent, <span class="keyword">long</span> drawingTime)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">boolean</span> hardwareAcceleratedCanvas = canvas.isHardwareAccelerated();</span><br><span class="line">    <span class="comment">/* If an attached view draws to a HW canvas, it may use its RenderNode + DisplayList.</span></span><br><span class="line"><span class="comment">    *</span></span><br><span class="line"><span class="comment">    * If a view is dettached, its DisplayList shouldn't exist. If the canvas isn't</span></span><br><span class="line"><span class="comment">    * HW accelerated, it can't handle drawing RenderNodes.</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="keyword">boolean</span> drawingWithRenderNode = mAttachInfo != <span class="keyword">null</span></span><br><span class="line">        &amp;&amp; mAttachInfo.mHardwareAccelerated</span><br><span class="line">        &amp;&amp; hardwareAcceleratedCanvas;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">boolean</span> more = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> parentFlags = parent.mGroupFlags;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    Transformation transformToApply = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">boolean</span> concatMatrix = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">boolean</span> scalingRequired = mAttachInfo != <span class="keyword">null</span> &amp;&amp; mAttachInfo.mScalingRequired;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Sets the flag as early as possible to allow draw() implementations</span></span><br><span class="line">    <span class="comment">// to call invalidate() successfully when doing animations</span></span><br><span class="line">    mPrivateFlags |= PFLAG_DRAWN;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> sx = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> sy = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (!drawingWithRenderNode) &#123;</span><br><span class="line">        computeScroll();</span><br><span class="line">        sx = mScrollX;</span><br><span class="line">        sy = mScrollY;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">boolean</span> drawingWithDrawingCache = cache != <span class="keyword">null</span> &amp;&amp; !drawingWithRenderNode;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">boolean</span> offsetForScroll = cache == <span class="keyword">null</span> &amp;&amp; !drawingWithRenderNode;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> restoreTo = -<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span> (!drawingWithRenderNode || transformToApply != <span class="keyword">null</span>) &#123;</span><br><span class="line">        restoreTo = canvas.save();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (offsetForScroll) &#123;</span><br><span class="line">        canvas.translate(mLeft - sx, mTop - sy);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (!drawingWithRenderNode) &#123;</span><br><span class="line">            canvas.translate(mLeft, mTop);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (scalingRequired) &#123;</span><br><span class="line">            <span class="keyword">if</span> (drawingWithRenderNode) &#123;</span><br><span class="line">                <span class="comment">// <span class="doctag">TODO:</span> Might not need this if we put everything inside the DL</span></span><br><span class="line">                restoreTo = canvas.save();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// mAttachInfo cannot be null, otherwise scalingRequired == false</span></span><br><span class="line">            <span class="keyword">final</span> <span class="keyword">float</span> scale = <span class="number">1.0f</span> / mAttachInfo.mApplicationScale;</span><br><span class="line">            canvas.scale(scale, scale);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!drawingWithRenderNode) &#123;</span><br><span class="line">    <span class="comment">// apply clips directly, since RenderNode won't do it for this draw</span></span><br><span class="line">    <span class="keyword">if</span> ((parentFlags &amp; ViewGroup.FLAG_CLIP_CHILDREN) != <span class="number">0</span> &amp;&amp; cache == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (offsetForScroll) &#123;</span><br><span class="line">            canvas.clipRect(sx, sy, sx + getWidth(), sy + getHeight());</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (!scalingRequired || cache == <span class="keyword">null</span>) &#123;</span><br><span class="line">                canvas.clipRect(<span class="number">0</span>, <span class="number">0</span>, getWidth(), getHeight());</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                canvas.clipRect(<span class="number">0</span>, <span class="number">0</span>, cache.getWidth(), cache.getHeight());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (mClipBounds != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">// clip bounds ignore scroll</span></span><br><span class="line">        canvas.clipRect(mClipBounds);</span><br><span class="line">    &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!drawingWithDrawingCache) &#123;</span><br><span class="line">        <span class="keyword">if</span> (drawingWithRenderNode) &#123;</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// Fast path for layouts with no backgrounds</span></span><br><span class="line">            <span class="keyword">if</span> ((mPrivateFlags &amp; PFLAG_SKIP_DRAW) == PFLAG_SKIP_DRAW) &#123;</span><br><span class="line">                mPrivateFlags &amp;= ~PFLAG_DIRTY_MASK;</span><br><span class="line">                dispatchDraw(canvas);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// 在这里调用 draw() 单参数方法。</span></span><br><span class="line">                draw(canvas);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (cache != <span class="keyword">null</span>) &#123;</span><br><span class="line"></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (restoreTo &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">        canvas.restoreToCount(restoreTo);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> more;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>原本的代码很长，并且涉及到软件绘制和硬件绘制两种不同的流程。为了便于学习，现在剔除了硬件加速绘制流程和一些矩阵变换的代码。</p>
+<p>drawingWithRenderNode 变量代表的就是是否要执行硬件加速绘制。</p>
+<p>代码运行中，先会调用 computeScroll() 方法，然后将 mScrollX 和 mScrollY 赋值给变量 sx 和 sy 变量。<font color="red">(这也是为什么我们使用Scroller的时候需要重写computeScroll方法的原因)</font></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Called by a parent to request that a child update its values for mScrollX</span></span><br><span class="line"><span class="comment"> * and mScrollY if necessary. This will typically be done if the child is</span></span><br><span class="line"><span class="comment"> * animating a scroll using a &#123;<span class="doctag">@link</span> android.widget.Scroller Scroller&#125;</span></span><br><span class="line"><span class="comment"> * object.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">computeScroll</span><span class="params">()</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 View 中 computeScroll() 是一个空方法，但注释说的很明白，这个方法是用来更新 mScrollX 和 mScrollY 的。典型用法就是一个 View 通过 Scroller 进行滚动动画（animating a scroll）时在这里更新 mScrollX 和 mScrollY。 </p>
+<p>接下来就是最关键的一环了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="keyword">boolean</span> drawingWithDrawingCache = cache != <span class="keyword">null</span> &amp;&amp; !drawingWithRenderNode;</span><br><span class="line"><span class="keyword">final</span> <span class="keyword">boolean</span> offsetForScroll = cache == <span class="keyword">null</span> &amp;&amp; !drawingWithRenderNode;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> restoreTo = -<span class="number">1</span>;</span><br><span class="line"><span class="keyword">if</span> (!drawingWithRenderNode || transformToApply != <span class="keyword">null</span>) &#123;</span><br><span class="line">    restoreTo = canvas.save();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (offsetForScroll) &#123;</span><br><span class="line">    canvas.translate(mLeft - sx, mTop - sy);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (!drawingWithRenderNode) &#123;</span><br><span class="line">        canvas.translate(mLeft, mTop);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于我们研究的目标不是说 View 的绘制是通过之前的缓存绘制，而是全新的绘制，所以 cache == null，offsetForScroll = true。那么，程序就会执行下面这段代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">canvas.translate(mLeft - sx, mTop - sy);</span><br></pre></td></tr></table></figure>
+
+<p>我们苦苦追寻的答案终于来临，canvas 确实平移了。好，我们继续向下。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ((mPrivateFlags &amp; PFLAG_SKIP_DRAW) == PFLAG_SKIP_DRAW) &#123;</span><br><span class="line">                mPrivateFlags &amp;= ~PFLAG_DIRTY_MASK;</span><br><span class="line">    dispatchDraw(canvas);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// 在这里调用 draw() 单参数方法。</span></span><br><span class="line">    draw(canvas);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后的地方调用了 draw(canvas)，而 draw(canvas) 中调用了开发者常见的 onDraw(canvas)。</p>
+<p>综上所述，scroll的原理是</p>
+<ol>
+<li>我们通过各种方式来更新View的mScrollX以及mScrollY属性</li>
+<li>在View的绘制过程中，通过canvas的translate操作平移画布，从而实现显示内容滑动的效果</li>
+</ol>
+<p>PS:</p>
+<ul>
+<li>可以通过 ViewConfiguration.getTouchSlop() 来获取最小能够识别的滑动距离，来判断滑动是否生效</li>
+<li>通过 VelocityTracker 来计算速度，实现fling的快速滚动效果</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/view/" rel="tag"># view</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/31/移动-APP-网络优化概述/" rel="next" title="移动 APP 网络优化概述">
+                <i class="fa fa-chevron-left"></i> 移动 APP 网络优化概述
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/04/15/关于Http请求方法Get与Post的思考/" rel="prev" title="关于HTTP请求方法GET与POST的思考">
+                关于HTTP请求方法GET与POST的思考 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#scrollTo方法图解"><span class="nav-number">1.</span> <span class="nav-text">scrollTo方法图解</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Scroller的使用"><span class="nav-number">2.</span> <span class="nav-text">Scroller的使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#scroll原理"><span class="nav-number">3.</span> <span class="nav-text">scroll原理</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

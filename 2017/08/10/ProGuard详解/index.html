@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,编译,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="（转载）简介、ProGuard作用、混淆注意事项、ProGuard使用">
+<meta name="keywords" content="android,编译">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ProGuard详解">
+<meta property="og:url" content="https://superxlcr.github.io/2017/08/10/ProGuard详解/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="（转载）简介、ProGuard作用、混淆注意事项、ProGuard使用">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2017/08/10/ProGuard详解/1.png">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.730Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ProGuard详解">
+<meta name="twitter:description" content="（转载）简介、ProGuard作用、混淆注意事项、ProGuard使用">
+<meta name="twitter:image" content="https://superxlcr.github.io/2017/08/10/ProGuard详解/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2017/08/10/ProGuard详解/">
+
+
+
+
+
+  <title>ProGuard详解 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2017/08/10/ProGuard详解/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ProGuard详解</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-10T16:31:48+08:00">
+                2017-08-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.5k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p><a href="http://proguard.sourceforge.net/" target="_blank" rel="noopener">ProGuard</a>是一个开源的Java代码混淆器。它可以混淆Android项目里面的java代码，对的，你没看错，仅仅是java代码。它是无法混淆Native代码，资源文件drawable、xml等。</p>
+<h1 id="ProGuard作用"><a href="#ProGuard作用" class="headerlink" title="ProGuard作用"></a>ProGuard作用</h1><ul>
+<li>压缩: 移除无效的类、属性、方法等</li>
+<li>优化: 优化字节码，并删除未使用的结构</li>
+<li>混淆: 将类名、属性名、方法名混淆为难以读懂的字母，比如a,b,c；</li>
+</ul>
+<h1 id="混淆注意事项"><a href="#混淆注意事项" class="headerlink" title="混淆注意事项"></a>混淆注意事项</h1><h2 id="不能混淆"><a href="#不能混淆" class="headerlink" title="不能混淆"></a>不能混淆</h2><ul>
+<li>在AndroidManifest中配置的类，比如四大组件</li>
+<li>JNI调用的方法</li>
+<li>反射用到的类</li>
+<li>WebView中JavaScript调用的方法</li>
+<li>Layout文件引用到的自定义View</li>
+<li>一些引入的第三方库（一般都会有混淆说明的）</li>
+</ul>
+<p>推荐两个开源项目，里面收集了一些第三方库的混淆规则<br><a href="https://github.com/krschultz/android-proguard-snippets" target="_blank" rel="noopener">android-proguard-snippets</a><br><a href="https://github.com/msdx/android-proguard-cn" target="_blank" rel="noopener">android-proguard-cn</a></p>
+<h2 id="Crash信息处理"><a href="#Crash信息处理" class="headerlink" title="Crash信息处理"></a>Crash信息处理</h2><p>代码混淆的时候记得加上在混淆文件里面记得加上这句： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># keep住源文件以及行号</span><br><span class="line">-keepattributes SourceFile,LineNumberTable</span><br></pre></td></tr></table></figure>
+
+<p>否则你看到的崩溃信息就会变成这样子:（图片来自bugly）</p>
+<p><img src="/2017/08/10/ProGuard详解/1.png" alt="_pic1"></p>
+<p>这里推荐bugly的一篇文章： <a href="http://bugly.qq.com/bbs/forum.php?mod=viewthread&tid=26&extra=page=1" target="_blank" rel="noopener"><br>http://bugly.qq.com/bbs/forum.php?mod=viewthread&amp;tid=26&amp;extra=page%3D1</a></p>
+<h1 id="ProGuard使用"><a href="#ProGuard使用" class="headerlink" title="ProGuard使用"></a>ProGuard使用</h1><h2 id="常用语法"><a href="#常用语法" class="headerlink" title="常用语法"></a>常用语法</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">// 从给定的文件中读取配置参数</span><br><span class="line">-include &#123;filename&#125; </span><br><span class="line">// 指定基础目录为以后相对的档案名称</span><br><span class="line">-basedirectory &#123;directoryname&#125;</span><br><span class="line">// 指定要处理的应用程序jar,war,ear和目录   </span><br><span class="line">-injars &#123;class_path&#125; </span><br><span class="line">// 指定处理完后要输出的jar,war,ear和目录的名称 </span><br><span class="line">-outjars &#123;class_path&#125; </span><br><span class="line">// 指定要处理的应用程序jar,war,ear和目录所需要的程序库文件   </span><br><span class="line">-libraryjars &#123;classpath&#125; </span><br><span class="line">// 指定不去忽略非公共的库类。</span><br><span class="line">-dontskipnonpubliclibraryclasses</span><br><span class="line">//  指定不去忽略包可见的库类的成员。</span><br><span class="line">-dontskipnonpubliclibraryclassmembers</span><br></pre></td></tr></table></figure>
+
+<h3 id="保留"><a href="#保留" class="headerlink" title="保留"></a>保留</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">// 保护指定的类文件和类的成员</span><br><span class="line">-keep &#123;Modifier&#125; &#123;class_specification&#125; </span><br><span class="line">// 保护指定类的成员，如果此类受到保护他们会保护的更好</span><br><span class="line">-keepclassmembers &#123;modifier&#125; &#123;class_specification&#125; </span><br><span class="line">// 保护指定的类和类的成员，但条件是所有指定的类和类成员是要存在。</span><br><span class="line">-keepclasseswithmembers &#123;class_specification&#125; </span><br><span class="line">// 保护指定的类和类的成员的名称（如果他们不会压缩步骤中删除）</span><br><span class="line">-keepnames &#123;class_specification&#125; </span><br><span class="line">// 保护指定的类的成员的名称（如果他们不会压缩步骤中删除）</span><br><span class="line">-keepclassmembernames &#123;class_specification&#125; </span><br><span class="line">// 保护指定的类和类的成员的名称，如果所有指定的类成员出席（在压缩步骤之后）</span><br><span class="line">-keepclasseswithmembernames &#123;class_specification&#125; </span><br><span class="line">// 列出类和类的成员-keep选项的清单，标准输出到给定的文件</span><br><span class="line">-printseeds &#123;filename&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="压缩"><a href="#压缩" class="headerlink" title="压缩"></a>压缩</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-dontshrink 不压缩输入的类文件</span><br><span class="line">-printusage &#123;filename&#125;</span><br><span class="line">-whyareyoukeeping &#123;class_specification&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-dontoptimize 不优化输入的类文件</span><br><span class="line">-assumenosideeffects &#123;class_specification&#125; 优化时假设指定的方法，没有任何副作用</span><br><span class="line">-allowaccessmodification 优化时允许访问并修改有修饰符的类和类的成员</span><br></pre></td></tr></table></figure>
+
+<h3 id="混淆"><a href="#混淆" class="headerlink" title="混淆"></a>混淆</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">// 不混淆输入的类文件</span><br><span class="line">-dontobfuscate </span><br><span class="line">// 使用给定文件中的关键字作为要混淆方法的名称</span><br><span class="line">-obfuscationdictionary &#123;filename&#125; </span><br><span class="line">// 混淆时应用侵入式重载</span><br><span class="line">-overloadaggressively </span><br><span class="line">// 确定统一的混淆类的成员名称来增加混淆</span><br><span class="line">-useuniqueclassmembernames </span><br><span class="line">// 重新包装所有重命名的包并放在给定的单一包中</span><br><span class="line">-flattenpackagehierarchy &#123;package_name&#125; </span><br><span class="line">// 重新包装所有重命名的类文件中放在给定的单一包中</span><br><span class="line">-repackageclass &#123;package_name&#125; </span><br><span class="line">// 混淆时不会产生形形色色的类名</span><br><span class="line">-dontusemixedcaseclassnames </span><br><span class="line">// 保护给定的可选属性，例如LineNumberTable, LocalVariableTable, SourceFile, Deprecated, Synthetic, Signature, and InnerClasses.</span><br><span class="line">-keepattributes &#123;attribute_name,…&#125; </span><br><span class="line">// 设置源文件中给定的字符串常量</span><br><span class="line">-renamesourcefileattribute &#123;string&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="通配符匹配规则"><a href="#通配符匹配规则" class="headerlink" title="通配符匹配规则"></a>通配符匹配规则</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">？      </span><br><span class="line">匹配单个字符</span><br><span class="line"></span><br><span class="line">*</span><br><span class="line">匹配类名中的任何部分，但不包含额外的包名</span><br><span class="line"></span><br><span class="line">**</span><br><span class="line">匹配类名中的任何部分，并且可以包含额外的包名</span><br><span class="line"></span><br><span class="line">%</span><br><span class="line">匹配任何基础类型的类型名</span><br><span class="line"></span><br><span class="line">***</span><br><span class="line">匹配任意类型名 ,包含基础类型/非基础类型</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line">匹配任意数量、任意类型的参数</span><br><span class="line"></span><br><span class="line">&lt;init&gt;</span><br><span class="line">匹配任何构造器</span><br><span class="line"></span><br><span class="line">&lt;ifield&gt;</span><br><span class="line">匹配任何字段名</span><br><span class="line"></span><br><span class="line">&lt;imethod&gt;</span><br><span class="line">匹配任何方法</span><br><span class="line"></span><br><span class="line">*(当用在类内部时)</span><br><span class="line">匹配任何字段和方法</span><br><span class="line"></span><br><span class="line">$</span><br><span class="line">指内部类</span><br></pre></td></tr></table></figure>
+
+<p>更详细的语法请戳:<a href="http://proguard.sourceforge.net/manual/usage.html#classspecification" target="_blank" rel="noopener">http://proguard.sourceforge.net/manual/usage.html#classspecification</a></p>
+<h2 id="Android-Studio中使用方法"><a href="#Android-Studio中使用方法" class="headerlink" title="Android Studio中使用方法"></a>Android Studio中使用方法</h2><p>按照上面的语法规则编写proguard-rules.pro后，需要在build.gradle中配置，需要混淆的时候，设置minifyEnabled为true即可</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">buildTypes &#123;</span><br><span class="line">    debug &#123;</span><br><span class="line">        minifyEnabled false</span><br><span class="line">    &#125;</span><br><span class="line">    release &#123;</span><br><span class="line">        signingConfig signingConfigs.release</span><br><span class="line">        minifyEnabled true</span><br><span class="line">        proguardFiles &apos;proguard-rules.pro&apos;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Eclipse-中使用方法"><a href="#Eclipse-中使用方法" class="headerlink" title="Eclipse 中使用方法"></a>Eclipse 中使用方法</h2><ul>
+<li><p>在工程目录下有个描述文件project.properties, 注意不是proguard-project.txt文件(当时因为这个原因一直失败)，添加一句话，启用ProGuard;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 原文件内容：</span><br><span class="line"># proguard.config=$&#123;sdk.dir&#125;/tools/proguard/proguard-android.txt:proguard-project.txt</span><br><span class="line">// 修改后内容(其实只是去除注释，并未添加):</span><br><span class="line">proguard.config=$&#123;sdk.dir&#125;/tools/proguard/proguard-android.txt:proguard-project.txt</span><br></pre></td></tr></table></figure>
+
+<p>  这样，Proguard就可以使用了。当我们正常通过Android Tools导出Application Package时（或者使用ant执行release打包），Proguard就会自动启用，优化混淆你的代码。</p>
+</li>
+<li><p>这一步并不是必要的，第一步中已经添加了sdk目录下的混淆工具，但是为了避免各个项目出现混乱（直接添加导致所有的项目都是使用sdk目录下的ProGard工具）；因此往往会将<strong>proguard-android.txt复制</strong>到项目的跟目录下，使每个项目各自拥有独立的ProGuard文件；</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// 因此project.properties修改后：</span><br><span class="line">proguard.config=proguard-android.txt:proguard-project.txt</span><br><span class="line">// proguard-project.txt表示项目目录下的proguard-project.txt文件</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="ProGuard的输出文件说明"><a href="#ProGuard的输出文件说明" class="headerlink" title="ProGuard的输出文件说明"></a>ProGuard的输出文件说明</h2><p>混淆后，会在/build/proguard/目录下输出下面的文件 (Eclipse使用Export Android Application会在项目根目录下产生proguard目录；</p>
+<ul>
+<li>dump.txt 描述apk文件中所有类文件间的内部结构。</li>
+<li>mapping.txt 列出了原始的类，方法，和字段名与混淆后代码之间的映射。</li>
+<li>seeds.txt 列出了未被混淆的类和成员;</li>
+<li>usage.txt 列出了从apk中删除的代码 ;</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/编译/" rel="tag"># 编译</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/08/Android常见问题总结（六）/" rel="next" title="Android常见问题总结（六）">
+                <i class="fa fa-chevron-left"></i> Android常见问题总结（六）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/10/关于一些基础的Java问题的解答（九）/" rel="prev" title="关于一些基础的Java问题的解答（九）">
+                关于一些基础的Java问题的解答（九） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ProGuard作用"><span class="nav-number">2.</span> <span class="nav-text">ProGuard作用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#混淆注意事项"><span class="nav-number">3.</span> <span class="nav-text">混淆注意事项</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#不能混淆"><span class="nav-number">3.1.</span> <span class="nav-text">不能混淆</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Crash信息处理"><span class="nav-number">3.2.</span> <span class="nav-text">Crash信息处理</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ProGuard使用"><span class="nav-number">4.</span> <span class="nav-text">ProGuard使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#常用语法"><span class="nav-number">4.1.</span> <span class="nav-text">常用语法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#保留"><span class="nav-number">4.1.1.</span> <span class="nav-text">保留</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#压缩"><span class="nav-number">4.1.2.</span> <span class="nav-text">压缩</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#优化"><span class="nav-number">4.1.3.</span> <span class="nav-text">优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#混淆"><span class="nav-number">4.1.4.</span> <span class="nav-text">混淆</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通配符匹配规则"><span class="nav-number">4.1.5.</span> <span class="nav-text">通配符匹配规则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Android-Studio中使用方法"><span class="nav-number">4.2.</span> <span class="nav-text">Android Studio中使用方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Eclipse-中使用方法"><span class="nav-number">4.3.</span> <span class="nav-text">Eclipse 中使用方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ProGuard的输出文件说明"><span class="nav-number">4.4.</span> <span class="nav-text">ProGuard的输出文件说明</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

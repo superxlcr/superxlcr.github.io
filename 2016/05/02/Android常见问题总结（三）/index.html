@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,基础知识,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Android的数据存储形式、Sqlite的基本操作、Android中的MVC模式、Merge、ViewStub的作用、Json有什么优劣势">
+<meta name="keywords" content="android,基础知识">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android常见问题总结（三）">
+<meta property="og:url" content="https://superxlcr.github.io/2016/05/02/Android常见问题总结（三）/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="Android的数据存储形式、Sqlite的基本操作、Android中的MVC模式、Merge、ViewStub的作用、Json有什么优劣势">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2016/05/02/Android常见问题总结（三）/1.png">
+<meta property="og:image" content="https://superxlcr.github.io/2016/05/02/Android常见问题总结（三）/2.png">
+<meta property="og:image" content="https://superxlcr.github.io/2016/05/02/Android常见问题总结（三）/3.png">
+<meta property="og:image" content="https://superxlcr.github.io/2016/05/02/Android常见问题总结（三）/4.png">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.577Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android常见问题总结（三）">
+<meta name="twitter:description" content="Android的数据存储形式、Sqlite的基本操作、Android中的MVC模式、Merge、ViewStub的作用、Json有什么优劣势">
+<meta name="twitter:image" content="https://superxlcr.github.io/2016/05/02/Android常见问题总结（三）/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2016/05/02/Android常见问题总结（三）/">
+
+
+
+
+
+  <title>Android常见问题总结（三） | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2016/05/02/Android常见问题总结（三）/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android常见问题总结（三）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-02T14:16:18+08:00">
+                2016-05-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.7k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上一篇文章的传送门：<a href="/2016/04/24/Android常见问题总结（二）/">Android常见问题总结（二）</a></p>
+<h1 id="Android的数据存储形式"><a href="#Android的数据存储形式" class="headerlink" title="Android的数据存储形式"></a>Android的数据存储形式</h1><p>在Android中的数据存储形式主要有以下几种：</p>
+<h2 id="SharedPreferrences"><a href="#SharedPreferrences" class="headerlink" title="SharedPreferrences"></a>SharedPreferrences</h2><p>SharedPreferrences主要用于存储一些少量的简单的应用程序配置信息。SharedPreferrences以明文键值对的形式把数据存储在一个xml文件上，该文件位于/data/data/<package name="">/shared_prefs目录下。因此，SharedPreferrences只适合用于存储一些简单的数据，不适合存储复杂的或敏感的数据</package></p>
+<h2 id="File"><a href="#File" class="headerlink" title="File"></a>File</h2><p>Android和Java一样，同样支持使用文件流来保存和访问文件。除了在手机内置存储空间上存储文件外，Android还支持读写SD卡上的文件：只要获取相应的权限后，调用Environment的getExternalStorageDirectory方法即可获取路径</p>
+<h2 id="SQLite数据库"><a href="#SQLite数据库" class="headerlink" title="SQLite数据库"></a>SQLite数据库</h2><p>Android系统集成了一个轻量级的数据库：SQLite。SQLite是一个嵌入式数据库引擎，专门适用于资源有限的设备上适量数据的存取。在Android上我们一般使用SQLiteOpenHelper辅助类来操作SQLite数据库</p>
+<h1 id="Sqlite的基本操作"><a href="#Sqlite的基本操作" class="headerlink" title="Sqlite的基本操作"></a>Sqlite的基本操作</h1><p>SQLite为熟悉SQL语句的程序员提供了相应的函数使用SQL语句，也为不了解SQL语法的程序员提供了简便的增删查改接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">String path = <span class="string">"数据库路径"</span>;  </span><br><span class="line">SQLiteDatabase database = SQLiteDatabase.openOrCreateDatabase(path, <span class="keyword">null</span>);  </span><br><span class="line"><span class="comment">// 执行sql语句  </span></span><br><span class="line">database.execSQL(sql);  </span><br><span class="line"><span class="comment">// 执行带占位符的sql语句  </span></span><br><span class="line">database.execSQL(sql, bindArgs);  </span><br><span class="line"><span class="comment">// 执行查找的sql语句  </span></span><br><span class="line">database.rawQuery(sql, selectionArgs);  </span><br><span class="line">  </span><br><span class="line"><span class="comment">// 执行增删查改  </span></span><br><span class="line">database.insert(table, nullColumnHack, values);  </span><br><span class="line">database.delete(table, whereClause, whereArgs);  </span><br><span class="line">database.query(table, columns, selection, selectionArgs, groupBy, having, orderBy);  </span><br><span class="line">database.update(table, values, whereClause, whereArgs);  </span><br><span class="line">  </span><br><span class="line"><span class="comment">// 开启事务  </span></span><br><span class="line">database.beginTransaction();  </span><br><span class="line"><span class="comment">// 确认事务成功  </span></span><br><span class="line">database.setTransactionSuccessful();  </span><br><span class="line"><span class="comment">// 结束事务  </span></span><br><span class="line">database.endTransaction();</span><br></pre></td></tr></table></figure>
+
+<h1 id="Android中的MVC模式"><a href="#Android中的MVC模式" class="headerlink" title="Android中的MVC模式"></a>Android中的MVC模式</h1><p>MVC全名是Model View Controller，是模型(model)－视图(view)－控制器(controller)的缩写，一种软件设计典范，用一种业务逻辑、数据、界面显示分离的方法组织代码，将业务逻辑聚集到一个部件里面，在改进和个性化定制界面及用户交互的同时，不需要重新编写业务逻辑<br>MVC模式的示意图如下：<br><img src="/2016/05/02/Android常见问题总结（三）/1.png" alt="MVC模式示意图"></p>
+<p>（图片源自百度百科）<br>Android的设计也使用了MVC模式，其中：</p>
+<ol>
+<li>View对应于Android的View控件和xml所编写的界面</li>
+<li>Controller对应于Android中的Activity，负责接收用户请求和改变模型状态</li>
+<li>Model一般封装保存了程序的状态模型</li>
+</ol>
+<h1 id="Merge、ViewStub的作用"><a href="#Merge、ViewStub的作用" class="headerlink" title="Merge、ViewStub的作用"></a>Merge、ViewStub的作用</h1><p>Merge和ViewStub均为Android中的xml优化标签，用于对Android的View布局进行优化</p>
+<h2 id="Merge"><a href="#Merge" class="headerlink" title="Merge"></a>Merge</h2><p>merge标签应用于xml的顶层标签，主要应对于layout嵌套浪费的现象。在Android layout文件中需要一个顶级容器来容纳其他的组件，而不能直接放置多个组件，通过使用merge标签作为顶层容器，我们可以删减多余或者额外的层级，从而优化整个Android Layout的结构</p>
+<p>以下是一个例子：<br>activity_merge_test.xml：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;  </span><br><span class="line"><span class="tag">&lt;<span class="name">FrameLayout</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span>  </span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span>  </span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span> &gt;</span>  </span><br><span class="line">      </span><br><span class="line">    <span class="tag">&lt;<span class="name">TextView</span>   </span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/text_view"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:gravity</span>=<span class="string">"top|center_horizontal"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:text</span>=<span class="string">"text_view"</span>/&gt;</span>  </span><br><span class="line">  </span><br><span class="line">    <span class="tag">&lt;<span class="name">TextView</span>   </span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/text_view_2"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:gravity</span>=<span class="string">"bottom|center_horizontal"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:text</span>=<span class="string">"text_view_2"</span>/&gt;</span>  </span><br><span class="line">      </span><br><span class="line"><span class="tag">&lt;/<span class="name">FrameLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>MergeTestActivity：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MergeTestActivity</span> <span class="keyword">extends</span> <span class="title">Activity</span> </span>&#123;  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);  </span><br><span class="line">        setContentView(R.layout.activity_merge_test);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>效果图如下：<br><img src="/2016/05/02/Android常见问题总结（三）/2.png" alt="merge测试效果图"></p>
+<p>由hierarchyviewer分析可得（此处只分析与Activity界面相关的部分）：<br><img src="/2016/05/02/Android常见问题总结（三）/3.png" alt="hierarchyviewer分析图"></p>
+<p>由hierarchyviewer得到的View树状图我们可以发现，id为content的FrameLayout中只有LinearLayout一个元素，造成了layout的嵌套浪费（如红框圈出所示）。此处我们若使用merge标签，便可以减少一层layout标签的嵌套，使程序运行得更快更流畅</p>
+<p>xml代码改为如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;  </span><br><span class="line"><span class="tag">&lt;<span class="name">merge</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span>  </span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span>  </span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span> &gt;</span>  </span><br><span class="line">      </span><br><span class="line">    <span class="tag">&lt;<span class="name">TextView</span>   </span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/text_view"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:gravity</span>=<span class="string">"top|center_horizontal"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:text</span>=<span class="string">"text_view"</span>/&gt;</span>  </span><br><span class="line">  </span><br><span class="line">    <span class="tag">&lt;<span class="name">TextView</span>   </span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/text_view_2"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:gravity</span>=<span class="string">"bottom|center_horizontal"</span>  </span></span><br><span class="line"><span class="tag">        <span class="attr">android:text</span>=<span class="string">"text_view_2"</span>/&gt;</span>  </span><br><span class="line">      </span><br><span class="line"><span class="tag">&lt;/<span class="name">merge</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>效果图没有变化，使用hierarchyviewer分析可得：<br><img src="/2016/05/02/Android常见问题总结（三）/4.png" alt="hierarchyviewer分析图2"></p>
+<p>此时已经减少了一层layout嵌套，我们通过使用merge标签，达到了优化的目的</p>
+<h2 id="ViewStub"><a href="#ViewStub" class="headerlink" title="ViewStub"></a>ViewStub</h2><p>ViewStub即占位符，用于处理动态觉得显示某个View的情况。在开发应用程序的时候，我们经常会在运行时动态根据条件来决定显示哪个View或某个布局。那么最通常的想法就是把可能用到的View都写在上面，先把它们的可见性都设为View.GONE，然后在代码中动态的更改它的可见性。这样的做法的优点是逻辑简单而且控制起来比较灵活。但是它的缺点就是，耗费资源。虽然把View的初始可见View.GONE但是在Inflate布局的时候View仍然会被Inflate，也就是说仍然会创建对象，会被实例化，会被设置属性。也就是说，会耗费内存等资源。而使用ViewStub的话在inflate布局的时候不会被inflate，ViewStub的inflate操作被延迟到了直到我们调用其inflate方法<br>ViewStub的xml文件设置如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ViewStub</span>  </span></span><br><span class="line"><span class="tag">    <span class="attr">android:id</span>=<span class="string">"@+id/view_stub"</span>  </span></span><br><span class="line"><span class="tag">    <span class="attr">android:inflatedId</span>=<span class="string">"@+id/my_view"</span>  </span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span>  </span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span>  </span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout</span>=<span class="string">"@layout/view_view_stub"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>其中，inflateId属性表示ViewStub被inflate后重新被赋予的id值，layout属性指定了调用inflate方法时inflate的具体布局。<br>找到ViewStub并调用inflate：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ViewStub viewStub = (ViewStub)findViewById(R.id.view_stub);  </span><br><span class="line">viewStub.inflate();</span><br></pre></td></tr></table></figure>
+
+<p>值得注意的是：</p>
+<ol>
+<li>ViewStub只能Inflate一次，之后ViewStub对象会被置为空。按句话说，某个被ViewStub指定的布局被Inflate后，就不会够再通过ViewStub来控制它了</li>
+<li>ViewStub只能用来Inflate一个布局文件，而不是某个具体的View</li>
+</ol>
+<h1 id="Json有什么优劣势"><a href="#Json有什么优劣势" class="headerlink" title="Json有什么优劣势"></a>Json有什么优劣势</h1><p>JSON，即JavaScript Object Notation，是 一种轻量级的数据交换格式，具有良好的可读和便于快速编写的特性。业内主流技术为其提供了完整的解决方案（有点类似于正则表达式 ，获得了当今大部分语言的支持），从而可以在不同平台间进行数据交换。JSON采用兼容性很高的文本格式，同时也具备类似于C语言体系的行为。这些特性使JSON成为理想的数据交换语言。 易于人阅读和编写，同时也易于机器解析和生成(一般用于提升网络传输速率)</p>
+<p>Json优点：<br>与传统的xml相比，Json有一下优点：</p>
+<ol>
+<li>在解码难度方面，XML的解析得考虑子节点父节点，而Json不需要，解析难度较低</li>
+<li>Json数据的体积小</li>
+<li>Json的传输速度快于XML</li>
+</ol>
+<p>但Json也有它不足之处：</p>
+<ol>
+<li>没有XML格式这么推广的深入人心和使用广泛, 没有XML那么通用性</li>
+<li>命名空间允许不同上下文中的相同的信息段彼此混合，然而在Json中已经找不到了命名空间</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/基础知识/" rel="tag"># 基础知识</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/04/30/Head-First-Java设计模式思维导图总结/" rel="next" title="Head First Java设计模式思维导图总结">
+                <i class="fa fa-chevron-left"></i> Head First Java设计模式思维导图总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/09/Android常见问题总结（四）/" rel="prev" title="Android常见问题总结（四）">
+                Android常见问题总结（四） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Android的数据存储形式"><span class="nav-number">1.</span> <span class="nav-text">Android的数据存储形式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#SharedPreferrences"><span class="nav-number">1.1.</span> <span class="nav-text">SharedPreferrences</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#File"><span class="nav-number">1.2.</span> <span class="nav-text">File</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SQLite数据库"><span class="nav-number">1.3.</span> <span class="nav-text">SQLite数据库</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Sqlite的基本操作"><span class="nav-number">2.</span> <span class="nav-text">Sqlite的基本操作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Android中的MVC模式"><span class="nav-number">3.</span> <span class="nav-text">Android中的MVC模式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Merge、ViewStub的作用"><span class="nav-number">4.</span> <span class="nav-text">Merge、ViewStub的作用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Merge"><span class="nav-number">4.1.</span> <span class="nav-text">Merge</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ViewStub"><span class="nav-number">4.2.</span> <span class="nav-text">ViewStub</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Json有什么优劣势"><span class="nav-number">5.</span> <span class="nav-text">Json有什么优劣势</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

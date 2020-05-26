@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="（转载）TraceView工具如何使用、TraceView工具面板介绍、如何进行具体的分析、相关资料">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TraceView工具如何使用">
+<meta property="og:url" content="https://superxlcr.github.io/2017/10/12/TraceView工具如何使用/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="（转载）TraceView工具如何使用、TraceView工具面板介绍、如何进行具体的分析、相关资料">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2017/10/12/TraceView工具如何使用/1.gif">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.741Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TraceView工具如何使用">
+<meta name="twitter:description" content="（转载）TraceView工具如何使用、TraceView工具面板介绍、如何进行具体的分析、相关资料">
+<meta name="twitter:image" content="https://superxlcr.github.io/2017/10/12/TraceView工具如何使用/1.gif">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2017/10/12/TraceView工具如何使用/">
+
+
+
+
+
+  <title>TraceView工具如何使用 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2017/10/12/TraceView工具如何使用/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">TraceView工具如何使用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-12T20:53:07+08:00">
+                2017-10-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.7k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="TraceView工具如何使用"><a href="#TraceView工具如何使用" class="headerlink" title="TraceView工具如何使用"></a>TraceView工具如何使用</h1><p>TraceView有4种启动/关闭分析方式：</p>
+<h2 id="第一种使用方法演示"><a href="#第一种使用方法演示" class="headerlink" title="第一种使用方法演示"></a>第一种使用方法演示</h2><h3 id="选择跟踪范围"><a href="#选择跟踪范围" class="headerlink" title="选择跟踪范围"></a>选择跟踪范围</h3><p>在想要根据的代码片段之间使用以下两句代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Debug.startMethodTracing(<span class="string">"love_world_"</span>);</span><br><span class="line">Debug.stopMethodTracing();</span><br></pre></td></tr></table></figure>
+
+<p>例如，onCreate与onStart方法之间方法跟踪</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">Activity</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);  </span><br><span class="line">        setContentView(R.layout.activity_main);  </span><br><span class="line">          </span><br><span class="line">        Debug.startMethodTracing(<span class="string">"Love_World_"</span>);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onStart</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">super</span>.onStart();  </span><br><span class="line">          </span><br><span class="line">        Debug.stopMethodTracing();  </span><br><span class="line">    &#125;  </span><br><span class="line">      </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="添加SD卡访问权限"><a href="#添加SD卡访问权限" class="headerlink" title="添加SD卡访问权限"></a>添加SD卡访问权限</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;uses-permission android:name=<span class="string">"android.permission.WRITE_EXTERNAL_STORAGE"</span>/&gt;  </span><br><span class="line">&lt;uses-permission android:name=<span class="string">"android.permission.MOUNT_UNMOUNT_FILESYSTEMS"</span>/&gt;</span><br></pre></td></tr></table></figure>
+
+<p>如果不添加，执行项目会出现以下异常</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java.lang.RuntimeException:Unable to open trace file &apos;/mnt/sdcard/Love_World_.trace&apos;: Permission denied</span><br></pre></td></tr></table></figure>
+
+<p>如果手机没有SD卡也会出现同样的问题</p>
+<h3 id="导出traceview文件"><a href="#导出traceview文件" class="headerlink" title="导出traceview文件"></a>导出traceview文件</h3><h4 id="首先执行项目，查看trace文件是否生成"><a href="#首先执行项目，查看trace文件是否生成" class="headerlink" title="首先执行项目，查看trace文件是否生成"></a>首先执行项目，查看trace文件是否生成</h4><p>进入shell模式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb shell</span><br></pre></td></tr></table></figure>
+
+<p>查看是否已经生成这个文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls sdcard/Love_World_.trace</span><br></pre></td></tr></table></figure>
+
+<h4 id="导出trace文件"><a href="#导出trace文件" class="headerlink" title="导出trace文件"></a>导出trace文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb pull sdcard/Love_World_.trace</span><br></pre></td></tr></table></figure>
+
+<h3 id="打开trace文件"><a href="#打开trace文件" class="headerlink" title="打开trace文件"></a>打开trace文件</h3><p>打开trace文件需要Android提供的traceview.bat工具，工具所在目录：sdk\tools\traceview.bat， 有两种方式执行：</p>
+<ol>
+<li>在命令行中切换到此目录</li>
+<li>将此目录添加到系统环境变量中</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//  cmd在calc.trace所在目录执行  </span><br><span class="line">traceview C:\Users\YourName\Desktop\Love_World_.trace</span><br></pre></td></tr></table></figure>
+
+<p>其中“C:\Users\YourName\Desktop\” 表示trace所在你系统中的目录，此工具需要输入trace文件的绝对路径才行</p>
+<p>在新版本的SDK 会有以下提示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">The standalone version of traceview is deprecated.  </span><br><span class="line">Please use Android Device Monitor (tools/monitor) instead.</span><br></pre></td></tr></table></figure>
+
+<p>所以建议使用tools/monitor 启动后跟Eclipse DDMS界面差不多，然后File -&gt; Open File -&gt; 选择trace文件</p>
+<h3 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h3><h4 id="异常处理-1"><a href="#异常处理-1" class="headerlink" title="异常处理"></a>异常处理</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&apos;C:\Windows\system32\java.exe&apos; 不是内部或外部命令，也不是可运行的程序  </span><br><span class="line">或批处理文件。  </span><br><span class="line">SWT folder &apos;&apos; does not exist.  </span><br><span class="line">Please set ANDROID_SWT to point to the folder containing swt.jar for your platfo  </span><br><span class="line">rm.</span><br></pre></td></tr></table></figure>
+
+<h4 id="异常信息"><a href="#异常信息" class="headerlink" title="异常信息"></a>异常信息</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">The standalone version of traceview is deprecated.  </span><br><span class="line">Please use Android Device Monitor (tools/monitor) instead.  </span><br><span class="line">Failed to read the trace filejava.io.IOException: Key section does not have an *  </span><br><span class="line">end marker  </span><br><span class="line">        at com.android.traceview.DmTraceReader.parseKeys(DmTraceReader.java:420)  </span><br><span class="line">        at com.android.traceview.DmTraceReader.generateTrees(DmTraceReader.java:91)  </span><br><span class="line">        at com.android.traceview.DmTraceReader.&lt;init&gt;(DmTraceReader.java:87)  </span><br><span class="line">        at com.android.traceview.MainWindow.main(MainWindow.java:286)</span><br></pre></td></tr></table></figure>
+
+<p>通常是trace文件有异常，再重新生成并导出试试</p>
+<h4 id="没有SD卡会出现异常"><a href="#没有SD卡会出现异常" class="headerlink" title="没有SD卡会出现异常"></a>没有SD卡会出现异常</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Unable to open trace file &apos;/sdcard/Love_World_.trace&apos;: Permission denied  </span><br><span class="line"> Caused by: java.lang.RuntimeException: Unable to open trace file &apos;/sdcard/Love_World_.trace&apos;: Permission denied</span><br></pre></td></tr></table></figure>
+
+<p>生成的trace系统自动放在SDCARD上，没有sd卡所以会出现这种异常</p>
+<h2 id="第二种使用方法演示"><a href="#第二种使用方法演示" class="headerlink" title="第二种使用方法演示"></a>第二种使用方法演示</h2><p>Eclipse -&gt; DDMS -&gt; Start Method Profiling</p>
+<p>二者的区别，第一种方式更精确到方法，不方便的地方是自己需要添加方法并且要导出文件，第二种方式的优缺点刚好相反。</p>
+<h2 id="任意时间点启动与关闭trace"><a href="#任意时间点启动与关闭trace" class="headerlink" title="任意时间点启动与关闭trace"></a>任意时间点启动与关闭trace</h2><p>启动：am profile &lt;PROCESS&gt; start &lt;FILE&gt;</p>
+<p>关闭：am profile &lt;PROCESS&gt; stop</p>
+<p>&lt;PROCESS&gt; 填写进程名，例如AndroidManifest.xml中声明的包名，通常都是主进程名</p>
+<p>例如：  </p>
+<p>adb shell am profile com.example start ./mnt/sdcard/test.trace</p>
+<p>adb shell am profile com.example stop</p>
+<h2 id="启动指定Activity并进行trace"><a href="#启动指定Activity并进行trace" class="headerlink" title="启动指定Activity并进行trace"></a>启动指定Activity并进行trace</h2><p>am start -n &lt;Package Name&gt;/&lt;Package Name&gt;.&lt;Activity Name&gt; –start-profiler &lt;FILE&gt;</p>
+<p>例如：</p>
+<p>adb shell am start -n com.example/com.example.MainActivity –start-profiler ./mnt/sdcard/test.trace</p>
+<p>细节详见官方文档：</p>
+<p><a href="http://developer.Android.com/tools/help/shell.html" target="_blank" rel="noopener">http://developer.Android.com/tools/help/shell.html</a></p>
+<h1 id="TraceView工具面板介绍"><a href="#TraceView工具面板介绍" class="headerlink" title="TraceView工具面板介绍"></a>TraceView工具面板介绍</h1><p>有两方面用途： </p>
+<ol>
+<li><p>查看跟踪代码的执行时间，分析哪些是耗时操作  </p>
+</li>
+<li><p>可以用于跟踪方法的调用，尤其是android Framework层的方法调用关系</p>
+</li>
+</ol>
+<p>获取方法的调用顺序</p>
+<ol>
+<li><p>在traceview中搜索响应的方法名不能使用大写字母</p>
+</li>
+<li><p>搜索出的方法会自动展开，其中包含Parents 和 Children 两组信息</p>
+</li>
+<li><p>点击Parents下的方法名，直接跳转到调用当前的方法处。Children相反</p>
+</li>
+</ol>
+<p><img src="/2017/10/12/TraceView工具如何使用/1.gif" alt="_pic1"></p>
+<p>Traceview 面板分上下两部分<br><strong>上面是时间轴面板 (Timeline Panel)</strong><br>左侧显示的是线程信息<br>右侧黑色部分是显示执行时间段、白色是线程暂停时间段，<br>右侧鼠标放在上面会出现时间线纵轴，在顶部会显示当前时间线所执行的具体函数信息<br>*<em>下面是分析面板(Profile Panel) *</em><br>每一列内容:</p>
+<ul>
+<li>Inclusive time  - 函数本身运行花费时间 + 函数调用其他函数时间</li>
+<li>Exclusive time - 函数本身运行花费时间。</li>
+<li>Calls + RecurCall/Total 调用 + 重复调用次数 / 函数总调用次数</li>
+<li>Cpu Time/Call 总的Cpu时间与总的调用次数之比</li>
+</ul>
+<p>表1-1  Profile Panel各列作用说明</p>
+<table>
+<thead>
+<tr>
+<th>列名</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Name</td>
+<td>该线程运行过程中所调用的函数名</td>
+</tr>
+<tr>
+<td>Incl Cpu Time</td>
+<td>某函数占用的CPU时间，包含内部调用其它函数的CPU时间</td>
+</tr>
+<tr>
+<td>Excl Cpu Time</td>
+<td>某函数占用的CPU时间，但不含内部调用其它函数所占用的CPU时间</td>
+</tr>
+<tr>
+<td>Incl Real Time</td>
+<td>某函数运行的真实时间（以毫秒为单位），内含调用其它函数所占用的真实时间</td>
+</tr>
+<tr>
+<td>Excl Real Time</td>
+<td>某函数运行的真实时间（以毫秒为单位），不含调用其它函数所占用的真实时间</td>
+</tr>
+<tr>
+<td>Call+Recur Calls/Total</td>
+<td>某函数被调用次数以及递归调用占总调用次数的百分比</td>
+</tr>
+<tr>
+<td>Cpu Time/Call</td>
+<td>某函数调用CPU时间与调用次数的比。相当于该函数平均执行时间</td>
+</tr>
+<tr>
+<td>Real Time/Call</td>
+<td>同CPU Time/Call类似，只不过统计单位换成了真实时间</td>
+</tr>
+</tbody></table>
+<h1 id="如何进行具体的分析"><a href="#如何进行具体的分析" class="headerlink" title="如何进行具体的分析"></a>如何进行具体的分析</h1><p>有两个问题需要解决：</p>
+<ol>
+<li>如何定位到所关心的地方？<br> 上面只是介绍了如何使用TraceView且有两种用法，但是有时使用第一种方式范围又不太精确，使用第二种添加代码的方式，可能有些地方又监听不到。这种情况可以尝试把开始或者结束放到延迟线程中，延迟一段时间在执行开始或者结束。</li>
+<li>如何查找出哪些地方比较耗时？<br> TraceView罗列出了是所有监听到的方法，当然也包括Android系统很多方法的耗时，如何在这么多方法里面查找到自己关心的？ 可以通过TraceView 底部的find 来查找，通常Android app都是有包名的，可以先针对某些关心的列排序后，在通过包名进行一个个查找，这些就省去自己筛选出自己app 方法耗时排行的时间。</li>
+</ol>
+<h1 id="相关资料"><a href="#相关资料" class="headerlink" title="相关资料"></a>相关资料</h1><p><a href="http://blog.csdn.net/innost/article/details/9008691" target="_blank" rel="noopener">Android系统性能调优工具介绍</a> （还有具体如何使用进行性能分析的例子，非常棒）<br><a href="http://developer.android.com/tools/debugging/debugging-tracing.html#timelinepanel" target="_blank" rel="noopener">Profiling with Traceview and dmtracedump</a><br><a href="http://www.cnblogs.com/sunzn/p/3192231.html" target="_blank" rel="noopener">Android 编程下的 TraceView 简介及其案例实战</a> （含例子）<br><a href="http://blog.csdn.net/yiyaaixuexi/article/details/6716884" target="_blank" rel="noopener">Android代码调试工具 traceview 和 dmtracedump的波折演绎</a></p>
+<p>原文地址： <a href="http://blog.csdn.net/androiddevelop/article/details/8223805" target="_blank" rel="noopener">http://blog.csdn.net/love_world_/article/details/8223805</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/10/09/Fragment中调用startActivityForResult问题/" rel="next" title="Fragment中调用startActivityForResult问题">
+                <i class="fa fa-chevron-left"></i> Fragment中调用startActivityForResult问题
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/10/13/记一次Native层崩溃追踪/" rel="prev" title="记一次Native层崩溃追踪">
+                记一次Native层崩溃追踪 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#TraceView工具如何使用"><span class="nav-number">1.</span> <span class="nav-text">TraceView工具如何使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#第一种使用方法演示"><span class="nav-number">1.1.</span> <span class="nav-text">第一种使用方法演示</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#选择跟踪范围"><span class="nav-number">1.1.1.</span> <span class="nav-text">选择跟踪范围</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加SD卡访问权限"><span class="nav-number">1.1.2.</span> <span class="nav-text">添加SD卡访问权限</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#导出traceview文件"><span class="nav-number">1.1.3.</span> <span class="nav-text">导出traceview文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#首先执行项目，查看trace文件是否生成"><span class="nav-number">1.1.3.1.</span> <span class="nav-text">首先执行项目，查看trace文件是否生成</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#导出trace文件"><span class="nav-number">1.1.3.2.</span> <span class="nav-text">导出trace文件</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#打开trace文件"><span class="nav-number">1.1.4.</span> <span class="nav-text">打开trace文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#异常处理"><span class="nav-number">1.1.5.</span> <span class="nav-text">异常处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#异常处理-1"><span class="nav-number">1.1.5.1.</span> <span class="nav-text">异常处理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#异常信息"><span class="nav-number">1.1.5.2.</span> <span class="nav-text">异常信息</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#没有SD卡会出现异常"><span class="nav-number">1.1.5.3.</span> <span class="nav-text">没有SD卡会出现异常</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第二种使用方法演示"><span class="nav-number">1.2.</span> <span class="nav-text">第二种使用方法演示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#任意时间点启动与关闭trace"><span class="nav-number">1.3.</span> <span class="nav-text">任意时间点启动与关闭trace</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启动指定Activity并进行trace"><span class="nav-number">1.4.</span> <span class="nav-text">启动指定Activity并进行trace</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TraceView工具面板介绍"><span class="nav-number">2.</span> <span class="nav-text">TraceView工具面板介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何进行具体的分析"><span class="nav-number">3.</span> <span class="nav-text">如何进行具体的分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#相关资料"><span class="nav-number">4.</span> <span class="nav-text">相关资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

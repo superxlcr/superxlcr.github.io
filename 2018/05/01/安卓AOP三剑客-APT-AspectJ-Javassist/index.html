@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,AOP,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="（转载）APT、AspectJ、Javassist、AOP">
+<meta name="keywords" content="android,AOP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="安卓AOP三剑客:APT,AspectJ,Javassist">
+<meta property="og:url" content="https://superxlcr.github.io/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="（转载）APT、AspectJ、Javassist、AOP">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/1.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/2.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/3.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/4.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/5.png">
+<meta property="og:image" content="https://superxlcr.github.io/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/6.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/7.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/8.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/9.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/10.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/11.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/12.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/13.jpg">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.842Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="安卓AOP三剑客:APT,AspectJ,Javassist">
+<meta name="twitter:description" content="（转载）APT、AspectJ、Javassist、AOP">
+<meta name="twitter:image" content="https://superxlcr.github.io/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/">
+
+
+
+
+
+  <title>安卓AOP三剑客:APT,AspectJ,Javassist | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">安卓AOP三剑客:APT,AspectJ,Javassist</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-01T16:32:35+08:00">
+                2018-05-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文转载自：<a href="https://www.jianshu.com/p/dca3e2c8608a?from=timeline" target="_blank" rel="noopener">https://www.jianshu.com/p/dca3e2c8608a?from=timeline</a></p>
+<p>AOP:面向切面编程(Aspect-Oriented Programming)。如果说，OOP如果是把问题划分到单个模块的话，那么AOP就是把涉及到众多模块的某一类问题进行统一管理。</p>
+<p>Android AOP就是通过预编译方式和运行期动态代理实现程序功能的统一维护的一种技术。利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可重用性，提高开发效率。本文仅做知识介绍，相关详细内容不做过多描述，全部代码在项目<a href="https://link.jianshu.com/?t=https://github.com/north2016/T-MVP" target="_blank" rel="noopener">T-MVP</a>。</p>
+<p>话不多说，先上图：<br><img src="/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/1.jpg" alt="APT,AspectJ,Javassist对应的编译时期"></p>
+<p>AOP在Java后台，已经被各路大神研发出各种框架风生水起，例如SSH、SpringMVC等等殿堂级框架。在Android端，近年来也是异军突起。</p>
+<h1 id="APT"><a href="#APT" class="headerlink" title="APT"></a>APT</h1><p>代表框架：DataBinding,Dagger2, ButterKnife, EventBus3 、DBFlow、AndroidAnnotation</p>
+<p>注解处理器 Java5 中叫APT(Annotation Processing Tool)，在Java6开始，规范化为 Pluggable Annotation Processing。Apt应该是这其中我们最常见到的了，难度也最低。定义编译期的注解，再通过继承Proccesor实现代码生成逻辑，实现了编译期生成代码的逻辑。</p>
+<p>使用姿势 ：<br>1、建立一个java的Module,写一个继承AbstractProcessor的类<br><img src="/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/2.jpg" alt="AbstractProcessor"></p>
+<p>2、在工具类里处理我们自定义的注解、生成代码：<br><img src="/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/3.jpg" alt="Processor"></p>
+<p>3、在Gradle中添加 dependencies annotationProcessor project(‘:apt’)<br>低版本需要使用第三方插件 apply plugin: ‘com.neenbedankt.android-apt’<br>然后apt project(‘:apt’)</p>
+<p>生成的源代码在build/generated/source/apt下可以看到<br><img src="/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/4.jpg" alt="apt生成代码的路径"></p>
+<p>难点：<br>就apt本身来说没有任何难点可言，难点一在于设计模式和解耦思想的灵活应用，二在与代码生成的繁琐，你可以手动字符串拼接，当然有更高级的玩法用squareup的javapoet，用建造者的模式构建出任何你想要的源代码。<br>想详细了解可以看官网或这篇博客：<br><a href="http://brucezz.itscoder.com/use-apt-in-android" target="_blank" rel="noopener">Android 利用 APT 技术在编译期生成代码</a></p>
+<p>优点：<br>它的强大之处无需多言，看代表框架的源码，你可以学到很多新姿势。总的一句话：它可以做任何你不想做的繁杂的工作，它可以帮你写任何你不想重复代码。懒人福利，老司机必备神技，可以提高车速，让你以任何姿势漂移。它可以生成任何源代码供你在任何地方使用，就像剑客的剑，快疾如风，无所不及。</p>
+<h1 id="AspectJ"><a href="#AspectJ" class="headerlink" title="AspectJ"></a>AspectJ</h1><p>代表框架： Hugo(Jake Wharton)</p>
+<p>AspectJ支持编译期和加载时代码注入，在开始之前，我们先看看需要了解的词汇：<br><strong>Advice（通知）</strong>: 典型的 Advice 类型有 before、after 和 around，分别表示在目标方法执行之前、执行后和完全替代目标方法执行的代码。</p>
+<p><strong>Joint point（连接点）</strong>: 程序中可能作为代码注入目标的特定的点和入口。</p>
+<p><strong>Pointcut（切入点）</strong>: 告诉代码注入工具，在何处注入一段特定代码的表达式。</p>
+<p><strong>Aspect（切面）</strong>: Pointcut 和 Advice 的组合看做切面。例如，在本例中通过定义一个 pointcut 和给定恰当的advice，添加一个了内存缓存的切面。</p>
+<p><strong>Weaving（织入）</strong>: 注入代码（advices）到目标位置（joint points）的过程。</p>
+<p>下面这张图简要总结了一下上述这些概念。<br><img src="/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/5.png" alt="AOP概念图"></p>
+<p>使用姿势：<br>1、建立一个android lib Module，定义一个切片，处理自定义注解，和添加切片逻辑<br><img src="/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/6.jpg" alt="AspectJ"></p>
+<p>2、自定义一个gradle插件，使用 AspectJ 的编译器（ajc，一个java编译器的扩展),对所有受 aspect 影响的类进行织入，在 gradle 的编译 task 中增加额外配置，使之能正确编译运行。<br><img src="/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/7.jpg" alt="AspectjPlugin"></p>
+<p>3、在grade中apply plugin:com.app.plugin.AspectjPlugin</p>
+<p>生成的class文件在build/intermediates/classes下可以看到<br><img src="/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/8.jpg" alt="Aspectj编织后的文件路径"></p>
+<p>难点：<br>AspectJ语法比较多，但是掌握几个简单常用的，就能实现绝大多数切片，完全兼容Java（纯Java语言开发，然后使用AspectJ注解，简称@AspectJ。）想详细了解可以看官网或这篇博客：<br><a href="https://link.jianshu.com/?t=http://blog.csdn.net/innost/article/details/49387395" target="_blank" rel="noopener">深入理解AndroidAOP</a></p>
+<p>优点：<br>AspectJ除了hook之外，AspectJ还可以为目标类添加变量,接口。另外，AspectJ也有抽象，继承等各种更高级的玩法。它能够在编译期间直接修改源代码生成class，强大的团战切入功能，指哪打哪，鞭辟入里。有了此神器，编程亦如庖丁解牛，游刃而有余。</p>
+<h1 id="Javassist"><a href="#Javassist" class="headerlink" title="Javassist"></a>Javassist</h1><p>代表框架：热修复框架HotFix 、Savior（InstantRun）等</p>
+<p>Javassist作用是在编译器间修改class文件，与之相似的ASM（热修复框架女娲）也有这个功能，可以让我们直接修改编译后的class二进制代码，首先我们得知道什么时候编译完成，并且我们要赶在class文件被转化为dex文件之前去修改。在Transfrom这个api出来之前，想要在项目被打包成dex之前对class进行操作，必须自定义一个Task，然后插入到predex或者dex之前，在自定义的Task中可以使用javassist或者asm对class进行操作。而Transform则更为方便，Transfrom会有他自己的执行时机，不需要我们插入到某个Task前面。Tranfrom一经注册便会自动添加到Task执行序列中，并且正好是项目被打包成dex之前。</p>
+<p>使用姿势<br>1、定义一个buildSrc module添加自定义Plugin<br><img src="/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/9.jpg" alt="自定义Plugin"></p>
+<p>2、自定义Transform<br><img src="/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/10.jpg" alt="自定义Transform"></p>
+<p>3、在Transform里处理Task，通过inputs拿到一些东西，处理完毕之后就输出outputs，而下一个Task的inputs则是上一个Task的outputs。<br><img src="/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/11.jpg" alt="处理Task"></p>
+<p>4、使用Javassist操作字节码，添加新的逻辑或者修改原有逻辑<br><img src="/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/12.jpg" alt="Javassist操作字节码"></p>
+<p>5、在grade中apply plugin:com.app.plugin.MyPlugin</p>
+<p>修改后的class文件在build/intermediates/transforms/MyTrans下可以看到<br><img src="/2018/05/01/安卓AOP三剑客-APT-AspectJ-Javassist/13.jpg" alt="Javassist修改后的文件路径"></p>
+<p>难点：<br>相比ASM，Javassist对java极度友好的api更容易快速上手，难点在思想的应用，小到切片逻辑的控制，如本例中的性能log打印日志，大到宏观的热修复，插件化中对preDex的操作修改，剑客精神到了这一层级，已经是上帝视角，无所不能。</p>
+<p>优点：<br>由于Javassist可以直接操作修改编译后的字节码，直接绕过了java编译器，所以可以做很多突破限制的事情，例如，跨dex引用，解决热修复中CLASS_ISPREVERIFIED的问题。</p>
+<p>想详细了解可以看官网或这篇博客：<br><a href="https://blog.csdn.net/u010386612/article/details/51131642" target="_blank" rel="noopener">Android热补丁动态修复技术</a></p>
+<p><a href="https://halfstackdeveloper.github.io/2016/09/23/%E5%9F%BA%E4%BA%8EInstant-Run%E6%80%9D%E6%83%B3%E7%9A%84HotFix%E6%96%B9%E6%A1%88%E5%AE%9E%E7%8E%B0/" target="_blank" rel="noopener">基于Instant Run思想的HotFix方案实现</a></p>
+<h1 id="AOP"><a href="#AOP" class="headerlink" title="AOP"></a>AOP</h1><p>AOP技术常用在以下方面：</p>
+<ol>
+<li>日志记录：业务埋点</li>
+<li>持久化</li>
+<li>性能监控：性能日志</li>
+<li>数据校验：方法的参数校验</li>
+<li>缓存：内存缓存和持久缓存</li>
+<li>权限检查：业务权限（如登陆，或用户等级）、系统权限（如拍照定位）</li>
+<li>异常处理</li>
+</ol>
+<p>利用AOP技术将这些功能代码从业务逻辑代码中划分出来，通过对这些行为的分离，可以将它们独立到非业务逻辑。无论是日后新增，或是修改，都手到擒来易如反掌。</p>
+<p>例如新的tmvp的demo中 apt用于生成实例化工厂，替换掉(对于小项目来说)繁杂冗余的Dagger2,实现了初始化功能的aop ；aspectj 的切片主要用在缓存和日志，用注解实现方法级别的内存缓存和方法耗时日志；Javassist 这里只是做了个示例，也是通过注解实现方法耗时日志的自动打印功能，当然这些都只是AOP的九牛一毛，AOP还可以做很多事，弥补OOP的不足，把所有跨对象的横切面关注点的功能都可以提取出来用AOP去实现 ，好处显而易见，将来要改的地方永远只有一处，而不是像OOP那样牵扯很多模块很多代码很多类。</p>
+<p>当然还有更多未知的可能，需要等各位大侠来研究开发，让Aop在Android上的应用更加广泛。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/AOP/" rel="tag"># AOP</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/15/关于Http请求方法Get与Post的思考/" rel="next" title="关于HTTP请求方法GET与POST的思考">
+                <i class="fa fa-chevron-left"></i> 关于HTTP请求方法GET与POST的思考
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/19/Android-沉浸式适配/" rel="prev" title="Android 沉浸式适配">
+                Android 沉浸式适配 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#APT"><span class="nav-number">1.</span> <span class="nav-text">APT</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AspectJ"><span class="nav-number">2.</span> <span class="nav-text">AspectJ</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Javassist"><span class="nav-number">3.</span> <span class="nav-text">Javassist</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AOP"><span class="nav-number">4.</span> <span class="nav-text">AOP</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

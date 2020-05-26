@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,资源文件,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="（转载）android中xml tools属性详解">
+<meta name="keywords" content="android,资源文件">
+<meta property="og:type" content="article">
+<meta property="og:title" content="android中xml tools属性详解">
+<meta property="og:url" content="https://superxlcr.github.io/2017/08/27/android中xml-tools属性详解/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="（转载）android中xml tools属性详解">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2017/08/27/android中xml-tools属性详解/1.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/08/27/android中xml-tools属性详解/2.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/08/27/android中xml-tools属性详解/3.png">
+<meta property="og:image" content="https://superxlcr.github.io/2017/08/27/android中xml-tools属性详解/4.png">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.768Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="android中xml tools属性详解">
+<meta name="twitter:description" content="（转载）android中xml tools属性详解">
+<meta name="twitter:image" content="https://superxlcr.github.io/2017/08/27/android中xml-tools属性详解/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2017/08/27/android中xml-tools属性详解/">
+
+
+
+
+
+  <title>android中xml tools属性详解 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2017/08/27/android中xml-tools属性详解/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">android中xml tools属性详解</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-27T10:28:59+08:00">
+                2017-08-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.6k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文转载自：<a href="http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2015/0309/2567.html" target="_blank" rel="noopener">http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2015/0309/2567.html</a></p>
+<h1 id="第一部分"><a href="#第一部分" class="headerlink" title="第一部分"></a>第一部分</h1><p>安卓开发中，在写布局代码的时候，ide可以看到布局的预览效果。<br><img src="/2017/08/27/android中xml-tools属性详解/1.png" alt="_pic1"></p>
+<p>但是有些效果则必须在运行之后才能看见，比如这种情况：TextView在xml中没有设置任何字符，而是在activity中设置了text。因此为了在ide中预览效果，你必须在xml中为TextView控件设置android:text属性</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">TextView</span></span></span><br><span class="line"><span class="tag">  <span class="attr">android:id</span>=<span class="string">"@+id/text_main"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">android:textAppearance</span>=<span class="string">"@style/TextAppearance.Title"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">android:layout_margin</span>=<span class="string">"@dimen/main_margin"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">android:text</span>=<span class="string">"I am a title"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>一般我们在这样做的时候都告诉自己，没关系，等写完代码我就把这些东西一并删了。但是你可能会忘，以至于在你的最终产品中也会有这样的代码。</p>
+<h2 id="用tools吧，别做傻事"><a href="#用tools吧，别做傻事" class="headerlink" title="用tools吧，别做傻事"></a>用tools吧，别做傻事</h2><p>以上的情况是可以避免的，我们使用tools命名空间以及其属性来解决这个问题。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xmlns:tools="http://schemas.android.com/tools"</span><br></pre></td></tr></table></figure>
+
+<p>tools可以告诉Android Studio，哪些属性在运行的时候是被忽略的，只在设计布局的时候有效。比如我们要让android:text属性只在布局预览中有效可以这样</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">TextView</span></span></span><br><span class="line"><span class="tag"> <span class="attr">android:id</span>=<span class="string">"@+id/text_main"</span></span></span><br><span class="line"><span class="tag"> <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag"> <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag"> <span class="attr">android:textAppearance</span>=<span class="string">"@style/TextAppearance.Title"</span></span></span><br><span class="line"><span class="tag"> <span class="attr">android:layout_margin</span>=<span class="string">"@dimen/main_margin"</span></span></span><br><span class="line"><span class="tag"> <span class="attr">tools:text</span>=<span class="string">"I am a title"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>tools可以覆盖android的所有标准属性，将android:换成tools:即可。同时在运行的时候就连tools:本身都是被忽略的，不会被带进apk中。</p>
+<h2 id="tools属性的种类"><a href="#tools属性的种类" class="headerlink" title="tools属性的种类"></a>tools属性的种类</h2><p>tools属性可以分为两种：一种是影响Lint提示的，一种是关于xml布局设计的。以上介绍的是tools的最基本用法：在UI设计的时候覆盖标准的android属性，属于第二种。下面介绍Lint相关的属性。<br><strong>Lint相关的属性</strong></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">tools:ignore</span><br><span class="line">tools:targetApi</span><br><span class="line">tools:locale</span><br></pre></td></tr></table></figure>
+
+<p><strong>tools:ignore</strong><br>ignore属性是告诉Lint忽略xml中的某些警告。<br>假设我们有这样的一个ImageView</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ImageView</span></span></span><br><span class="line"><span class="tag">  <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">android:layout_marginStart</span>=<span class="string">"@dimen/margin_main"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">android:layout_marginTop</span>=<span class="string">"@dimen/margin_main"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">android:scaleType</span>=<span class="string">"center"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">android:src</span>=<span class="string">"@drawable/divider"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>Lint会提示该ImageView缺少android:contentDescription属性。我们可以使用tools:ignore来忽略这个警告：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ImageView</span></span></span><br><span class="line"><span class="tag">  <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">android:layout_marginStart</span>=<span class="string">"@dimen/margin_main"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">android:layout_marginTop</span>=<span class="string">"@dimen/margin_main"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">android:scaleType</span>=<span class="string">"center"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">android:src</span>=<span class="string">"@drawable/divider"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">tools:ignore</span>=<span class="string">"contentDescription"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>tools:targetApi</strong><br>假设minSdkLevel 15，而你使用了api21中的控件比如RippleDrawable</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ripple</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">android:color</span>=<span class="string">"@color/accent_color"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>则Lint会提示警告。<br>为了不显示这个警告，可以：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ripple</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">android:color</span>=<span class="string">"@color/accent_color"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">tools:targetApi</span>=<span class="string">"LOLLIPOP"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>tools:locale（本地语言）属性</strong><br>默认情况下res/values/strings.xml中的字符串会执行拼写检查，如果不是英语，会提示拼写错误，通过以下代码来告诉studio本地语言不是英语，就不会有提示了。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">resources</span></span></span><br><span class="line"><span class="tag">  <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">tools:locale</span>=<span class="string">"it"</span>&gt;</span></span><br><span class="line"> </span><br><span class="line">  <span class="comment">&lt;!-- Your strings go here --&gt;</span></span><br><span class="line"> </span><br><span class="line"><span class="tag">&lt;/<span class="name">resources</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这篇文章首先介绍了tools的最基本用法-覆盖android的属性，然后介绍了忽略Lint提示的属性。下篇文章中，我们将继续介绍关于UI预览的其他属性（非android标准属性）。<br>ps：关于忽略Lint的属性，如果不想了解的话也没关系，因为并不影响编译，一般我都不会管这些警告。</p>
+<h1 id="第二部分"><a href="#第二部分" class="headerlink" title="第二部分"></a>第二部分</h1><p>这部分我们将继续介绍关于UI预览的其他属性（非android标准属性）。</p>
+<ul>
+<li>tools:context</li>
+<li>tools:menu</li>
+<li>tools:actionBarNavMode</li>
+<li>tools:listitem/listheader/listfooter</li>
+<li>tools:showIn</li>
+<li>tools:layout</li>
+</ul>
+<p><strong>tools:context</strong><br>context属性其实正是的称呼是activity属性，有了这个属性，ide就知道在预览布局的时候该采用什么样的主题。同时他还可以在android studio的java代码中帮助找到相关的文件（Go to Related files）<br><img src="/2017/08/27/android中xml-tools属性详解/2.png" alt="_pic2"></p>
+<p>该属性的值是activity的完整包名</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">  <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">android:id</span>=<span class="string">"@+id/container"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">tools:context</span>=<span class="string">"com.android.example.MainActivity"</span>&gt;</span>  <span class="comment">&lt;!-- ... --&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>tools:menu</strong><br>告诉IDE 在预览窗口中使用哪个菜单，这个菜单将显示在layout的根节点上（actionbar的位置）。<br><img src="/2017/08/27/android中xml-tools属性详解/3.png" alt="_pic3"></p>
+<p>其实预览窗口非常智能，如果布局和一个activity关联（指上面所讲的用tools:context关联）它将会自动查询相关activity的onCreateOptionsMenu方法中的代码，以显示菜单。而<strong>menu属性</strong>则可以覆盖这种默认的行为。<br>你还可以为<strong>menu属性</strong>定义多个菜单资源，不同的菜单资源之间用逗号隔开。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tools:menu="menu_main,menu_edit"</span><br></pre></td></tr></table></figure>
+
+<p>如果你不希望在预览图中显示菜单则：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tools:menu=""</span><br></pre></td></tr></table></figure>
+
+<p>最后需要注意，当主题为Theme.AppCompat时，这个属性不起作用。</p>
+<p><strong>tools:actionBarNavMode</strong><br>这个属性告诉ide  app bar（Material中对actionbar的称呼）的显示模式，其值可以是</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">standard</span><br><span class="line">tabs</span><br><span class="line">list</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">tools:actionBarNavMode</span>=<span class="string">"tabs"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>同样的，当主题是Theme.AppCompat (r21+, at least)<em>或者Theme.Material</em>,或者使用了布局包含Toolbar的方式。  该属性也不起作用，只有holo主题才有效。</p>
+<p><strong>listitem, listheader 和listfooter 属性</strong></p>
+<p>顾名思义就是在ListView ExpandableListView等的预览效果中添加头部 尾部 以及子item的预览布局。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">GridView</span></span></span><br><span class="line"><span class="tag"> <span class="attr">android:id</span>=<span class="string">"@+id/list"</span></span></span><br><span class="line"><span class="tag"> <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag"> <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag"> <span class="attr">tools:listheader</span>=<span class="string">"@layout/list_header"</span></span></span><br><span class="line"><span class="tag"> <span class="attr">tools:listitem</span>=<span class="string">"@layout/list_item"</span></span></span><br><span class="line"><span class="tag"> <span class="attr">tools:listfooter</span>=<span class="string">"@layout/list_footer"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<p><strong>layout属性</strong><br>tools:layout告诉ide，Fragment在程序预览的时候该显示成什么样</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">fragment</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:id</span>=<span class="string">"@+id/item_list"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:name</span>=<span class="string">"com.example.fragmenttwopanel.ItemListFragment"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_marginLeft</span>=<span class="string">"16dp"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_marginRight</span>=<span class="string">"16dp"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">tools:layout</span>=<span class="string">"@android:layout/list_content"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2017/08/27/android中xml-tools属性详解/4.png" alt="_pic4"></p>
+<p><strong>tools:showIn</strong></p>
+<p>该属性设置于一个被其他布局&lt;include&gt;的布局的根元素上。这让您可以指向包含此布局的其中一个布局，在设计时这个被包含的布局会带着周围的外部布局被渲染。这将允许您“在上下文中”查看和编辑这个布局。需要 Studio 0.5.8 或更高版本。</p>
+<p>关于tools 就介绍完了。</p>
+<p>注：原文是两篇文章  </p>
+<p><a href="https://medium.com/sebs-top-tips/tools-of-the-trade-part-1-f3c1c73de898" target="_blank" rel="noopener">Tools of the trade — Part 1</a> </p>
+<p><a href="https://medium.com/sebs-top-tips/tools-of-the-trade-part-2-b91271892d10" target="_blank" rel="noopener">Tools of the trade — Part 2</a> 。</p>
+<p>觉得完全可以在一篇文章中讲完，就翻译在了一起，原文有很多和内容无关的gif图，描述也比较啰嗦，都被我去掉了，这篇文章属于意译。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/资源文件/" rel="tag"># 资源文件</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/23/Java-Enum枚举替代方案-Android-IntDef-StringDef-Annotation注解/" rel="next" title="Java Enum枚举替代方案--Android IntDef/StringDef Annotation注解">
+                <i class="fa fa-chevron-left"></i> Java Enum枚举替代方案--Android IntDef/StringDef Annotation注解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/09/07/Groovy中对xml的操作补充/" rel="prev" title="Groovy中对xml的操作补充">
+                Groovy中对xml的操作补充 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#第一部分"><span class="nav-number">1.</span> <span class="nav-text">第一部分</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#用tools吧，别做傻事"><span class="nav-number">1.1.</span> <span class="nav-text">用tools吧，别做傻事</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tools属性的种类"><span class="nav-number">1.2.</span> <span class="nav-text">tools属性的种类</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第二部分"><span class="nav-number">2.</span> <span class="nav-text">第二部分</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

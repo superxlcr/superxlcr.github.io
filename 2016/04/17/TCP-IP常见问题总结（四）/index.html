@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="计算机网络,Http,TCP,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="C/S模式下使用socket通信、IP地址分类、路由器与交换机区别">
+<meta name="keywords" content="计算机网络,Http,TCP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TCP&#x2F;IP常见问题总结（四）">
+<meta property="og:url" content="https://superxlcr.github.io/2016/04/17/TCP-IP常见问题总结（四）/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="C/S模式下使用socket通信、IP地址分类、路由器与交换机区别">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.741Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TCP&#x2F;IP常见问题总结（四）">
+<meta name="twitter:description" content="C/S模式下使用socket通信、IP地址分类、路由器与交换机区别">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2016/04/17/TCP-IP常见问题总结（四）/">
+
+
+
+
+
+  <title>TCP/IP常见问题总结（四） | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2016/04/17/TCP-IP常见问题总结（四）/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">TCP/IP常见问题总结（四）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-17T21:29:06+08:00">
+                2016-04-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/计算机网络/" itemprop="url" rel="index">
+                    <span itemprop="name">计算机网络</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.2k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上一篇文章的传送门：<a href="/2016/04/15/TCP-IP常见问题总结（三）/">TCP/IP常见问题总结（三）</a></p>
+<h1 id="C-S模式下使用socket通信"><a href="#C-S模式下使用socket通信" class="headerlink" title="C/S模式下使用socket通信"></a>C/S模式下使用socket通信</h1><p>客户端的Java代码如下所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;  </span><br><span class="line">        String host = <span class="string">""</span>;  </span><br><span class="line">        <span class="keyword">int</span> port = <span class="number">0</span>;  </span><br><span class="line">        Socket socket = <span class="keyword">new</span> Socket(host, port); <span class="comment">// 分别填入目标主机ip和端口  </span></span><br><span class="line">        <span class="keyword">try</span> &#123;  </span><br><span class="line">            <span class="comment">// 获取输出流  </span></span><br><span class="line">            OutputStream os = socket.getOutputStream();  </span><br><span class="line">            <span class="comment">// 获取输入流  </span></span><br><span class="line">            InputStream is = socket.getInputStream();  </span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;  </span><br><span class="line">            <span class="comment">// 关闭socket  </span></span><br><span class="line">            socket.close();  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>建立连接后，获取输入输出流进行对应的输入输出即可。<br>服务器的Java代码如下所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;  </span><br><span class="line">        <span class="keyword">int</span> port = <span class="number">0</span>;  </span><br><span class="line">        ServerSocket serverSocket = <span class="keyword">new</span> ServerSocket(port); <span class="comment">// 填入监听的端口号  </span></span><br><span class="line">        <span class="keyword">try</span> &#123;  </span><br><span class="line">            <span class="comment">// accept是一个阻塞的方法，阻塞直到返回一个socket连接  </span></span><br><span class="line">            Socket socket = serverSocket.accept();  </span><br><span class="line">            <span class="keyword">try</span> &#123;  </span><br><span class="line">                <span class="comment">// 获取输入输出流进行对应操作  </span></span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;  </span><br><span class="line">                socket.close();  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;  </span><br><span class="line">            serverSocket.close();  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过accept获取一个socket连接后类似客户端获取输入输出处理即可。<br>客户端Java NIO代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;  </span><br><span class="line">        String hostname = <span class="string">""</span>;  </span><br><span class="line">        <span class="keyword">int</span> port = <span class="number">0</span>;  </span><br><span class="line">        SocketChannel socketChannel = SocketChannel.open();  </span><br><span class="line">        <span class="comment">// 设置成非阻塞IO  </span></span><br><span class="line">        socketChannel.configureBlocking(<span class="keyword">false</span>);  </span><br><span class="line">        <span class="keyword">try</span> &#123;  </span><br><span class="line">            <span class="comment">// 非阻塞模式下可能没建立连接就返回了  </span></span><br><span class="line">            <span class="keyword">while</span> (!socketChannel.finishConnect()) &#123;   </span><br><span class="line">                <span class="comment">// 传入目标主机ip和端口号建立连接  </span></span><br><span class="line">                socketChannel.connect(<span class="keyword">new</span> InetSocketAddress(hostname, port));  </span><br><span class="line">            &#125;  </span><br><span class="line">              </span><br><span class="line">            <span class="keyword">int</span> capacity = <span class="number">48</span>;  </span><br><span class="line">            <span class="comment">// 传入缓冲区大小建立缓冲区  </span></span><br><span class="line">            ByteBuffer buffer = ByteBuffer.allocate(capacity);  </span><br><span class="line">              </span><br><span class="line">            <span class="comment">// 读取字节输入  </span></span><br><span class="line">            <span class="keyword">int</span> byteRead = socketChannel.read(buffer);  </span><br><span class="line">              </span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;  </span><br><span class="line">            socketChannel.close();  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意NIO下的连接、读取和写入操作均为非阻塞操作，可能并没有达到我们预料中的结果就返回了，因此切记在循环中使用并进行相应的判断。<br>服务器Java NIO代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;  </span><br><span class="line">        <span class="keyword">int</span> port = <span class="number">0</span>;  </span><br><span class="line">        ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();  </span><br><span class="line">        <span class="comment">// 绑定监听端口  </span></span><br><span class="line">        serverSocketChannel.bind(<span class="keyword">new</span> InetSocketAddress(port));  </span><br><span class="line">        <span class="comment">// 设置为非阻塞模式  </span></span><br><span class="line">        serverSocketChannel.configureBlocking(<span class="keyword">false</span>);  </span><br><span class="line">        <span class="keyword">try</span> &#123;  </span><br><span class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;  </span><br><span class="line">                SocketChannel socketChannel = serverSocketChannel.accept();  </span><br><span class="line">                <span class="comment">// 非阻塞模式下可能没监听到任何通道就返回了  </span></span><br><span class="line">                <span class="keyword">if</span> (socketChannel != <span class="keyword">null</span>) &#123;  </span><br><span class="line">                    <span class="comment">// 获取socket通道后进行对应操作  </span></span><br><span class="line">                &#125;  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;  </span><br><span class="line">            serverSocketChannel.close();  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于非阻塞的原因，accept方法不一定成功获取socketChannel，因此我们需要进行判断是否返回了null</p>
+<h1 id="IP地址分类"><a href="#IP地址分类" class="headerlink" title="IP地址分类"></a>IP地址分类</h1><p>IP地址分为IPv4地址（32位）和IPv6地址（128位），在此我们讨论IPv4地址。<br>IP地址由两部分（网络部分和主机部分）组成，可以分为有类网和无类网两类。</p>
+<h2 id="有类网"><a href="#有类网" class="headerlink" title="有类网"></a>有类网</h2><p>有类网分为以下5种：</p>
+<table>
+<thead>
+<tr>
+<th>种类</th>
+<th>定义</th>
+<th>网络地址范围</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A类网</td>
+<td>第一位为0，后7位为网络号，剩余24位为主机号</td>
+<td>1.0.0.0 到 126.0.0.0 有效（0.0.0.0 与 127.0.0.0保留）</td>
+</tr>
+<tr>
+<td>B类网</td>
+<td>前两位为10，后14位为网络号，剩余16位为主机号</td>
+<td>128.1.0.0 到 191.254.0.0 有效（128.0.0.0 与 191.255.0.0保留）</td>
+</tr>
+<tr>
+<td>C类网</td>
+<td>前三位为110，后21位为网络号，剩余8位为主机号</td>
+<td>192.0.1.0 到 223.255.254.0 有效（192.0.0.0 与 223.255.255.0保留）</td>
+</tr>
+<tr>
+<td>D类网（不可用）</td>
+<td>前四位为1110，后28位为多播地址</td>
+<td>224.0.0.0 到 239.255.255.255 用于多点广播</td>
+</tr>
+<tr>
+<td>E类网（不可用）</td>
+<td>前四位为1111，被保留</td>
+<td>240.0.0.0 到 255.255.255.254 保留（255.255.255.255用于广播）</td>
+</tr>
+</tbody></table>
+<p>除了D类网与E类网不能使用外，A、B和C类网IP均可用来表示一台主机。我们一般根据自己网络中主机的多少来选择A、B还是C类网，但一般而言网路中的主机数目都不会刚好等于有类网提供的主机数，于是经常会造成有多余的IP地址浪费，因此我们有了无类网</p>
+<h2 id="无类网"><a href="#无类网" class="headerlink" title="无类网"></a>无类网</h2><p>无类网加入了子网掩码的概念。子网掩码是一个32位地址，用于将某个IP地址划分成网络地址和主机地址两部分。在子网掩码中我们以1表示为网络号，例：255.255.255.0表示前24位为网络号</p>
+<h1 id="路由器与交换机区别"><a href="#路由器与交换机区别" class="headerlink" title="路由器与交换机区别"></a>路由器与交换机区别</h1><p>路由器工作于网络模型的网络层，其主要的功能是路由选择与存储转发，路由器上还能开启ACL访问控制列表、NAT地址转换等功能，扩展网络应用<br>交换机工作于网络模型的数据链路层，其主要的功能是泛洪、存储转发、过滤和自学习，交换机还能够隔离冲突域，并划分VLAN</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/计算机网络/" rel="tag"># 计算机网络</a>
+          
+            <a href="/tags/Http/" rel="tag"># Http</a>
+          
+            <a href="/tags/TCP/" rel="tag"># TCP</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/04/16/关于-gitignore中-使用的注意事项/" rel="next" title="关于.gitignore中!使用的注意事项">
+                <i class="fa fa-chevron-left"></i> 关于.gitignore中!使用的注意事项
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/04/22/Android常见问题总结（一）/" rel="prev" title="Android常见问题总结（一）">
+                Android常见问题总结（一） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#C-S模式下使用socket通信"><span class="nav-number">1.</span> <span class="nav-text">C/S模式下使用socket通信</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#IP地址分类"><span class="nav-number">2.</span> <span class="nav-text">IP地址分类</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#有类网"><span class="nav-number">2.1.</span> <span class="nav-text">有类网</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#无类网"><span class="nav-number">2.2.</span> <span class="nav-text">无类网</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#路由器与交换机区别"><span class="nav-number">3.</span> <span class="nav-text">路由器与交换机区别</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

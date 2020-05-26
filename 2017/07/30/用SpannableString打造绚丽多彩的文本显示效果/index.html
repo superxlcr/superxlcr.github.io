@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="android,应用,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="（转载）引语、SpannableString、SpannableStringBuilder、彩蛋">
+<meta name="keywords" content="android,应用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用SpannableString打造绚丽多彩的文本显示效果">
+<meta property="og:url" content="https://superxlcr.github.io/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="（转载）引语、SpannableString、SpannableStringBuilder、彩蛋">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://superxlcr.github.io/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/1.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/2.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/5.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/7.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/9.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/11.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/13.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/15.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/17.jpg">
+<meta property="og:image" content="https://superxlcr.github.io/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/19.gif">
+<meta property="og:image" content="https://superxlcr.github.io/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/21.gif">
+<meta property="og:image" content="https://superxlcr.github.io/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/23.gif">
+<meta property="og:updated_time" content="2020-05-11T07:23:44.863Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="用SpannableString打造绚丽多彩的文本显示效果">
+<meta name="twitter:description" content="（转载）引语、SpannableString、SpannableStringBuilder、彩蛋">
+<meta name="twitter:image" content="https://superxlcr.github.io/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/">
+
+
+
+
+
+  <title>用SpannableString打造绚丽多彩的文本显示效果 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">用SpannableString打造绚丽多彩的文本显示效果</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-30T16:03:39+08:00">
+                2017-07-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.1k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文转载自：<a href="http://www.jianshu.com/p/84067ad289d2" target="_blank" rel="noopener">http://www.jianshu.com/p/84067ad289d2</a></p>
+<h1 id="引语"><a href="#引语" class="headerlink" title="引语"></a>引语</h1><p>TeXtView大家应该都不陌生，文本展示控件嘛！ 就用TextView显示普普通通的文本，OK，很简单，Android入门的都会，没入门的在门缝外看两眼也都会，哈哈，开玩笑。那要是设计在开发需求中要求类似微信聊天表情一样在TextView中插入表情图片呢？ 有的小伙伴就会说啦，“TextView添加图片我会啊，不就是drawableLeft，drawableRight嘛！” 嗯 ~ 也行，算是一种方法，可这有一个限制，首先，图片只能在TextView的两端，其次，两端都只能设置一张图片。要是图片要在文本中间呢？无能为力了吧，要是你会使用SpannableString，这个问题也就不难解决了，简直是Just So So。<br>所以，不论你是否正在经受以上问题的困扰，亦或是还没有经历到，请驻足仔细耐心的看完这篇简短的文章。不仅能够轻松实现以上设计需求，更能收获其他各种炫酷的效果，也许就能帮助你解决现在你所困扰的问题。</p>
+<h1 id="SpannableString"><a href="#SpannableString" class="headerlink" title="SpannableString"></a>SpannableString</h1><p>SpannableString其实和String一样，都是一种字符串类型，同样TextView也可以直接设置SpannableString作为显示文本，不同的是SpannableString可以通过使用其方法setSpan方法实现字符串各种形式风格的显示,重要的是可以指定设置的区间，也就是为字符串指定下标区间内的子字符串设置格式。<br>setSpan(Object what, int start, int end, int flags)方法需要用户输入四个参数，what表示设置的格式是什么，可以是前景色、背景色也可以是可点击的文本等等，start表示需要设置格式的子字符串的起始下标，同理end表示终了下标，flags属性就有意思了，共有四种属性：</p>
+<ul>
+<li>Spanned.SPAN_INCLUSIVE_EXCLUSIVE 从起始下标到终了下标，包括起始下标</li>
+<li>Spanned.SPAN_INCLUSIVE_INCLUSIVE 从起始下标到终了下标，同时包括起始下标和终了下标</li>
+<li>Spanned.SPAN_EXCLUSIVE_EXCLUSIVE 从起始下标到终了下标，但都不包括起始下标和终了下标</li>
+<li>Spanned.SPAN_EXCLUSIVE_INCLUSIVE 从起始下标到终了下标，包括终了下标</li>
+</ul>
+<p>下面我们一一解读几种Span常用的格式:</p>
+<ul>
+<li><strong>ForegroundColorSpan</strong></li>
+</ul>
+<p><img src="/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/1.jpg" alt="_pic1"></p>
+<p>ForegroundColorSpan，为文本设置前景色，效果和TextView的setTextColor()类似，实现方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SpannableString spannableString = <span class="keyword">new</span> SpannableString(<span class="string">"设置文字的前景色为淡蓝色"</span>);</span><br><span class="line">ForegroundColorSpan colorSpan = <span class="keyword">new</span> ForegroundColorSpan(Color.parseColor(<span class="string">"#0099EE"</span>));</span><br><span class="line">spannableString.setSpan(colorSpan, <span class="number">9</span>, spannableString.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE); </span><br><span class="line">textView.setText(spannableString);</span><br></pre></td></tr></table></figure>
+
+<p>设置的区间是9到字符串的最后，也就是图中“淡蓝色”三字。</p>
+<ul>
+<li><strong>BackgroundColorSpan</strong></li>
+</ul>
+<p><img src="/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/2.jpg" alt="_pic3"></p>
+<p>BackgroundColorSpan，为文本设置背景色，效果和TextView的setBackground()类，实现方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SpannableString spannableString = <span class="keyword">new</span> SpannableString(<span class="string">"设置文字的背景色为淡绿色"</span>);</span><br><span class="line">BackgroundColorSpan colorSpan = <span class="keyword">new</span> BackgroundColorSpan(Color.parseColor(<span class="string">"#AC00FF30"</span>));</span><br><span class="line">spannableString.setSpan(colorSpan, <span class="number">9</span>, spannableString.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);</span><br><span class="line">textView.setText(spannableString);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>RelativeSizeSpan</strong></li>
+</ul>
+<p><img src="/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/5.jpg" alt="_pic5"></p>
+<p>RelativeSizeSpan，设置文字相对大小，在TextView原有的文字大小的基础上，相对设置文字大小，实现方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">SpannableString spannableString = <span class="keyword">new</span> SpannableString(<span class="string">"万丈高楼平地起"</span>);</span><br><span class="line"></span><br><span class="line">RelativeSizeSpan sizeSpan01 = <span class="keyword">new</span> RelativeSizeSpan(<span class="number">1.2f</span>);</span><br><span class="line">RelativeSizeSpan sizeSpan02 = <span class="keyword">new</span> RelativeSizeSpan(<span class="number">1.4f</span>);</span><br><span class="line">RelativeSizeSpan sizeSpan03 = <span class="keyword">new</span> RelativeSizeSpan(<span class="number">1.6f</span>);</span><br><span class="line">RelativeSizeSpan sizeSpan04 = <span class="keyword">new</span> RelativeSizeSpan(<span class="number">1.8f</span>);</span><br><span class="line">RelativeSizeSpan sizeSpan05 = <span class="keyword">new</span> RelativeSizeSpan(<span class="number">1.6f</span>);</span><br><span class="line">RelativeSizeSpan sizeSpan06 = <span class="keyword">new</span> RelativeSizeSpan(<span class="number">1.4f</span>);</span><br><span class="line">RelativeSizeSpan sizeSpan07 = <span class="keyword">new</span> RelativeSizeSpan(<span class="number">1.2f</span>);</span><br><span class="line"></span><br><span class="line">spannableString.setSpan(sizeSpan01, <span class="number">0</span>, <span class="number">1</span>, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);</span><br><span class="line">spannableString.setSpan(sizeSpan02, <span class="number">1</span>, <span class="number">2</span>, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);</span><br><span class="line">spannableString.setSpan(sizeSpan03, <span class="number">2</span>, <span class="number">3</span>, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);</span><br><span class="line">spannableString.setSpan(sizeSpan04, <span class="number">3</span>, <span class="number">4</span>, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);</span><br><span class="line">spannableString.setSpan(sizeSpan05, <span class="number">4</span>, <span class="number">5</span>, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);</span><br><span class="line">spannableString.setSpan(sizeSpan06, <span class="number">5</span>, <span class="number">6</span>, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);</span><br><span class="line">spannableString.setSpan(sizeSpan07, <span class="number">6</span>, <span class="number">7</span>, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);</span><br><span class="line">textView.setText(spannableString);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>StrikethroughSpan</strong></li>
+</ul>
+<p><img src="/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/7.jpg" alt="_pic7"></p>
+<p>StrikethroughSpan，为文本设置中划线，也就是常说的删除线，实现方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SpannableString spannableString = <span class="keyword">new</span> SpannableString(<span class="string">"为文字设置删除线"</span>);</span><br><span class="line">StrikethroughSpan strikethroughSpan = <span class="keyword">new</span> StrikethroughSpan();</span><br><span class="line">spannableString.setSpan(strikethroughSpan, <span class="number">5</span>, spannableString.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);</span><br><span class="line">textView.setText(spannableString);</span><br></pre></td></tr></table></figure>
+
+<p>看到这有没有小激动，分分钟实现天猫打折优惠效果，有木有？</p>
+<ul>
+<li><strong>UnderlineSpan</strong></li>
+</ul>
+<p><img src="/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/9.jpg" alt="_pic9"></p>
+<p>UnderlineSpan，为文本设置下划线，具体实现方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SpannableString spannableString = <span class="keyword">new</span> SpannableString(<span class="string">"为文字设置下划线"</span>);</span><br><span class="line">UnderlineSpan underlineSpan = <span class="keyword">new</span> UnderlineSpan();</span><br><span class="line">spannableString.setSpan(underlineSpan, <span class="number">5</span>, spannableString.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);</span><br><span class="line">textView.setText(spannableString);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>SuperscriptSpan</strong></li>
+</ul>
+<p><img src="/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/11.jpg" alt="_pic11"></p>
+<p>SuperscriptSpan，设置上标，具体实现方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SpannableString spannableString = <span class="keyword">new</span> SpannableString(<span class="string">"为文字设置上标"</span>);</span><br><span class="line">SuperscriptSpan superscriptSpan = <span class="keyword">new</span> SuperscriptSpan();</span><br><span class="line">spannableString.setSpan(superscriptSpan, <span class="number">5</span>, spannableString.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);</span><br><span class="line">textView.setText(spannableString);</span><br></pre></td></tr></table></figure>
+
+<p>从效果图可以看出，被设置为上标的文字大小和下面的文本文字大小一样，只要我们稍加修饰，结合RelativeSizeSpan设置小字体文本作为上标，分分钟实现指数公式有木有，再也不用2^2+3^2=13这样缺乏审美的数学公式了，是不是超实用？</p>
+<ul>
+<li><strong>SubscriptSpan</strong></li>
+</ul>
+<p><img src="/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/13.jpg" alt="_pic13"></p>
+<p>SubscriptSpan，设置下标，功能与设置上标类似，不做过多描述，具体实现方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SpannableString spannableString = <span class="keyword">new</span> SpannableString(<span class="string">"为文字设置下标"</span>);</span><br><span class="line">SubscriptSpan subscriptSpan = <span class="keyword">new</span> SubscriptSpan();</span><br><span class="line">spannableString.setSpan(subscriptSpan, <span class="number">5</span>, spannableString.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);</span><br><span class="line">textView.setText(spannableString);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>StyleSpan</strong></li>
+</ul>
+<p><img src="/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/15.jpg" alt="_pic15"></p>
+<p>StyleSpan，为文字设置风格（粗体、斜体），和TextView属性textStyle类似，实现方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">SpannableString spannableString = <span class="keyword">new</span> SpannableString(<span class="string">"为文字设置粗体、斜体风格"</span>);</span><br><span class="line">StyleSpan styleSpan_B  = <span class="keyword">new</span> StyleSpan(Typeface.BOLD);</span><br><span class="line">StyleSpan styleSpan_I  = <span class="keyword">new</span> StyleSpan(Typeface.ITALIC);</span><br><span class="line">spannableString.setSpan(styleSpan_B, <span class="number">5</span>, <span class="number">7</span>, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);</span><br><span class="line">spannableString.setSpan(styleSpan_I, <span class="number">8</span>, <span class="number">10</span>, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);</span><br><span class="line">textView.setHighlightColor(Color.parseColor(<span class="string">"#36969696"</span>));</span><br><span class="line">textView.setText(spannableString);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>ImageSpan</strong></li>
+</ul>
+<p><img src="/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/17.jpg" alt="_pic17"></p>
+<p>ImageSpan，设置文本图片，实现方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">SpannableString spannableString = <span class="keyword">new</span> SpannableString(<span class="string">"在文本中添加表情（表情）"</span>);</span><br><span class="line">Drawable drawable = getResources().getDrawable(R.mipmap.a9c);</span><br><span class="line">drawable.setBounds(<span class="number">0</span>, <span class="number">0</span>, <span class="number">42</span>, <span class="number">42</span>);</span><br><span class="line">ImageSpan imageSpan = <span class="keyword">new</span> ImageSpan(drawable);</span><br><span class="line">spannableString.setSpan(imageSpan, <span class="number">6</span>, <span class="number">8</span>, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);</span><br><span class="line">textView.setText(spannableString);</span><br></pre></td></tr></table></figure>
+
+<p>这一个是不是很炫酷？再加一个解析算法，将文本中特定的文本转换成特定的表情图片，分分钟实现聊天表情显示效果有木有啊朋友们！</p>
+<ul>
+<li><strong>ClickableSpan</strong></li>
+</ul>
+<p><img src="/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/19.gif" alt="_pic19"></p>
+<p>ClickableSpan，设置可点击的文本，设置这个属性的文本可以相应用户点击事件，至于点击事件用户可以自定义，就像效果图显示一样，用户可以实现点击跳转页面的效果，具体实现方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">SpannableString spannableString = <span class="keyword">new</span> SpannableString(<span class="string">"为文字设置点击事件"</span>);</span><br><span class="line">MyClickableSpan clickableSpan = <span class="keyword">new</span> MyClickableSpan(<span class="string">"http://www.jianshu.com/users/dbae9ac95c78"</span>);</span><br><span class="line">spannableString.setSpan(clickableSpan, <span class="number">5</span>, spannableString.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);</span><br><span class="line">textView.setMovementMethod(LinkMovementMethod.getInstance());</span><br><span class="line">textView.setHighlightColor(Color.parseColor(<span class="string">"#36969696"</span>)); </span><br><span class="line">textView.setText(spannableString);</span><br><span class="line"></span><br><span class="line"><span class="comment">/***************************************************************/</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyClickableSpan</span> <span class="keyword">extends</span> <span class="title">ClickableSpan</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String content;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyClickableSpan</span><span class="params">(String content)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.content = content;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">updateDrawState</span><span class="params">(TextPaint ds)</span> </span>&#123;</span><br><span class="line">        ds.setUnderlineText(<span class="keyword">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View widget)</span> </span>&#123;</span><br><span class="line">        Intent intent = <span class="keyword">new</span> Intent(MainActivity.<span class="keyword">this</span>, OtherActivity.class);</span><br><span class="line">        Bundle bundle = <span class="keyword">new</span> Bundle();</span><br><span class="line">        bundle.putString(<span class="string">"content"</span>, content);</span><br><span class="line">        intent.putExtra(<span class="string">"bundle"</span>, bundle);</span><br><span class="line">        startActivity(intent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代码中我们自定义MyClickableSpan类，继承至ClickableSpan，并重写其中一些方法。ds.setUnderlineText()控制是否让可点击文本显示下划线，很明显，在上面代码中我选择了false，不显示下滑写。onClick点击事件的具体实现方法写在其中。如上代码，我们重写ClickableSpan的onClick方法实现Activity的跳转效果，并传递跳转数据。<br><em>注意：使用ClickableSpan的文本如果想真正实现点击作用，必须为TextView设置setMovementMethod方法，否则没有点击相应，至于setHighlightColor方法则是控制点击是的背景色。</em></p>
+<ul>
+<li><strong>URLSpan</strong></li>
+</ul>
+<p><img src="/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/21.gif" alt="_pic21"></p>
+<p>URLSpan，设置超链接文本，其实聪明的小伙帮在讲到ClickableSpan的时候就能实现超链接文本的效果了，重写onClick点击事件就行，也确实看了URLSpan的源码，URLSpan就是继承自ClickableSpan，也和想象中一样，就是重写了父类的onClick事件，用系统自带浏览器打开链接，具体实现方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">SpannableString spannableString = <span class="keyword">new</span> SpannableString(<span class="string">"为文字设置超链接"</span>);</span><br><span class="line">URLSpan urlSpan = <span class="keyword">new</span> URLSpan(<span class="string">"http://www.jianshu.com/users/dbae9ac95c78"</span>);</span><br><span class="line">spannableString.setSpan(urlSpan, <span class="number">5</span>, spannableString.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);</span><br><span class="line">textView.setMovementMethod(LinkMovementMethod.getInstance());</span><br><span class="line">textView.setHighlightColor(Color.parseColor(<span class="string">"#36969696"</span>));</span><br><span class="line">textView.setText(spannableString);</span><br></pre></td></tr></table></figure>
+
+<p>URLSpan onClick事件的源码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View widget)</span> </span>&#123;</span><br><span class="line">    Uri uri = Uri.parse(getURL());</span><br><span class="line">    Context context = widget.getContext();</span><br><span class="line">    Intent intent = <span class="keyword">new</span> Intent(Intent.ACTION_VIEW, uri);</span><br><span class="line">    intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        context.startActivity(intent);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (ActivityNotFoundException e) &#123;</span><br><span class="line">        Log.w(<span class="string">"URLSpan"</span>, <span class="string">"Actvity was not found for intent, "</span> + intent.toString());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>除此之外，还有MaskFilterSpan可以实现模糊和浮雕效果，RasterizerSpan可以实现光栅效果，因为以上两个使用频率不高，而且效果也不是很明显，就不做详细说明，有兴趣的小伙伴不妨去试一试。</p>
+<h1 id="SpannableStringBuilder"><a href="#SpannableStringBuilder" class="headerlink" title="SpannableStringBuilder"></a>SpannableStringBuilder</h1><p>应该有不少开发的小伙伴知道StringBuilder，可以使用append()方法实现字符串拼接，非常方便。同样，SpannableString中也有SpannableStringBuilder，顾名思义，就是实现对，SpannableString的一个拼接效果，同样是append()方法，可以实现各种风格效果的SpannableString拼接，非常实用。</p>
+<h1 id="彩蛋"><a href="#彩蛋" class="headerlink" title="彩蛋"></a>彩蛋</h1><p>看了这么多的效果是不是收货满满呢？最后我在附上一个个小小的彩蛋，小伙伴们可以开动脑经想一想是怎么实现的哦！ 要是有更好的创意，不妨在评论区留言跟大伙儿分享分享呢！<br><img src="/2017/07/30/用SpannableString打造绚丽多彩的文本显示效果/23.gif" alt="_pic23"></p>
+<p><a href="https://github.com/WuLiFei/SpannableStringDemo" target="_blank" rel="noopener">github下载地址-内含菜单实现代码</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/应用/" rel="tag"># 应用</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/30/git-stash和git-stash-pop/" rel="next" title="git stash和git stash pop">
+                <i class="fa fa-chevron-left"></i> git stash和git stash pop
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/03/Gson简易使用指南/" rel="prev" title="Gson简易使用指南">
+                Gson简易使用指南 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引语"><span class="nav-number">1.</span> <span class="nav-text">引语</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SpannableString"><span class="nav-number">2.</span> <span class="nav-text">SpannableString</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SpannableStringBuilder"><span class="nav-number">3.</span> <span class="nav-text">SpannableStringBuilder</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#彩蛋"><span class="nav-number">4.</span> <span class="nav-text">彩蛋</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>
