@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="偏向所锁，轻量级锁及重量级锁、线程池线程数如何确定">
+<meta name="description" content="偏向所锁、轻量级锁及重量级锁、线程池线程数如何确定、反射创建对象 与 new 创建对象区别">
 <meta name="keywords" content="基础知识,java">
 <meta property="og:type" content="article">
 <meta property="og:title" content="关于一些基础的Java问题的解答（十）">
 <meta property="og:url" content="https://superxlcr.github.io/2019/05/06/关于一些基础的Java问题的解答（十）/index.html">
 <meta property="og:site_name" content="superxlcr&#39;s notebook">
-<meta property="og:description" content="偏向所锁，轻量级锁及重量级锁、线程池线程数如何确定">
+<meta property="og:description" content="偏向所锁、轻量级锁及重量级锁、线程池线程数如何确定、反射创建对象 与 new 创建对象区别">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-05-11T07:23:44.835Z">
+<meta property="og:updated_time" content="2020-05-28T02:39:18.351Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="关于一些基础的Java问题的解答（十）">
-<meta name="twitter:description" content="偏向所锁，轻量级锁及重量级锁、线程池线程数如何确定">
+<meta name="twitter:description" content="偏向所锁、轻量级锁及重量级锁、线程池线程数如何确定、反射创建对象 与 new 创建对象区别">
 
 
 
@@ -336,7 +336,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1.1k字
+                  1.4k字
                 </span>
               
 
@@ -385,6 +385,10 @@
 <li>IO密集型场景，即cpu等待时间/cpu总时间比值接近1，因此线程数一般定为 CPU核心数 x 2 + 1</li>
 </ul>
 <p>参考资料：<br><a href="https://www.cnblogs.com/dennyzhangdd/p/6909771.html?utm_source=itdadao&amp;utm_medium=referral" target="_blank" rel="noopener">https://www.cnblogs.com/dennyzhangdd/p/6909771.html?utm_source=itdadao&amp;utm_medium=referral</a><br><a href="https://blog.csdn.net/varyall/article/details/79583036?utm_source=blogxgwz8" target="_blank" rel="noopener">https://blog.csdn.net/varyall/article/details/79583036?utm_source=blogxgwz8</a></p>
+<h1 id="反射创建对象-与-new-创建对象区别"><a href="#反射创建对象-与-new-创建对象区别" class="headerlink" title="反射创建对象 与 new 创建对象区别"></a>反射创建对象 与 new 创建对象区别</h1><p>在java中，我们既可以通过new来直接创建一个对象，也可以通过反射的api，使用Class.forName().newInstance()来创建对象<br>那么这两者有何区别呢？</p>
+<p>当我们通过new来创建对象时，在编译期间内，对于我们创建对象的类型以及调用的构造函数方法，都是明确可知的<br>因此这种方式创建对象会更快，而且JVM也会针对这种情况执行一系列的优化</p>
+<p>当我们通过Class.forName().newInstance()来创建对象时，我们相当于使用了一种动态的方式来创建对象<br>这种创建对象的方式会更慢，因为这时创建的对象类型并不是明确的，是不能硬编码到字节码中的<br>并且JVM可能还需要进行权限的校验，确保执行的代码是否能调用构造函数创建对象<br>并且JVM还需要对调用的构造函数进行检查，确保拥有跟我们参数匹配的构造函数</p>
+<p>综上所述，反射创建对象 慢于 new 创建对象</p>
 
       
     </div>
@@ -573,7 +577,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#偏向所锁，轻量级锁及重量级锁"><span class="nav-number">1.</span> <span class="nav-text">偏向所锁，轻量级锁及重量级锁</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#线程池线程数如何确定"><span class="nav-number">2.</span> <span class="nav-text">线程池线程数如何确定</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#偏向所锁，轻量级锁及重量级锁"><span class="nav-number">1.</span> <span class="nav-text">偏向所锁，轻量级锁及重量级锁</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#线程池线程数如何确定"><span class="nav-number">2.</span> <span class="nav-text">线程池线程数如何确定</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#反射创建对象-与-new-创建对象区别"><span class="nav-number">3.</span> <span class="nav-text">反射创建对象 与 new 创建对象区别</span></a></li></ol></div>
             
 
           </div>
