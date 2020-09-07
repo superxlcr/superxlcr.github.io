@@ -79,20 +79,20 @@
 
 
 
-<meta name="description" content="Android Studio Build Output输出栏内汉字出现乱码的解决方案、Android Studio 正则表达式分组替换信息、aar库依赖项打包问题">
+<meta name="description" content="Android Studio Build Output输出栏内汉字出现乱码的解决方案、Android Studio 正则表达式分组替换信息、aar库依赖项打包问题、下载AndroidSDKtools目录">
 <meta name="keywords" content="android,基础知识">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android常见问题总结（十）">
 <meta property="og:url" content="https://superxlcr.github.io/2020/03/28/Android常见问题总结（十）/index.html">
 <meta property="og:site_name" content="superxlcr&#39;s notebook">
-<meta property="og:description" content="Android Studio Build Output输出栏内汉字出现乱码的解决方案、Android Studio 正则表达式分组替换信息、aar库依赖项打包问题">
+<meta property="og:description" content="Android Studio Build Output输出栏内汉字出现乱码的解决方案、Android Studio 正则表达式分组替换信息、aar库依赖项打包问题、下载AndroidSDKtools目录">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://superxlcr.github.io/2020/03/28/Android常见问题总结（十）/1.png">
 <meta property="og:image" content="https://superxlcr.github.io/2020/03/28/Android常见问题总结（十）/2.png">
-<meta property="og:updated_time" content="2020-07-16T11:54:46.890Z">
+<meta property="og:updated_time" content="2020-09-07T12:32:33.867Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android常见问题总结（十）">
-<meta name="twitter:description" content="Android Studio Build Output输出栏内汉字出现乱码的解决方案、Android Studio 正则表达式分组替换信息、aar库依赖项打包问题">
+<meta name="twitter:description" content="Android Studio Build Output输出栏内汉字出现乱码的解决方案、Android Studio 正则表达式分组替换信息、aar库依赖项打包问题、下载AndroidSDKtools目录">
 <meta name="twitter:image" content="https://superxlcr.github.io/2020/03/28/Android常见问题总结（十）/1.png">
 
 
@@ -339,7 +339,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  562字
+                  728字
                 </span>
               
 
@@ -392,6 +392,11 @@
 <p>经过了解，其实aar只会打包自己源码的东西，我们aar所依赖的项都是由maven来进行管理维护的<br>当我们发布aar的时候，会生成相应的pom文件，来描述我们这个aar的属性以及他所需要的依赖的库<br>当我们使用发布的aar的时候，maven以及gradle会根据这个pom文件把相应的依赖给补全，这就是传递依赖的场景</p>
 <p>当我们不需要使用传递依赖时，我们在gradle中可以通过exclude方法或者transitive属性来控制：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">implementation (xxx) &#123;</span><br><span class="line">	exclude (group : &quot;xxx&quot;, module : &quot;xxx&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">implementation (xxx) &#123;</span><br><span class="line">	transitive = false</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="下载AndroidSDKtools目录"><a href="#下载AndroidSDKtools目录" class="headerlink" title="下载AndroidSDKtools目录"></a>下载AndroidSDKtools目录</h1><p>在Android的SDK下的tools目录中，存放着一些开发相关的工具，比如博主经常使用的monitor（里面包含一大堆工具，虽然新版AS也有，但总感觉不好用，尤其是界面dump工具）<br>不过貌似在AS 3.0及以上，官方默认下载SDK时就不下载这套工具了</p>
+<p>博主经过网上搜索了一番后，找到了相关的资料来下载：<br><a href="https://stackoverflow.com/questions/28789556/android-studio-sdk-tools-directory-is-missing/61040516#61040516" target="_blank" rel="noopener">https://stackoverflow.com/questions/28789556/android-studio-sdk-tools-directory-is-missing/61040516#61040516</a></p>
+<p>其实就是因为被标记废弃，所以被隐藏起来了，只要去掉勾选隐藏废弃package就能找到Android SDK Tools</p>
+
       
     </div>
     
@@ -514,7 +519,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">183</span>
+                  <span class="site-state-item-count">184</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -579,7 +584,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Android-Studio-Build-Output输出栏内汉字出现乱码的解决方案"><span class="nav-number">1.</span> <span class="nav-text">Android Studio Build Output输出栏内汉字出现乱码的解决方案</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Android-Studio-正则表达式分组替换信息"><span class="nav-number">2.</span> <span class="nav-text">Android Studio 正则表达式分组替换信息</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#aar库依赖项打包问题"><span class="nav-number">3.</span> <span class="nav-text">aar库依赖项打包问题</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Android-Studio-Build-Output输出栏内汉字出现乱码的解决方案"><span class="nav-number">1.</span> <span class="nav-text">Android Studio Build Output输出栏内汉字出现乱码的解决方案</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Android-Studio-正则表达式分组替换信息"><span class="nav-number">2.</span> <span class="nav-text">Android Studio 正则表达式分组替换信息</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#aar库依赖项打包问题"><span class="nav-number">3.</span> <span class="nav-text">aar库依赖项打包问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#下载AndroidSDKtools目录"><span class="nav-number">4.</span> <span class="nav-text">下载AndroidSDKtools目录</span></a></li></ol></div>
             
 
           </div>
