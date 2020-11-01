@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="gradle,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言、版本冲突处理、gradle最新版本判断代码、结论">
+<meta name="keywords" content="gradle">
+<meta property="og:type" content="article">
+<meta property="og:title" content="gradle版本冲突如何处理">
+<meta property="og:url" content="https://superxlcr.github.io/2020/11/01/gradle版本冲突如何处理/index.html">
+<meta property="og:site_name" content="superxlcr&#39;s notebook">
+<meta property="og:description" content="前言、版本冲突处理、gradle最新版本判断代码、结论">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-11-01T09:15:21.309Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="gradle版本冲突如何处理">
+<meta name="twitter:description" content="前言、版本冲突处理、gradle最新版本判断代码、结论">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://superxlcr.github.io/2020/11/01/gradle版本冲突如何处理/">
+
+
+
+
+
+  <title>gradle版本冲突如何处理 | superxlcr's notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">superxlcr's notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://superxlcr.github.io/2020/11/01/gradle版本冲突如何处理/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="superxlcr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="superxlcr's notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">gradle版本冲突如何处理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-11-01T16:30:05+08:00">
+                2020-11-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/gradle/" itemprop="url" rel="index">
+                    <span itemprop="name">gradle</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.3k字
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>当我们遇到gradle的版本依赖冲突时，一般可以通过force语句来处理：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">resolutionStrategy &#123;</span><br><span class="line">	force &apos;xxxxxx&apos;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当如果我们不使用force语句时，原本的gradle版本冲突时如何处理的呢？</p>
+<h1 id="版本冲突处理"><a href="#版本冲突处理" class="headerlink" title="版本冲突处理"></a>版本冲突处理</h1><p>当我们添加了gradle的源码依赖后：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">implementation gradleApi()</span><br><span class="line">implementation localGroovy()</span><br></pre></td></tr></table></figure>
+
+<p>我们可以找到下面的枚举类：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * The conflict resolution</span><br><span class="line"> */</span><br><span class="line">public enum ConflictResolution &#123;</span><br><span class="line">    strict,</span><br><span class="line">    latest,</span><br><span class="line">    preferProjectModules</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中：</p>
+<ul>
+<li>strict：严格模式，通过 failOnVersionConflict() 来设置，表示如果存在依赖冲突则失败</li>
+<li>latest：选择最新的，默认选项</li>
+<li>preferProjectModules：没用过，官方说明是 prefer modules that are part of this build (multi-project or composite build) over external modules</li>
+</ul>
+<p>一般而言，我们都是默认选择最新的版本</p>
+<p>但由于依赖库的版本号是字符串，而非数字，那么gradle默认的实现是如何判断哪个版本是最新呢？</p>
+<h1 id="gradle最新版本判断代码"><a href="#gradle最新版本判断代码" class="headerlink" title="gradle最新版本判断代码"></a>gradle最新版本判断代码</h1><p>枚举latest对应的版本处理类是 LatestModuleConflictResolver</p>
+<p>他的构造函数中需要传入处理版本冲突的版本对比器，默认实现代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * This comparator considers `1.1.1 == 1-1-1`.</span><br><span class="line"> * @see StaticVersionComparator</span><br><span class="line"> */</span><br><span class="line">public class DefaultVersionComparator implements VersionComparator &#123;</span><br><span class="line">    private final Comparator&lt;Version&gt; baseComparator = new StaticVersionComparator();</span><br><span class="line"></span><br><span class="line">    public int compare(Versioned element1, Versioned element2) &#123;</span><br><span class="line">        Version version1 = element1.getVersion();</span><br><span class="line">        Version version2 = element2.getVersion();</span><br><span class="line">        return baseComparator.compare(version1, version2);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Comparator&lt;Version&gt; asVersionComparator() &#123;</span><br><span class="line">        return baseComparator;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中StaticVersionComparator代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * Allows for comparison of Version instances.</span><br><span class="line"> * Note that this comparator only considers the &apos;parts&apos; of a version, and does not consider the part &apos;separators&apos;.</span><br><span class="line"> * This means that it considers `1.1.1 == 1-1-1 == 1.1-1`, and should not be used in cases where this is important.</span><br><span class="line"> * One example where this comparator is inappropriate is if versions should be retained in a TreeMap/TreeSet.</span><br><span class="line"> */</span><br><span class="line">class StaticVersionComparator implements Comparator&lt;Version&gt; &#123;</span><br><span class="line">    private static final Map&lt;String, Integer&gt; SPECIAL_MEANINGS =</span><br><span class="line">            ImmutableMap.of(&quot;dev&quot;, -1, &quot;rc&quot;, 1, &quot;release&quot;, 2, &quot;final&quot;, 3);</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * Compares 2 versions. Algorithm is inspired by PHP version_compare one.</span><br><span class="line">     */</span><br><span class="line">    public int compare(Version version1, Version version2) &#123;</span><br><span class="line">        if (version1.equals(version2)) &#123;</span><br><span class="line">            return 0;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        String[] parts1 = version1.getParts();</span><br><span class="line">        String[] parts2 = version2.getParts();</span><br><span class="line">        Long[] numericParts1 = version1.getNumericParts();</span><br><span class="line">        Long[] numericParts2 = version2.getNumericParts();</span><br><span class="line"></span><br><span class="line">        int i = 0;</span><br><span class="line">        for (; i &lt; parts1.length &amp;&amp; i &lt; parts2.length; i++) &#123;</span><br><span class="line">            String part1 = parts1[i];</span><br><span class="line">            String part2 = parts2[i];</span><br><span class="line"></span><br><span class="line">            Long numericPart1 = numericParts1[i];</span><br><span class="line">            Long numericPart2 = numericParts2[i];</span><br><span class="line"></span><br><span class="line">            boolean is1Number = numericPart1 != null;</span><br><span class="line">            boolean is2Number = numericPart2 != null;</span><br><span class="line"></span><br><span class="line">            if (part1.equals(part2)) &#123;</span><br><span class="line">                continue;</span><br><span class="line">            &#125;</span><br><span class="line">            if (is1Number &amp;&amp; !is2Number) &#123;</span><br><span class="line">                return 1;</span><br><span class="line">            &#125;</span><br><span class="line">            if (is2Number &amp;&amp; !is1Number) &#123;</span><br><span class="line">                return -1;</span><br><span class="line">            &#125;</span><br><span class="line">            if (is1Number &amp;&amp; is2Number) &#123;</span><br><span class="line">                return numericPart1.compareTo(numericPart2);</span><br><span class="line">            &#125;</span><br><span class="line">            // both are strings, we compare them taking into account special meaning</span><br><span class="line">            Integer sm1 = SPECIAL_MEANINGS.get(part1.toLowerCase(Locale.US));</span><br><span class="line">            Integer sm2 = SPECIAL_MEANINGS.get(part2.toLowerCase(Locale.US));</span><br><span class="line">            if (sm1 != null) &#123;</span><br><span class="line">                sm2 = sm2 == null ? 0 : sm2;</span><br><span class="line">                return sm1 - sm2;</span><br><span class="line">            &#125;</span><br><span class="line">            if (sm2 != null) &#123;</span><br><span class="line">                return -sm2;</span><br><span class="line">            &#125;</span><br><span class="line">            return part1.compareTo(part2);</span><br><span class="line">        &#125;</span><br><span class="line">        if (i &lt; parts1.length) &#123;</span><br><span class="line">            return numericParts1[i] == null ? -1 : 1;</span><br><span class="line">        &#125;</span><br><span class="line">        if (i &lt; parts2.length) &#123;</span><br><span class="line">            return numericParts2[i] == null ? 1 : -1;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return 0;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中使用到的Version类的解析数据代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br></pre></td><td class="code"><pre><span class="line">public class VersionParser implements Transformer&lt;Version, String&gt; &#123;</span><br><span class="line">    public static final VersionParser INSTANCE = new VersionParser();</span><br><span class="line"></span><br><span class="line">    public VersionParser() &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Version transform(String original) &#123;</span><br><span class="line">        List&lt;String&gt; parts = new ArrayList&lt;String&gt;();</span><br><span class="line">        boolean digit = false;</span><br><span class="line">        int startPart = 0;</span><br><span class="line">        int pos = 0;</span><br><span class="line">        int endBase = 0;</span><br><span class="line">        int endBaseStr = 0;</span><br><span class="line">        for (; pos &lt; original.length(); pos++) &#123;</span><br><span class="line">            char ch = original.charAt(pos);</span><br><span class="line">            if (ch == &apos;.&apos; || ch == &apos;_&apos; || ch == &apos;-&apos; || ch == &apos;+&apos;) &#123;</span><br><span class="line">                parts.add(original.substring(startPart, pos));</span><br><span class="line">                startPart = pos + 1;</span><br><span class="line">                digit = false;</span><br><span class="line">                if (ch != &apos;.&apos; &amp;&amp; endBaseStr == 0) &#123;</span><br><span class="line">                    endBase = parts.size();</span><br><span class="line">                    endBaseStr = pos;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; else if (ch &gt;= &apos;0&apos; &amp;&amp; ch &lt;= &apos;9&apos;) &#123;</span><br><span class="line">                if (!digit &amp;&amp; pos &gt; startPart) &#123;</span><br><span class="line">                    if (endBaseStr == 0) &#123;</span><br><span class="line">                        endBase = parts.size() + 1;</span><br><span class="line">                        endBaseStr = pos;</span><br><span class="line">                    &#125;</span><br><span class="line">                    parts.add(original.substring(startPart, pos));</span><br><span class="line">                    startPart = pos;</span><br><span class="line">                &#125;</span><br><span class="line">                digit = true;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                if (digit) &#123;</span><br><span class="line">                    if (endBaseStr == 0) &#123;</span><br><span class="line">                        endBase = parts.size() + 1;</span><br><span class="line">                        endBaseStr = pos;</span><br><span class="line">                    &#125;</span><br><span class="line">                    parts.add(original.substring(startPart, pos));</span><br><span class="line">                    startPart = pos;</span><br><span class="line">                &#125;</span><br><span class="line">                digit = false;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        if (pos &gt; startPart) &#123;</span><br><span class="line">            parts.add(original.substring(startPart, pos));</span><br><span class="line">        &#125;</span><br><span class="line">        DefaultVersion base = null;</span><br><span class="line">        if (endBaseStr &gt; 0) &#123;</span><br><span class="line">            base = new DefaultVersion(original.substring(0, endBaseStr), parts.subList(0, endBase), null);</span><br><span class="line">        &#125;</span><br><span class="line">        return new DefaultVersion(original, parts, base);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static class DefaultVersion implements Version &#123;</span><br><span class="line">        private final String source;</span><br><span class="line">        private final String[] parts;</span><br><span class="line">        private final Long[] numericParts;</span><br><span class="line">        private final DefaultVersion baseVersion;</span><br><span class="line"></span><br><span class="line">        public DefaultVersion(String source, List&lt;String&gt; parts, DefaultVersion baseVersion) &#123;</span><br><span class="line">            this.source = source;</span><br><span class="line">            this.parts = parts.toArray(new String[0]);</span><br><span class="line">            this.numericParts = new Long[this.parts.length];</span><br><span class="line">            for (int i = 0; i &lt; parts.size(); i++) &#123;</span><br><span class="line">                this.numericParts[i] = Longs.tryParse(this.parts[i]);</span><br><span class="line">            &#125;</span><br><span class="line">            this.baseVersion = baseVersion == null ? this : baseVersion;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public String toString() &#123;</span><br><span class="line">            return source;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public boolean equals(Object obj) &#123;</span><br><span class="line">            if (obj == this) &#123;</span><br><span class="line">                return true;</span><br><span class="line">            &#125;</span><br><span class="line">            if (obj == null || obj.getClass() != getClass()) &#123;</span><br><span class="line">                return false;</span><br><span class="line">            &#125;</span><br><span class="line">            DefaultVersion other = (DefaultVersion) obj;</span><br><span class="line">            return source.equals(other.source);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public int hashCode() &#123;</span><br><span class="line">            return source.hashCode();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public boolean isQualified() &#123;</span><br><span class="line">            return baseVersion != this;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public Version getBaseVersion() &#123;</span><br><span class="line">            return baseVersion;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        public String[] getParts() &#123;</span><br><span class="line">            return parts;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public Long[] getNumericParts() &#123;</span><br><span class="line">            return numericParts;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public String getSource() &#123;</span><br><span class="line">            return source;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h1><p>由上面的代码可知：</p>
+<ul>
+<li>我们表示版本的字符串，首先会根据 ._-+ 分隔符分为多个部分，每个部分中，只会存在数字或者非数字的字符串</li>
+<li>对比版本新旧时，其实是对版本的每个部分进行对比</li>
+<li>同一部分中，数字的部分版本大于非数字的字符串，如果同为数字，则比较大小</li>
+<li>同为字符串的情况下，查看是否特殊字符串，dev表示最低级别版本，低于普通字符串，rc高于普通字符串，release更高，最高的级别是final</li>
+<li>同为普通字符串的情况下，通过string的compare方法来进行对比</li>
+<li>如果上面的对比情况均相等，则判断最后较长的版本中，最后一部分是否为数字，为数字则较长的版本号为最新</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/gradle/" rel="tag"># gradle</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/09/07/win10自动重启问题跟踪/" rel="next" title="win10自动重启问题跟踪">
+                <i class="fa fa-chevron-left"></i> win10自动重启问题跟踪
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/head.jpg" alt="superxlcr">
+            
+              <p class="site-author-name" itemprop="name">superxlcr</p>
+              <p class="site-description motion-element" itemprop="description">just a programmer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">185</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/superxlcr" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#版本冲突处理"><span class="nav-number">2.</span> <span class="nav-text">版本冲突处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#gradle最新版本判断代码"><span class="nav-number">3.</span> <span class="nav-text">gradle最新版本判断代码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#结论"><span class="nav-number">4.</span> <span class="nav-text">结论</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">superxlcr</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>
